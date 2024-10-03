@@ -4,4 +4,4 @@ This is the repository for the Disability Data Initiative (DDI). It contains the
 The project website is: https://disabilitydata.ace.fordham.edu/
 
 # Maintainer
-The DDI Github repository is maintained by Bradley Carpenter (South African Medical Research Council)
+The DDI Github repository is maintained by [Bradley Carpenter](https://github.com/bscarp/) (South African Medical Research Council)
