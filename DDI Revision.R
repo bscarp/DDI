@@ -1,6 +1,5 @@
 library(future)
 library(doFuture)
-options(parallelly.fork.enable = TRUE)
 options(future.globals.maxSize = 1e10)
 library(foreach)
 library(tidyverse)

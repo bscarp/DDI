@@ -114,12 +114,14 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
       arrange({{agg}}, admin1) %>% mutate(Agg = paste0(agg_grp," = ",{{agg}}),.before = "admin1") %>% select(-1)
   }
   
+  dck2 = dck %>% filter(~duplicated(hh_id))
+  
   #Summary for P3
-  tab_P3_nr = bind_rows(bind_rows(dck %>% group_by(admin1) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop"),
-                                  dck %>% group_by(admin1) %>% mutate(admin1 = factor(admin1_n+1,labels = "National")) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop")) %>%
+  tab_P3_nr = bind_rows(bind_rows(dck2 %>% group_by(admin1) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop"),
+                                  dck2 %>% group_by(admin1) %>% mutate(admin1 = factor(admin1_n+1,labels = "National")) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop")) %>%
                           mutate(Agg = "All = All",.before = "admin1"),
-                        bind_rows(dck %>% group_by(admin1,urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop"),
-                                  dck %>% group_by(admin1,urban_new) %>% mutate(admin1 = factor(admin1_n+1,labels = "National")) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop")) %>%
+                        bind_rows(dck2 %>% group_by(admin1,urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop"),
+                                  dck2 %>% group_by(admin1,urban_new) %>% mutate(admin1 = factor(admin1_n+1,labels = "National")) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop")) %>%
                           arrange(urban_new, admin1) %>% mutate(Agg = paste0("urban_new = ",urban_new),.before = "admin1") %>% select(-3))
   
   #Indicators by domain
@@ -227,9 +229,11 @@ foreach(r_name = wei_list, .options.future = list(packages = c("tidyverse","have
   oth_a = dck %>% select(!mobile_own) %>% select(disability_any_hh,disability_some_hh,disability_atleast_hh,seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any) %>% names()
   oth_a2 = c("age_group5")
   cou_a = c("admin1","admin2")
-  psu_a = c("ind_weight","hh_weight")
+  psu_a = c("ind_weight","hh_weight","hh_id")
   
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
+  dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
+
   
   size = object.size(dck)
   if(size < 3400000000) {
@@ -252,7 +256,7 @@ foreach(r_name = wei_list, .options.future = list(packages = c("tidyverse","have
   
   #Means national and regional
   tab_m_nr1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
-    options(future.globals.maxSize = 1e10)
+    options(future.globals.maxSize = 1e11)
     dis = as.symbol(dis_grp)
     agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
     tab = bind_rows(dck %>% group_by({{agg}}, {{dis}}, admin1) %>% summarise(across(any_of(ind_a1), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,ind_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, admin1),
