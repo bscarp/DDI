@@ -126,6 +126,8 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(hh_weight  )&!is.na(sample_strata))
     dck2a = dck2a %>% as_survey_design(ids = c(psu, ssu), weights = c(ind_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = c(psu, ssu), weights = c(hh_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
+    dck2a$fpc$pps = FALSE
+    dck2b$fpc$pps = FALSE
     rm(dck)
   } else if(grepl("psu", psu2$`Stata code July 17th 2024`)) {
     psu_a = psu_a[!grepl("ssu|sample_strata",psu_a)]
@@ -133,6 +135,8 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(hh_weight)&!is.na(country_abrev))
     dck2a = dck2a %>% as_survey_design(ids = psu, weights = ind_weight, strata = country_abrev, nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = psu, weights = hh_weight, strata = country_abrev, nest = TRUE)
+    dck2a$fpc$pps = FALSE
+    dck2b$fpc$pps = FALSE
     rm(dck)
   } else if(grepl("sample_strata", psu2$`Stata code July 17th 2024`)) {
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
@@ -140,6 +144,8 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
     dck2a = dck2a %>% as_survey_design(ids = hh_id, weights = ind_weight, strata = sample_strata, nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = hh_id, weights = hh_weight, strata = sample_strata, nest = TRUE)
+    dck2a$fpc$pps = FALSE
+    dck2b$fpc$pps = FALSE
     rm(dck)
   } else {
     psu_a = psu_a[!grepl("ssu|psu|sample_strata|country_abrev|hh_id",psu_a)]
@@ -147,6 +153,8 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(hh_weight))
     dck2a = dck2a %>% as_survey_design(ids = NULL, weights = ind_weight)
     dck2b = dck2b %>% as_survey_design(ids = NULL, weights = hh_weight)
+    dck2a$fpc$pps = FALSE
+    dck2b$fpc$pps = FALSE
     rm(dck)
   }
   
