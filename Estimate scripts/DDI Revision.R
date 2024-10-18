@@ -67,7 +67,7 @@ write_xlsx(list("Means" = admin1_m, "Standard Errors" = admin1_se),paste0(cen_di
 write_xlsx(list("Means" = admin2_m, "Standard Errors" = admin2_se),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2.xlsx"))
 rm(admin0_m,admin1_m,admin2_m,admin0_se,admin1_se,admin2_se)
 
-temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietnam",File_Name),"IPUMS_Cleaned_Individual_Data_Trimmed",File_Name),
+temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietnam.*2019|Cambodia",File_Name),"IPUMS_Cleaned_Individual_Data_Trimmed",File_Name),
                       File_Name = ifelse(grepl("DHS",File_Name),"Final_Individual_DHS_only",File_Name))
 temp2 = temp2 |> distinct(File_Name,.keep_all = TRUE)
 
@@ -92,9 +92,14 @@ foreach(i=zip_list) %do% {
   dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
   unzip_7z(sub('Stata Datasets','"Stata Datasets"',i),paste0(cen_dir,'Downloads/Census/"Stata Datasets"/'))
   dta_list2 = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
-  file.rename(from = paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list2[!dta_list2 %in% dta_list]), to = sub(".zip",".dta",i))
+  dta_list2 = dta_list2[!dta_list2 %in% dta_list&grepl("\\.dta",dta_list2)]
+  file.rename(from = paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list2), to = sub(".zip",".dta",i))
   file.remove(i)
 }
 
-rm(dta_list,zip_list,i,j,k,unzip_7z)
+dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
+dta_list_c = dta_list[grepl("house",dta_list,ignore.case = TRUE)]
+file.remove(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list_c))
+
+rm(dta_list,dta_list_c,zip_list,i,j,k,unzip_7z)
 gc()
