@@ -72,8 +72,8 @@ with_progress({
   dataset = sub(pattern = ".RData", replacement = "", x = r_name)
 
   write.table(tibble(x = dataset, time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
-  
   p(sprintf("Loading %s",r_name))
+  
   load(file = file_name)
   
   dck = dck %>% mutate(disability_any = factor(disability_any,labels = c("no_a","any")),
@@ -86,11 +86,33 @@ with_progress({
   # dck = dck %>% mutate(across(any_of(c("country_name","country_abrev","country_dataset_year","admin1","admin2","admin_alt")),~as.character(as_factor(.x))))
   dck = dck %>% filter(complete.cases(disability_any))
   
+  if("psu2" %in% names(dck)) {
+    dck = dck %>% select(-any_of(c("psu"))) %>% rename(psu = psu2)
+  }
+  if("strata2" %in% names(dck)) {
+    dck = dck %>% select(-any_of(c("sample_strata"))) %>% rename(sample_strata = strata2)
+  } 
+  if("informal2" %in% names(dck)) {
+    dck = dck %>% select(-any_of(c("work_informal"))) %>% rename(work_informal = informal2)
+  } 
+  if("work_managerial2" %in% names(dck)) {
+    dck = dck %>% select(-any_of(c("work_managerial"))) %>% rename(work_managerial = work_managerial2)
+  } 
+  
+  if ("admin1" %in% names(dck)) if(n_distinct(dck$admin1) < 2) {
+    dck = dck %>% select(-admin1)
+  } else {
+    dck = dck %>% mutate(admin1 = str_to_title(admin1))
+  }
   if ("admin2" %in% names(dck)) if(n_distinct(dck$admin2) < 2) {
-    dck$admin2 = NULL
-  }  
+    dck = dck %>% select(-admin2)
+  } else {
+    dck = dck %>% mutate(admin2 = str_to_title(admin2))
+  }
   if ("admin_alt" %in% names(dck)) if(n_distinct(dck$admin_alt) < 2) {
-    dck$admin_alt = NULL
+    dck = dck %>% select(-admin_alt)
+  } else {
+    dck = dck %>% mutate(admin_alt = str_to_title(admin_alt))
   }
   
   grp_a = c("female","urban_new","age_group")
@@ -150,8 +172,8 @@ with_progress({
     rm(dck)
   }
   
-  p(sprintf("%s processed", r_name))
   write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+  p(sprintf("%s processed", r_name))
   
   tabs = foreach(admin_grp = c("admin0",cou_a)) %dofuture% {
     options(future.globals.maxSize = 1e10)
