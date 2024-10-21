@@ -251,7 +251,7 @@ foreach(r_name = dhs_list, .options.future = list(packages = c("tidyverse","have
   tabs$tab_as_adj = tabs$tab_as_adj %>% filter(!duplicated(age_sex))
   
   #write to R
-  save(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj,file = r_sum_name)
+  save(tabs,file = r_sum_name)
   return(r_name)
   gc()
 }
