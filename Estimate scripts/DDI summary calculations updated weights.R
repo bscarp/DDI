@@ -59,7 +59,7 @@ options(survey.lonely.psu = "adjust")
 
 #Run analysis for unprocessed datasets
 with_progress({
-  p = progressor(along = seq(length(r_list2)*3*48))
+  p = progressor(along = seq(length(r_list2)*(3*48+2)))
   foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
   
   cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
@@ -72,6 +72,7 @@ with_progress({
 
   write.table(tibble(x = dataset, time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
   
+  p(sprintf("Loading %s",r_name))
   load(file = file_name)
   
   dck = dck %>% mutate(disability_any = factor(disability_any,labels = c("no_a","any")),
@@ -148,6 +149,7 @@ with_progress({
     rm(dck)
   }
   
+  p(sprintf("%s processed", r_name))
   write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
   
   tabs = foreach(admin_grp = c("admin0",cou_a)) %dofuture% {
