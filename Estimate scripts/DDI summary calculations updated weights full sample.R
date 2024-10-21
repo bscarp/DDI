@@ -57,10 +57,7 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
   r_sum_name = paste0(data_loc2,sub("\\.RData","\\_Summary.RData",r_name))
   dataset = sub(pattern = ".RData", replacement = "", x = r_name)
   
-  if(file.exists("~/progress.csv")) {
-    file.remove("~/progress.csv")
-  }
-  write.csv(x = dataset, file = "~/progress.csv")
+  write.table(tibble(x = dataset, time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
   
   load(file = file_name)
   
@@ -94,6 +91,8 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
+  write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+  
   tabs = foreach(admin_grp = c("admin0",cou_a)) %dofuture% {
     options(future.globals.maxSize = 1e10)
     options(survey.adjust.domain.lonely = TRUE)
@@ -111,6 +110,8 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
         arrange({{agg}}, {{dis}}, {{admin}}) %>% pivot_wider(names_from = {{dis}},values_from = -c(1:3)) %>% mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
+    write.table(tibble(x = paste0("Table 1", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    
     #Summary for P1
     tab_P1_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
       options(future.globals.maxSize = 1e10)
@@ -120,6 +121,8 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
       tab = dck %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(as.numeric(.x)-1,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
+    
+    write.table(tibble(x = paste0("Table 2", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Summary for P2
     tab_P2_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
@@ -131,6 +134,8 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
+    write.table(tibble(x = paste0("Table 3", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    
     dck3 = dck %>% filter(!duplicated(hh_id))
     
     #Summary for P3
@@ -138,6 +143,8 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
                             mutate(Agg = "All = All", admin = {{admin_grp}}, level = as.character({{admin}}), .after= 1) %>% select(-1),
                           dck3 %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>%
                             arrange(urban_new, {{admin}}) %>% mutate(Agg = paste0("urban_new = ",urban_new), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2)))
+    
+    write.table(tibble(x = paste0("Table 4", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Indicators by domain
     tab_P4_nr = foreach(dom_grp=dom_a, .options.future = list(packages = c("tidyverse","haven")),.combine = "rbind") %do% {
@@ -149,8 +156,13 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
     }
     
+    write.table(tibble(x = paste0("Table 5", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    
     #Prevalences for age-sex adjustment
     tab_as_adj = dck %>% mutate(female = factor(female,labels = c("Male","Female")),age_sex = paste(age_group5,female)) %>% group_by(age_sex) %>% summarise(across(all_of(dis_a2),~ifelse(sum(!is.na(.x))<50,NA,mean(as.numeric(.x)-1,na.rm = T)*100)),.groups = "drop")
+    
+    write.table(tibble(x = paste0("Table 6", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    
     return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj))
   }
 
