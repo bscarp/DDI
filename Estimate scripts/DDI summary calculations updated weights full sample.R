@@ -71,10 +71,10 @@ foreach(r_name = full_list, .options.future = list(packages = c("tidyverse","hav
   # dck = dck %>% mutate(across(any_of(c("country_name","country_abrev","country_dataset_year","admin1","admin2","admin_alt")),~as.character(as_factor(.x))))
   dck = dck %>% filter(complete.cases(disability_any))
   
-  if(n_distinct(dck$admin2) < 2) {
+  if ("admin2" %in% names(dck)) if(n_distinct(dck$admin2) < 2) {
     dck$admin2 = NULL
   }  
-  if(n_distinct(dck$admin_alt) < 2) {
+  if ("admin_alt" %in% names(dck)) if(n_distinct(dck$admin_alt) < 2) {
     dck$admin_alt = NULL
   }
   
