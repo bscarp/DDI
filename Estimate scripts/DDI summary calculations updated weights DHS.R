@@ -26,7 +26,7 @@ dhs_list = r_list[!r_list %in% sum_list&grepl("DHS",r_list)]
 
 #Run analysis for unprocessed datasets
 with_progress({
-  p = progressor(along = seq(length(r_list2)*(3*48+2)))
+  p = progressor(along = seq(length(dhs_list)*(3*85+2)))
   foreach(r_name = dhs_list, .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
   
   cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
@@ -291,5 +291,4 @@ with_progress({
   return(r_name)
   gc()
 }
-
-file.remove("~/progress.csv")
+})

@@ -301,8 +301,6 @@ with_progress({
 }
 })
 
-file.remove("~/progress.csv")
-
 time = time %>% add_row(.,point = "Summaries", val = Sys.time(), diff = val-time$val[4])
 
 #Process estimates for database
