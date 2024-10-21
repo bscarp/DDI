@@ -12,20 +12,6 @@ library(tableone)
 
 plan(list(sequential,sequential,tweak(multisession, workers = 4)))
 
-# size = function() {
-# if(isTRUE(test)) {
-#   temp = object.size(df)
-# case_when(temp < 3400000000 ~ 6,
-#           temp < 4000000000 ~ 5,
-#           temp < 4800000000 ~ 4,
-#           temp < 6000000000 ~ 3,
-#           temp < 8000000000 ~ 2,
-#           TRUE              ~ 1)
-# } else {
-# round(runif(1,1,6),0)
-# }
-# }
-
 library(progressr)
 handlers(global = TRUE)
 handlers("progress")
@@ -72,7 +58,9 @@ options(survey.adjust.domain.lonely = TRUE)
 options(survey.lonely.psu = "adjust")
 
 #Run analysis for unprocessed datasets
-foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
+with_progress({
+  p = progressor(along = seq(length(r_list2)*3*48))
+  foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
   
   cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
   data_loc = paste0(cen_dir,"Downloads/Census/R Datasets/")
@@ -173,6 +161,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
+      p(sprintf("Tab1, %s, %s"), agg_grp, dis_grp)
       dis = as.symbol(dis_grp)
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck2a %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
@@ -183,6 +172,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
         options(future.globals.maxSize = 1e10)
         options(survey.adjust.domain.lonely = TRUE)
         options(survey.lonely.psu = "adjust")
+        p(sprintf("Tab1b, %s, %s"), agg_grp, dis_grp)
         dis = as.symbol(dis_grp)
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
         tab = dck2b %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
@@ -204,6 +194,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
+      p(sprintf("Tab2, %s"), agg_grp)
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck2a %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
@@ -216,6 +207,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
+      p(sprintf("Tab3, %s"), agg_grp)
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck2a %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
@@ -226,6 +218,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
     dck3b = dck2b %>% filter(!duplicated(hh_id))
     
     #Summary for P3
+    p(sprintf("Tab4"), agg_grp, dis_grp)
     tab_P3_nr = bind_rows(dck3b %>% group_by({{admin}}) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
                             mutate(Agg = "All = All", admin = {{admin_grp}}, level = as.character({{admin}}), .after= 1) %>% select(-1),
                           dck3b %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
@@ -238,6 +231,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
+      p(sprintf("Tab5, %s"), dom_grp)
       dom = as.symbol(dom_grp)
       tab = dck2a %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{admin}}) %>%
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
@@ -247,6 +241,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
         options(future.globals.maxSize = 1e10)
         options(survey.adjust.domain.lonely = TRUE)
         options(survey.lonely.psu = "adjust")
+        p(sprintf("Tab5b, %s"), dom_grp)
         dom = as.symbol(dom_grp)
         tab = dck2b %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{admin}}) %>%
           arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
@@ -263,6 +258,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
     write.table(tibble(x = paste0("Table 5", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Prevalences for age-sex adjustment
+    p(sprintf("Tab6"), agg_grp, dis_grp)
     tab_as_adj = dck2a %>% mutate(female = factor(female,labels = c("Male","Female")),age_sex = paste(age_group5,female)) %>% group_by(age_sex) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop")
     
     write.table(tibble(x = paste0("Table 6", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
@@ -278,6 +274,7 @@ foreach(r_name = r_list2, .options.future = list(packages = c("tidyverse","haven
   return(r_name)
   gc()
 }
+})
 
 file.remove("~/progress.csv")
 
