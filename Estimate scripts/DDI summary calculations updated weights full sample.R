@@ -116,7 +116,7 @@ with_progress({
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
-      p(sprintf("Tab1, %s, %s"), agg_grp, dis_grp)
+      p(sprintf("%s, Tab1, %s, %s, %s", r_name, admin_grp, agg_grp, dis_grp))
       dis = as.symbol(dis_grp)
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
@@ -130,7 +130,7 @@ with_progress({
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
-      p(sprintf("Tab2, %s"), agg_grp)
+      p(sprintf("%s, Tab2, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(as.numeric(.x)-1,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
@@ -143,7 +143,7 @@ with_progress({
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
-      p(sprintf("Tab3, %s"), agg_grp)
+      p(sprintf("%s, Tab3, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
@@ -154,7 +154,7 @@ with_progress({
     dck3 = dck %>% filter(!duplicated(hh_id))
     
     #Summary for P3
-    p(sprintf("Tab4"), agg_grp, dis_grp)
+    p(sprintf("%s, Tab4, %s", r_name, admin_grp))
     tab_P3_nr = bind_rows(dck3 %>% group_by({{admin}}) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>%
                             mutate(Agg = "All = All", admin = {{admin_grp}}, level = as.character({{admin}}), .after= 1) %>% select(-1),
                           dck3 %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>%
@@ -167,7 +167,7 @@ with_progress({
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
-      p(sprintf("Tab5, %s"), dom_grp)
+      p(sprintf("%s, Tab5, %s, %s", r_name, admin_grp, dom_grp))
       dom = as.symbol(dom_grp)
       tab = dck %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(all_of(ind_a), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,mean(.x,na.rm = T)*100),mean_se = ~NA)),.groups = "drop") %>% complete({{admin}}) %>%
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
@@ -176,7 +176,7 @@ with_progress({
     write.table(tibble(x = paste0("Table 5", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Prevalences for age-sex adjustment
-    p(sprintf("Tab6"), agg_grp, dis_grp)
+    p(sprintf("%s, Tab6, %s", r_name, admin_grp))
     tab_as_adj = dck %>% mutate(female = factor(female,labels = c("Male","Female")),age_sex = paste(age_group5,female)) %>% group_by(age_sex) %>% summarise(across(all_of(dis_a2),~ifelse(sum(!is.na(.x))<50,NA,mean(as.numeric(.x)-1,na.rm = T)*100)),.groups = "drop")
     
     write.table(tibble(x = paste0("Table 6", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
@@ -278,7 +278,7 @@ with_progress({
     #Means national and regional
     tab_m_nr1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
       options(future.globals.maxSize = 1e11)
-      p(sprintf("Tab1, %s, %s"), agg_grp, dis_grp)
+      p(sprintf("%s, Tab1, %s, %s, %s", r_name, admin_grp, agg_grp, dis_grp))
       dis = as.symbol(dis_grp)
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a1), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,ind_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
@@ -286,7 +286,7 @@ with_progress({
     }
     tab_m_nr2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
       options(future.globals.maxSize = 1e10)
-      p(sprintf("Tab1b, %s, %s"), agg_grp, dis_grp)
+      p(sprintf("%s, Tab1b, %s, %s, %s", r_name, admin_grp, agg_grp, dis_grp))
       dis = as.symbol(dis_grp)
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a2), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,hh_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
@@ -301,7 +301,7 @@ with_progress({
     #Summary for P1
     tab_P1_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
       options(future.globals.maxSize = 1e10)
-      p(sprintf("Tab2, %s"), agg_grp)
+      p(sprintf("%s, Tab2, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(as.numeric(.x)-1,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(as.numeric(.x)-1,na.rm = T)/n())*100))),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
@@ -312,7 +312,7 @@ with_progress({
     #Summary for P2
     tab_P2_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
       options(future.globals.maxSize = 1e10)
-      p(sprintf("Tab3, %s"), agg_grp)
+      p(sprintf("%s, Tab3, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,ind_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
@@ -323,7 +323,7 @@ with_progress({
     dck3 = dck %>% filter(!duplicated(hh_id))
     
     #Summary for P3
-    p(sprintf("Tab4"), agg_grp, dis_grp)
+    p(sprintf("%s, Tab4, %s", r_name, admin_grp))
     tab_P3_nr = bind_rows(dck3 %>% group_by({{admin}}) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,ind_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>%
                             mutate(Agg = "All = All", admin = {{admin_grp}}, level = as.character({{admin}}), .after= 1) %>% select(-1),
                           dck3 %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,ind_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>%
@@ -334,14 +334,14 @@ with_progress({
     #Indicators by domain
     tab_P4_nr1 = foreach(dom_grp=dom_a, .options.future = list(packages = c("tidyverse","haven")),.combine = "rbind") %do% {
       options(future.globals.maxSize = 1e10)
-      p(sprintf("Tab5, %s"), dom_grp)
+      p(sprintf("%s, Tab5, %s, %s", r_name, admin_grp, dom_grp))
       dom = as.symbol(dom_grp)
       tab = dck %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(all_of(ind_a1), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,ind_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>% complete({{admin}}) %>%
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
     }
     tab_P4_nr2 = foreach(dom_grp=dom_a, .options.future = list(packages = c("tidyverse","haven")),.combine = "rbind") %do% {
       options(future.globals.maxSize = 1e10)
-      p(sprintf("Tab5b, %s"), dom_grp)
+      p(sprintf("%s, Tab5b, %s, %s", r_name, admin_grp, dom_grp))
       dom = as.symbol(dom_grp)
       tab = dck %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(all_of(ind_a2), list(mean = ~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(.x,hh_weight,na.rm = T)*100),mean_se = ~ifelse(sum(!is.na(.x))<50,NA,sqrt(wtd.var(.x,na.rm = T)/n())*100))),.groups = "drop") %>% complete({{admin}}) %>%
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
@@ -353,7 +353,7 @@ with_progress({
     write.table(tibble(x = paste0("Table 5", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Prevalences for age-sex adjustment
-    p(sprintf("Tab6"), agg_grp, dis_grp)
+    p(sprintf("%s, Tab6, %s", r_name, admin_grp))
     tab_as_adj = dck %>% mutate(female = factor(female,labels = c("Male","Female")),age_sex = paste(age_group5,female)) %>% group_by(age_sex) %>% summarise(across(all_of(dis_a2),~ifelse(sum(!is.na(.x))<50,NA,wtd.mean(as.numeric(.x)-1,na.rm = T)*100)),.groups = "drop")
     
     write.table(tibble(x = paste0("Table 6", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
