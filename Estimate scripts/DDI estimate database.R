@@ -4,7 +4,6 @@ options(future.globals.maxSize = 1e10)
 library(foreach)
 library(tidyverse)
 library(googledrive)
-options(java.parameters = "-Xmx8192m")
 library(readxl)
 library(writexl)
 plan(multisession, workers = 4)
@@ -46,7 +45,7 @@ svy_list = sum_list2[!sum_list2 %in% com_list]
 #Needs refinement
 # check = foreach(file = run_list, svy = svy_list,.verbose = FALSE , .options.future = list(packages = c("tidyverse","haven")), .combine = "rbind") %dofuture% {
 #   load(paste0(paste0(cen_dir,"Downloads/Census/Summaries/",file))
-#   tab_m_nr[[1]][[1]] |> summarise(across(everything(),~mode(.x))) |> mutate(svy = svy,.before = admin1)
+#   tabs$tab_m_nr[[1]][[1]] |> summarise(across(everything(),~mode(.x))) |> mutate(svy = svy,.before = admin1)
 # }
 
 #Run analysis for unprocessed datasets
@@ -60,13 +59,14 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
             "work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","ind_electric","ind_cleanfuel","ind_livingcond",
             "ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","health_exp_hh","ind_mdp")
   
-  db1 = tab_P1_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
+  db1 = tabs$tab_P1_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
   db1b = db1 %>% select(-ends_with("_mean")) %>% rename("any_difficulty"=disability_any_mean_se,"some_difficulty"=disability_some_mean_se, "atleast_alot_difficulty"=disability_atleast_mean_se)
   db1 = db1 %>% select(-ends_with("_mean_se")) %>% rename("any_difficulty"=disability_any_mean,"some_difficulty"=disability_some_mean, "atleast_alot_difficulty"=disability_atleast_mean)
-  db1c = db1 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1[-c(1:2)])))
-  db1d = db1b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1b[-c(1:2)])))
+  db1c = db1 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1[-c(1:3)])))
+  db1d = db1b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1b[-c(1:3)])))
   
-  db2 = tab_m_nr %>% rename(disagg=Agg) %>% select(disagg,admin1,ends_with("_no"),ends_with("_some"),ends_with("_atleast"),ends_with("any"),ends_with("no_l")) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
+  db2 = tabs$tab_m_nr %>% rename(disagg=Agg) %>% select(disagg,admin,level,ends_with("_no"),ends_with("_some"),ends_with("_atleast"),ends_with("any"),ends_with("no_l")) %>% 
+    filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
 
   names(db2) = sub("everattended_new","Ever_attended_school",names(db2))
   names(db2) = sub("ind_atleastprimary","At_least_primary",names(db2))
@@ -95,7 +95,7 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
   names(db2) = sub("shock_any","Shock",names(db2))
   names(db2) = sub("health_exp_hh","Health_expenditures",names(db2))
   names(db2) = sub("ind_mdp","Multid_poverty",names(db2))
-  db2b = db2 %>% select(disagg,admin1,contains("_mean_se_"))
+  db2b = db2 %>% select(disagg,admin,level,contains("_mean_se_"))
   db2 = db2 %>% select(-contains("_mean_se_"))
   names(db2) = sub("_mean_no_l"," nosome_difficulty",names(db2))
   names(db2) = sub("_mean_any"," any_difficulty",names(db2))
@@ -108,8 +108,8 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
   names(db2b) = sub("_mean_se_some"," some_difficulty",names(db2b))
   names(db2b) = sub("_mean_se_atleast"," atleast_alot_difficulty",names(db2b))
   
-  db2c = db2 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2[-c(1:2)])))
-  db2d = db2b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2b[-c(1:2)])))
+  db2c = db2 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2[-c(1:3)])))
+  db2d = db2b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2b[-c(1:3)])))
   db2c = db2c %>% rename("At_least_primary no_difficulty (ages25to29)"="At_least_primary no_difficulty (ages15to29)",
                          "At_least_primary some_difficulty (ages25to29)"="At_least_primary some_difficulty (ages15to29)",
                          "At_least_primary atleast_alot_difficulty (ages25to29)"="At_least_primary atleast_alot_difficulty (ages15to29)",
@@ -131,23 +131,25 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
                          "At_least_secondary any_difficulty (ages25to29)"="At_least_secondary any_difficulty (ages15to29)",
                          "At_least_secondary nosome_difficulty (ages25to29)"="At_least_secondary nosome_difficulty (ages15to29)")
   
-  db3 = tab_P2_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
+  db3 = tabs$tab_P2_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% 
+    mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
   db3b = db3 %>% select(-ends_with("_mean"))
   db3 = db3 %>% select(-ends_with("_mean_se"))
   names(db3) = sub("_any_mean","",names(db3))
   names(db3b) = sub("_any_mean_se","",names(db3b))
-  db3c = db3 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3[-c(1:2)])))
-  db3d = db3b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3b[-c(1:2)])))
+  db3c = db3 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3[-c(1:3)])))
+  db3d = db3b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3b[-c(1:3)])))
 
-  db4 = tab_P3_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
+  db4 = tabs$tab_P3_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% 
+    mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
   db4b = db4 %>% select(-ends_with("_mean"))
   db4 = db4 %>% select(-ends_with("_mean_se"))  
-  names(db4) = c("disagg","admin1","Household_Prevalence_any_difficulty","Household_Prevalence_some_difficulty","Household_Prevalence_atleast_alot_difficulty")
-  names(db4b) = c("disagg","admin1","Household_Prevalence_any_difficulty","Household_Prevalence_some_difficulty","Household_Prevalence_atleast_alot_difficulty")
-  db4c = db4 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4[-c(1:2)])))
-  db4d = db4b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4b[-c(1:2)])))
+  names(db4) = c("disagg","admin","level","Household_Prevalence_any_difficulty","Household_Prevalence_some_difficulty","Household_Prevalence_atleast_alot_difficulty")
+  names(db4b) = c("disagg","admin","level","Household_Prevalence_any_difficulty","Household_Prevalence_some_difficulty","Household_Prevalence_atleast_alot_difficulty")
+  db4c = db4 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4[-c(1:3)])))
+  db4d = db4b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4b[-c(1:3)])))
   
-  db5 = tab_P4_nr %>% rename(disagg=domain) %>% filter(!disagg=="disability_any") %>% mutate(disagg = gsub("_any","",disagg))
+  db5 = tabs$tab_P4_nr %>% rename(disagg=domain) %>% filter(!disagg=="disability_any") %>% mutate(disagg = gsub("_any","",disagg))
   names(db5) = sub("everattended_new","Ever_attended_school",names(db5))
   names(db5) = sub("ind_atleastprimary","At_least_primary",names(db5))
   names(db5) = sub("ind_atleastsecondary","At_least_secondary",names(db5))
@@ -180,189 +182,30 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
   db5 = db5 %>% select(-ends_with("_mean_se"))
   names(db5) = sub("_mean$","",names(db5))
   names(db5b) = sub("_mean_se$","",names(db5b))
-  db5c = db5 %>% pivot_wider(names_from = disagg, names_glue = "{.value} {disagg} (all_adults)",values_from = c(names(db5[-c(1:2)])))
-  db5d = db5b %>% pivot_wider(names_from = disagg, names_glue = "{.value} {disagg} (all_adults)",values_from = c(names(db5b[-c(1:2)])))
+  db5c = db5 %>% pivot_wider(names_from = disagg, names_glue = "{.value} {disagg} (all_adults)",values_from = c(names(db5[-c(1:3)])))
+  db5d = db5b %>% pivot_wider(names_from = disagg, names_glue = "{.value} {disagg} (all_adults)",values_from = c(names(db5b[-c(1:3)])))
   
-  db_admin1_mean = full_join(full_join(full_join(full_join(db1c,db2c,by = c("admin1")),db3c,by = c("admin1")),db4c,by = c("admin1")),db5c,by = c("admin1"))
-  db_admin1_se = full_join(full_join(full_join(full_join(db1d,db2d,by = c("admin1")),db3d,by = c("admin1")),db4d,by = c("admin1")),db5d,by = c("admin1"))
+  db_mean = full_join(full_join(full_join(full_join(db1c,db2c,by = c("admin","level")),db3c,by = c("admin","level")),db4c,by = c("admin","level")),db5c,by = c("admin","level"))
+  db_se = full_join(full_join(full_join(full_join(db1d,db2d,by = c("admin","level")),db3d,by = c("admin","level")),db4d,by = c("admin","level")),db5d,by = c("admin","level"))
   rm(db1,db1b,db1c,db1d,db2,db2b,db2c,db2d,db3,db3b,db3c,db3d,db4,db4b,db4c,db4d,db5,db5b,db5c,db5d)
 
-  if(exists("tab_P1_sn")) {
-  db1 = tab_P1_sn[[1]] %>% rename(disagg=`"All"`) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"All"="all_adults"))
-  db1 = full_join(db1, tab_P1_sn[[2]] %>% rename(disagg=female) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,'1'="females",'0'="males")), by = names(db1))
-  db1 = full_join(db1, tab_P1_sn[[3]] %>% rename(disagg=urban_new) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,'0'="rural",'1'="urban")), by = names(db1))
-  db1 = full_join(db1, tab_P1_sn[[4]] %>% rename(disagg=age_group) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,'1'="ages15to29",'2'="ages30to44",'3'="ages45to64",'4'="ages65plus")), by = names(db1))
+  rm(tabs)
   
-  db1b = db1 %>% select(-ends_with("_mean")) %>% rename("any_difficulty"=disability_any_mean_se,"some_difficulty"=disability_some_mean_se, "atleast_alot_difficulty"=disability_atleast_mean_se)
-  db1 = db1 %>% select(-ends_with("_mean_se")) %>% rename("any_difficulty"=disability_any_mean,"some_difficulty"=disability_some_mean, "atleast_alot_difficulty"=disability_atleast_mean)
-  db1c = db1 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1[-c(1:2)])))
-  db1d = db1b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1b[-c(1:2)])))
-  
-  db2 = tab_m_sn[[1]][[2]] %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults"))
-  db2 = full_join(db2, tab_m_sn[[1]][[1]] %>% select(Agg,admin2,ends_with("any")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults")), by = c("disagg","admin2"))
-  db2 = full_join(db2, tab_m_sn[[1]][[3]] %>% select(Agg,admin2,ends_with("no_l")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults")), by = c("disagg","admin2"))
-  
-  temp = tab_m_sn[[2]][[2]] %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"female = 1"="females","female = 0"="males"))
-  temp = full_join(temp, tab_m_sn[[2]][[1]] %>% select(Agg,admin2,ends_with("any")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"female = 1"="females","female = 0"="males")), by = c("disagg","admin2"))
-  temp = full_join(temp, tab_m_sn[[2]][[3]] %>% select(Agg,admin2,ends_with("no_l")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"female = 1"="females","female = 0"="males")), by = c("disagg","admin2"))
-  db2 = full_join(db2,temp, by = names(db2))
-  rm(temp)
-  
-  temp = tab_m_sn[[3]][[2]] %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"urban_new = 0"="rural","urban_new = 1"="urban"))
-  temp = full_join(temp, tab_m_sn[[3]][[1]] %>% select(Agg,admin2,ends_with("any")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"urban_new = 0"="rural","urban_new = 1"="urban")), by = c("disagg","admin2"))
-  temp = full_join(temp, tab_m_sn[[3]][[3]] %>% select(Agg,admin2,ends_with("no_l")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"urban_new = 0"="rural","urban_new = 1"="urban")), by = c("disagg","admin2"))
-  db2 = full_join(db2,temp, by = names(db2))
-  rm(temp)
-  
-  temp = tab_m_sn[[4]][[2]] %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
-  temp = full_join(temp, tab_m_sn[[4]][[1]] %>% select(Agg,admin2,ends_with("any")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus")), by = c("disagg","admin2"))
-  temp = full_join(temp, tab_m_sn[[4]][[3]] %>% select(Agg,admin2,ends_with("no_l")) %>% rename(disagg=Agg) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus")), by = c("disagg","admin2"))
-  db2 = full_join(db2,temp, by = names(db2))
-  rm(temp)
-  
-  names(db2) = sub("everattended_new","Ever_attended_school",names(db2))
-  names(db2) = sub("ind_atleastprimary","At_least_primary",names(db2))
-  names(db2) = sub("ind_atleastsecondary","At_least_secondary",names(db2))
-  names(db2) = sub("lit_new","Literacy_rate",names(db2))
-  names(db2) = sub("computer","Computer_use",names(db2))
-  names(db2) = sub("internet","Internet_use",names(db2))
-  names(db2) = sub("mobile_own","Own_Mobile",names(db2))
-  names(db2) = sub("ind_emp","Employment",names(db2))
-  names(db2) = sub("youth_idle","Youth_idle_rate",names(db2))
-  names(db2) = sub("work_manufacturing","Manufacturing_work",names(db2))
-  names(db2) = sub("work_managerial","Managerial_work",names(db2))
-  names(db2) = sub("work_informal","Informal_work",names(db2))
-  names(db2) = sub("ind_water","Water",names(db2))
-  names(db2) = sub("ind_toilet","Sanitation",names(db2))
-  names(db2) = sub("fp_demsat_mod","Family_Planning_Met",names(db2))
-  names(db2) = sub("anyviolence_byh_12m","Any_Violence",names(db2))
-  names(db2) = sub("ind_electric","Electricity",names(db2))
-  names(db2) = sub("ind_cleanfuel","Clean_fuel",names(db2))
-  names(db2) = sub("ind_livingcond","Adequate_Housing",names(db2))
-  names(db2) = sub("ind_asset_ownership","Share_assets_owned",names(db2))
-  names(db2) = sub("cell_new","Household_Mobile_phone",names(db2))
-  names(db2) = sub("health_insurance","Health_insurance",names(db2))
-  names(db2) = sub("social_prot","Social_protection",names(db2))
-  names(db2) = sub("food_insecure","Food_insecure",names(db2))
-  names(db2) = sub("shock_any","Shock",names(db2))
-  names(db2) = sub("health_exp_hh","Health_expenditures",names(db2))
-  names(db2) = sub("ind_mdp","Multid_poverty",names(db2))
-  db2b = db2 %>% select(-contains("_mean_"))
-  db2 = db2 %>% select(-contains("_mean_se_"))
-  names(db2) = sub("_mean_no_l"," nosome_difficulty",names(db2))
-  names(db2) = sub("_mean_any"," any_difficulty",names(db2))
-  names(db2) = sub("_mean_no"," no_difficulty",names(db2))
-  names(db2) = sub("_mean_some"," some_difficulty",names(db2))
-  names(db2) = sub("_mean_atleast"," atleast_alot_difficulty",names(db2))
-  names(db2b) = sub("_mean_se_no_l"," nosome_difficulty",names(db2b))
-  names(db2b) = sub("_mean_se_any"," any_difficulty",names(db2b))
-  names(db2b) = sub("_mean_se_no"," no_difficulty",names(db2b))
-  names(db2b) = sub("_mean_se_some"," some_difficulty",names(db2b))
-  names(db2b) = sub("_mean_se_atleast"," atleast_alot_difficulty",names(db2b))
-  
-  db2c = db2 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2[-c(1:2)])))
-  db2d = db2b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2b[-c(1:2)])))
-  db2c = db2c %>% rename("At_least_primary no_difficulty (ages25to29)"="At_least_primary no_difficulty (ages15to29)",
-                         "At_least_primary some_difficulty (ages25to29)"="At_least_primary some_difficulty (ages15to29)",
-                         "At_least_primary atleast_alot_difficulty (ages25to29)"="At_least_primary atleast_alot_difficulty (ages15to29)",
-                         "At_least_primary any_difficulty (ages25to29)"="At_least_primary any_difficulty (ages15to29)",
-                         "At_least_primary nosome_difficulty (ages25to29)"="At_least_primary nosome_difficulty (ages15to29)",
-                         "At_least_secondary no_difficulty (ages25to29)"="At_least_secondary no_difficulty (ages15to29)",
-                         "At_least_secondary some_difficulty (ages25to29)"="At_least_secondary some_difficulty (ages15to29)",
-                         "At_least_secondary atleast_alot_difficulty (ages25to29)"="At_least_secondary atleast_alot_difficulty (ages15to29)",
-                         "At_least_secondary any_difficulty (ages25to29)"="At_least_secondary any_difficulty (ages15to29)",
-                         "At_least_secondary nosome_difficulty (ages25to29)"="At_least_secondary nosome_difficulty (ages15to29)")
-  db2d = db2d %>% rename("At_least_primary no_difficulty (ages25to29)"="At_least_primary no_difficulty (ages15to29)",
-                         "At_least_primary some_difficulty (ages25to29)"="At_least_primary some_difficulty (ages15to29)",
-                         "At_least_primary atleast_alot_difficulty (ages25to29)"="At_least_primary atleast_alot_difficulty (ages15to29)",
-                         "At_least_primary any_difficulty (ages25to29)"="At_least_primary any_difficulty (ages15to29)",
-                         "At_least_primary nosome_difficulty (ages25to29)"="At_least_primary nosome_difficulty (ages15to29)",
-                         "At_least_secondary no_difficulty (ages25to29)"="At_least_secondary no_difficulty (ages15to29)",
-                         "At_least_secondary some_difficulty (ages25to29)"="At_least_secondary some_difficulty (ages15to29)",
-                         "At_least_secondary atleast_alot_difficulty (ages25to29)"="At_least_secondary atleast_alot_difficulty (ages15to29)",
-                         "At_least_secondary any_difficulty (ages25to29)"="At_least_secondary any_difficulty (ages15to29)",
-                         "At_least_secondary nosome_difficulty (ages25to29)"="At_least_secondary nosome_difficulty (ages15to29)")
-  
-  db3 = tab_P2_sn[[1]] %>% rename(disagg=`"All"`) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,"All"="all_adults"))
-  db3 = full_join(db3, tab_P2_sn[[2]] %>% rename(disagg=female) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,'1'="females",'0'="males")), by = names(db3))
-  db3 = full_join(db3, tab_P2_sn[[3]] %>% rename(disagg=urban_new) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,'0'="rural",'1'="urban")), by = names(db3))
-  db3 = full_join(db3, tab_P2_sn[[4]] %>% rename(disagg=age_group) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,'1'="ages15to29",'2'="ages30to44",'3'="ages45to64",'4'="ages65plus")), by = names(db3))
-  
-  db3b = db3 %>% select(-ends_with("_mean"))
-  db3 = db3 %>% select(-ends_with("_mean_se"))
-  names(db3) = sub("_any_mean","",names(db3))
-  names(db3b) = sub("_any_mean_se","",names(db3b))
-  db3c = db3 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3[-c(1:2)])))
-  db3d = db3b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3b[-c(1:2)])))
-  
-  db4 = tab_P3_sn[[1]] %>% mutate(disagg = factor(rep("all_adults",n())),.before = admin2)
-  db4 = full_join(db4, tab_P3_sn[[2]] %>% rename(disagg=urban_new) %>% filter(!is.na(disagg)) %>% mutate(disagg = recode_factor(disagg,'0'="rural",'1'="urban")), by = names(db4))
-  
-  db4b = db4 %>% select(-ends_with("_mean"))
-  db4 = db4 %>% select(-ends_with("_mean_se"))  
-  names(db4) = c("disagg","admin2","Household_Prevalence_any_difficulty","Household_Prevalence_some_difficulty","Household_Prevalence_atleast_alot_difficulty")
-  names(db4b) = c("disagg","admin2","Household_Prevalence_any_difficulty","Household_Prevalence_some_difficulty","Household_Prevalence_atleast_alot_difficulty")
-  db4c = db4 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4[-c(1:2)])))
-  db4d = db4b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4b[-c(1:2)])))
-  
-  db5 = tab_P4_sn %>% rename(disagg=domain) %>% filter(!disagg=="disability_any") %>% mutate(disagg = gsub("_any","",disagg))
-  names(db5) = sub("everattended_new","Ever_attended_school",names(db5))
-  names(db5) = sub("ind_atleastprimary","At_least_primary",names(db5))
-  names(db5) = sub("ind_atleastsecondary","At_least_secondary",names(db5))
-  names(db5) = sub("lit_new","Literacy_rate",names(db5))
-  names(db5) = sub("computer","Computer_use",names(db5))
-  names(db5) = sub("internet","Internet_use",names(db5))
-  names(db5) = sub("mobile_own","Own_Mobile",names(db5))
-  names(db5) = sub("ind_emp","Employment",names(db5))
-  names(db5) = sub("youth_idle","Youth_idle_rate",names(db5))
-  names(db5) = sub("work_manufacturing","Manufacturing_work",names(db5))
-  names(db5) = sub("work_managerial","Managerial_work",names(db5))
-  names(db5) = sub("work_informal","Informal_work",names(db5))
-  names(db5) = sub("ind_water","Water",names(db5))
-  names(db5) = sub("ind_toilet","Sanitation",names(db5))
-  names(db5) = sub("fp_demsat_mod","Family_Planning_Met",names(db5))
-  names(db5) = sub("anyviolence_byh_12m","Any_Violence",names(db5))
-  names(db5) = sub("ind_electric","Electricity",names(db5))
-  names(db5) = sub("ind_cleanfuel","Clean_fuel",names(db5))
-  names(db5) = sub("ind_livingcond","Adequate_Housing",names(db5))
-  names(db5) = sub("ind_asset_ownership","Share_assets_owned",names(db5))
-  names(db5) = sub("cell_new","Household_Mobile_phone",names(db5))
-  names(db5) = sub("health_insurance","Health_insurance",names(db5))
-  names(db5) = sub("social_prot","Social_protection",names(db5))
-  names(db5) = sub("food_insecure","Food_insecure",names(db5))
-  names(db5) = sub("shock_any","Shock",names(db5))
-  names(db5) = sub("health_exp_hh","Health_expenditures",names(db5))
-  names(db5) = sub("ind_mdp","Multid_poverty",names(db5))
-  
-  db5b = db5 %>% select(-ends_with("_mean"))
-  db5 = db5 %>% select(-ends_with("_mean_se"))
-  names(db5) = sub("_mean$","",names(db5))
-  names(db5b) = sub("_mean_se$","",names(db5b))
-  db5c = db5 %>% pivot_wider(names_from = disagg, names_glue = "{.value} {disagg} (all_adults)",values_from = c(names(db5[-c(1:2)])))
-  db5d = db5b %>% pivot_wider(names_from = disagg, names_glue = "{.value} {disagg} (all_adults)",values_from = c(names(db5b[-c(1:2)])))
-  
-  db_admin2_mean = full_join(full_join(full_join(full_join(db1c,db2c,by = c("admin2")),db3c,by = c("admin2")),db4c,by = c("admin2")),db5c,by = c("admin2"))
-  db_admin2_se = full_join(full_join(full_join(full_join(db1d,db2d,by = c("admin2")),db3d,by = c("admin2")),db4d,by = c("admin2")),db5d,by = c("admin2"))
-  rm(db1,db1b,db1c,db1d,db2,db2b,db2c,db2d,db3,db3b,db3c,db3d,db4,db4b,db4c,db4d,db5,db5b,db5c,db5d)
-  }
-  
-  rm(list=ls(pattern="tab"))
-  
-  db_admin1_mean = db_admin1_mean |> select(names(db_admin1_mean)[names(db_admin1_mean) %in% {{order}}]) |> mutate(survey = svy,.before = admin1)
+  db_mean = db_mean |> select(names(db_mean)[names(db_mean) %in% {{order}}]) |> mutate(survey = svy,.before = admin1)
   db_admin1_se = db_admin1_se |> select(names(db_admin1_se)[names(db_admin1_se) %in% {{order}}]) |> mutate(survey = svy,.before = admin1)
   if(exists("db_admin2_mean")) {
   db_admin2_mean = db_admin2_mean |> select(names(db_admin2_mean)[names(db_admin2_mean) %in% {{order2}}]) |> mutate(survey = svy,.before = admin2)
   db_admin2_se = db_admin2_se |> select(names(db_admin2_se)[names(db_admin2_se) %in% {{order2}}]) |> mutate(survey = svy,.before = admin2)
   }
   
-  db_admin1_mean[setdiff(order,names(db_admin1_mean))] = NA
+  db_mean[setdiff(order,names(db_mean))] = NA
   db_admin1_se[setdiff(order,names(db_admin1_se))] = NA
   if(exists("db_admin2_mean")) {
   db_admin2_mean[setdiff(order2,names(db_admin2_mean))] = NA
   db_admin2_se[setdiff(order2,names(db_admin2_se))] = NA
   }
   
-  db_admin1_mean = db_admin1_mean %>% select({{order}})
+  db_mean = db_mean %>% select({{order}})
   db_admin1_se = db_admin1_se %>% select({{order}})
   if(exists("db_admin2_mean")) {
   db_admin2_mean = db_admin2_mean %>% select({{order2}})
@@ -378,7 +221,7 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
   db_admin2_se = db_admin2_se %>% filter(!admin2 == "National")
   }
   
-  db_admin1_mean = db_admin1_mean %>% mutate(admin1 = stringi::stri_trans_general(sub('.\xba\xa1|.\xba\xa3|.\xba\xaf|.\xba\xb1|.\xba\xad','a',admin1,useBytes = TRUE) %>%
+  db_mean = db_mean %>% mutate(admin1 = stringi::stri_trans_general(sub('.\xba\xa1|.\xba\xa3|.\xba\xaf|.\xba\xb1|.\xba\xad','a',admin1,useBytes = TRUE) %>%
                                                                                     sub('.\xba\xbf|.\xbb\x87|.\xbb\x81','e',.,useBytes = TRUE) %>%
                                                                                     sub('.\xbb\x93|.\xbb\x91|.\xbb\x9b','o',.,useBytes = TRUE) %>%
                                                                                     sub('.\xbb\x8b','i',.,useBytes = TRUE) %>%
@@ -401,22 +244,8 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
                                                                                   sub('.\xbb\xab','u',.,useBytes = TRUE),"latin-ASCII"))
     }
 
-  if(exists("db_admin2_mean")) {
-  save(db_admin0_mean,db_admin0_se,db_admin1_mean,db_admin1_se,db_admin2_mean,db_admin2_se,file = paste0(db_loc,svy,".RData"),compress = "xz")
-  } else {
-    save(db_admin0_mean,db_admin0_se,db_admin1_mean,db_admin1_se,file = paste0(db_loc,svy,".RData"),compress = "xz")
-  }
-  
-  temp0 = bind_rows(list(mean = db_admin0_mean, se = db_admin0_se),.id = "output")
-  temp1 = bind_rows(list(mean = db_admin1_mean, se = db_admin1_se),.id = "output") %>% rename("date"="admin1")
-  if(exists("db_admin2_mean")) {
-    temp2 = bind_rows(list(mean = db_admin2_mean, se = db_admin2_se),.id = "output") %>% rename("date"="admin2")
-    merged = bind_rows(list("0" = temp0, "1" = temp1, "2" = temp2),.id = "admin")
-  } else {
-    merged = bind_rows(list("0" = temp0, "1" = temp1),.id = "admin")
-  }
-  
-  
+  save(db_mean,db_se,file = paste0(db_loc,svy,".RData"),compress = "xz")
+
   # write.xlsx(db_admin1_se,paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"),"Standard Errors", append = TRUE)
   # write.xlsx(db_admin2_mean,paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2.xlsx"),"Means")
   # write.xlsx(db_admin2_se,paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2.xlsx"),"Standard Errors", append = TRUE)
