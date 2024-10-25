@@ -29,7 +29,7 @@ source("./Estimate scripts/DDI summary calculations large files.R")
 source("./Estimate scripts/DDI summary pre-process.R")
 
 time = time %>% add_row(.,point = "Processing", val = Sys.time(), diff = val-time$val[1])
-write.table(tibble(x="x", time="time"), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE)
+# write.table(tibble(x="x", time="time"), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE)
 
 #Process full population datasets
 source("./Estimate scripts/DDI summary calculations updated weights full sample.R")
@@ -71,7 +71,7 @@ with_progress({
   r_sum_name = paste0(data_loc2,sub("\\.RData","\\_Summary.RData",r_name))
   dataset = sub(pattern = ".RData", replacement = "", x = r_name)
 
-  write.table(tibble(x = dataset, time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+  # write.table(tibble(x = dataset, time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
   p(sprintf("Loading %s",r_name))
   
   load(file = file_name)
@@ -81,9 +81,9 @@ with_progress({
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
                        disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
                        age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")))
-  dck = dck %>% mutate(across(any_of(c("admin1","admin2","admin_alt")),~as.character(as_factor(.x))))
+  dck = dck %>% mutate(across(any_of(c("admin1","admin2","admin3","admin_alt")),~as.character(as_factor(.x))))
   # dck = dck %>% mutate(across(any_of(c("admin1","admin2","admin_alt")),~as.factor(.x)),across(any_of(c("admin1","admin2","admin_alt")),~factor(as.character(.x))))
-  # dck = dck %>% mutate(across(any_of(c("country_name","country_abrev","country_dataset_year","admin1","admin2","admin_alt")),~as.character(as_factor(.x))))
+  # dck = dck %>% mutate(across(any_of(c("country_name","country_dataset_year","admin1","admin2","admin_alt")),~as.character(as_factor(.x))))
   dck = dck %>% filter(complete.cases(disability_any))
   
   if("psu2" %in% names(dck)) {
@@ -109,6 +109,11 @@ with_progress({
   } else {
     dck = dck %>% mutate(admin2 = str_to_title(admin2))
   }
+  if ("admin3" %in% names(dck)) if(n_distinct(dck$admin3) < 2) {
+    dck = dck %>% select(-admin3)
+  } else {
+    dck = dck %>% mutate(admin3 = str_to_title(admin3))
+  }
   if ("admin_alt" %in% names(dck)) if(n_distinct(dck$admin_alt) < 2) {
     dck = dck %>% select(-admin_alt)
   } else {
@@ -123,8 +128,8 @@ with_progress({
   dis_a2 = c("disability_any","disability_some","disability_atleast")
   oth_a = dck %>% select(!mobile_own) %>% select(age_group5,seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any) %>% names()
   oth_a2 = c("disability_any_hh","disability_some_hh","disability_atleast_hh")
-  cou_a = dck %>% select(any_of(c("admin1","admin2","admin_alt"))) %>% names()
-  psu_a = c("hh_id","ind_weight","hh_weight","psu","ssu","sample_strata","country_abrev")
+  cou_a = dck %>% select(any_of(c("admin1","admin2","admin3","admin_alt"))) %>% names()
+  psu_a = c("hh_id","ind_weight","hh_weight","psu","ssu","sample_strata")
   dom_a = c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any")
   
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
@@ -145,10 +150,24 @@ with_progress({
     rm(dck)
   } else if(grepl("psu", psu2$`Stata code July 17th 2024`)) {
     psu_a = psu_a[!grepl("ssu|sample_strata",psu_a)]
-    dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a ),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ind_weight)&!is.na(country_abrev))
-    dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(hh_weight)&!is.na(country_abrev))
-    dck2a = dck2a %>% as_survey_design(ids = psu, weights = ind_weight, strata = country_abrev, nest = TRUE)
-    dck2b = dck2b %>% as_survey_design(ids = psu, weights = hh_weight, strata = country_abrev, nest = TRUE)
+    dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a ),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ind_weight))
+    dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(hh_weight))
+    dck2a = dck2a %>% as_survey_design(ids = psu, weights = ind_weight, strata = NULL, nest = TRUE)
+    dck2b = dck2b %>% as_survey_design(ids = psu, weights = hh_weight, strata = NULL, nest = TRUE)
+    dck2a$fpc$pps = FALSE
+    dck2b$fpc$pps = FALSE
+    rm(dck)
+  } else if(grepl("admin", psu2$`Stata code July 17th 2024`)) {
+    psu_a = psu_a[!grepl("ssu|psu",psu_a)]
+    dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a ),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
+    if (dataset == "South Africa_IPUMS_2011") {
+      dck2a = dck2a %>% as_survey_design(ids = admin3, weights = ind_weight, strata = sample_strata, nest = TRUE)
+      dck2b = dck2b %>% as_survey_design(ids = admin3, weights = hh_weight, strata = sample_strata, nest = TRUE)      
+    } else {
+      dck2a = dck2a %>% as_survey_design(ids = admin2, weights = ind_weight, strata = sample_strata, nest = TRUE)
+      dck2b = dck2b %>% as_survey_design(ids = admin2, weights = hh_weight, strata = sample_strata, nest = TRUE)
+    }
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
     rm(dck)
@@ -162,7 +181,7 @@ with_progress({
     dck2b$fpc$pps = FALSE
     rm(dck)
   } else {
-    psu_a = psu_a[!grepl("ssu|psu|sample_strata|country_abrev",psu_a)]
+    psu_a = psu_a[!grepl("ssu|psu|sample_strata",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a ),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(ind_weight))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(hh_weight))
     dck2a = dck2a %>% as_survey_design(ids = NULL, weights = ind_weight)
@@ -172,8 +191,10 @@ with_progress({
     rm(dck)
   }
   
-  write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+  # write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
   p(sprintf("%s processed", r_name))
+  
+  cou_a = cou_a[!cou_a %in% "admin3"]
   
   tabs = foreach(admin_grp = c("admin0",cou_a)) %dofuture% {
     options(future.globals.maxSize = 1e10)
@@ -212,7 +233,7 @@ with_progress({
     tab_m_nr = full_join(tab_m_nr1,tab_m_nr2)
     rm(tab_m_nr1,tab_m_nr2)
     
-    write.table(tibble(x = paste0("Table 1", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    # write.table(tibble(x = paste0("Table 1", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Summary for P1
     tab_P1_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
@@ -225,7 +246,7 @@ with_progress({
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
-    write.table(tibble(x = paste0("Table 2", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    # write.table(tibble(x = paste0("Table 2", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Summary for P2
     tab_P2_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
@@ -238,7 +259,7 @@ with_progress({
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
-    write.table(tibble(x = paste0("Table 3", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    # write.table(tibble(x = paste0("Table 3", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     dck3b = dck2b %>% filter(!duplicated(hh_id))
     
@@ -249,7 +270,7 @@ with_progress({
                           dck3b %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
                             arrange(urban_new, {{admin}}) %>% mutate(Agg = paste0("urban_new = ",urban_new), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2)))
     
-    write.table(tibble(x = paste0("Table 4", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    # write.table(tibble(x = paste0("Table 4", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Indicators by domain
     tab_P4_nr1 = foreach(dom_grp=dom_a, .options.future = list(packages = c("tidyverse","haven")),.combine = "rbind") %dofuture% {
@@ -280,13 +301,13 @@ with_progress({
     tab_P4_nr = full_join(tab_P4_nr1,tab_P4_nr2)
     rm(tab_P4_nr1,tab_P4_nr2)
     
-    write.table(tibble(x = paste0("Table 5", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    # write.table(tibble(x = paste0("Table 5", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Prevalences for age-sex adjustment
     p(sprintf("%s, Tab6, %s", r_name, admin_grp))
     tab_as_adj = dck2a %>% mutate(female = factor(female,labels = c("Male","Female")),age_sex = paste(age_group5,female)) %>% group_by(age_sex) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop")
     
-    write.table(tibble(x = paste0("Table 6", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    # write.table(tibble(x = paste0("Table 6", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj))
   }
