@@ -50,22 +50,14 @@ if(length(bac_list2)>0) {
 }
 rm(bac_list,bac_list2)
 
-if(!file.exists(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin1.xlsx"))) {
-  file.copy(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin0 - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin0.xlsx"))
-  file.copy(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin1 - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin1.xlsx"))
-  file.copy(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2 - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2.xlsx"))
+if(!file.exists(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"))) {
+  file.copy(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"))
 }
 
-admin0_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin0.xlsx"),"Means") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-admin0_se = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin0.xlsx"),"Standard Errors") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-admin1_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin1.xlsx"),"Means") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-admin1_se = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin1.xlsx"),"Standard Errors") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-admin2_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2.xlsx"),"Means") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-admin2_se = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2.xlsx"),"Standard Errors") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-write_xlsx(list("Means" = admin0_m, "Standard Errors" = admin0_se),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin0.xlsx"))
-write_xlsx(list("Means" = admin1_m, "Standard Errors" = admin1_se),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin1.xlsx"))
-write_xlsx(list("Means" = admin2_m, "Standard Errors" = admin2_se),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output_Admin2.xlsx"))
-rm(admin0_m,admin1_m,admin2_m,admin0_se,admin1_se,admin2_se)
+db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"),"Means") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
+db_se = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"),"Standard Errors") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
+write_xlsx(list("Means" = db_m, "Standard Errors" = db_se),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"))
+rm(db_m,db_se)
 
 temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietnam.*2019|Cambodia",File_Name),"IPUMS_Cleaned_Individual_Data_Trimmed",File_Name),
                       File_Name = ifelse(grepl("DHS",File_Name),"Final_Individual_DHS_only",File_Name))

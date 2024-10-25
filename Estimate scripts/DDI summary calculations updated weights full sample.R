@@ -93,13 +93,13 @@ with_progress({
   ind_a = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","health_exp_hh","ind_mdp")
   dis_a = c("disability_any","disability_some","disability_atleast","disability_sev")
   dis_a2 = c("disability_any","disability_some","disability_atleast")
-  oth_a = dck %>% select(!mobile_own) %>% select(disability_any_hh,disability_some_hh,disability_atleast_hh,seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any) %>% names()
-  oth_a2 = c("age_group5")
+  oth_a = c("age_group5")
+  oth_a2 = c("disability_any_hh","disability_some_hh","disability_atleast_hh")
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin_alt"))) %>% names()
   psu_a = c("ind_weight","hh_weight","hh_id")
-  dom_a = c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any")
+  dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
   
-  dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
+  dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
   # write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
@@ -261,9 +261,9 @@ with_progress({
   oth_a2 = c("age_group5")
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin_alt"))) %>% names()
   psu_a = c("ind_weight","hh_weight","hh_id")
-  dom_a = c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any")
+  dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
   
-  dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
+  dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
   # write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
