@@ -150,7 +150,7 @@ with_progress({
       tab = dck2b %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
         arrange({{agg}}, {{dis}}, {{admin}}) %>% pivot_wider(names_from = {{dis}},values_from = -c(1:3)) %>% mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
-    if(sum(!is.na(dck2c$health_exp_hh))>0) {
+    if(sum(!is.na(dck2c$variables$health_exp_hh))>0) {
       tab_m_nr3 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
         options(future.globals.maxSize = 1e10)
         options(survey.adjust.domain.lonely = TRUE)
@@ -163,10 +163,10 @@ with_progress({
       }
     } else {
       tab_m_nr3 = tab_m_nr1 %>% select(Agg,admin,level,contains("everattended_new"))
-      tab_m_nr3 = tab_m_nr3 %>% mutate(across(contains("everattended_new"),~NA))
+      tab_m_nr3 = tab_m_nr3 %>% mutate(across(contains("everattended_new"),~as.double(NA)))
       names(tab_m_nr3) = sub("everattended_new_","health_exp_hh_",names(tab_m_nr3))
     }
-    if(sum(!is.na(dck2d$anyviolence_byh_12m))>0) {
+    if(sum(!is.na(dck2d$variables$anyviolence_byh_12m))>0) {
       tab_m_nr4 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
         options(future.globals.maxSize = 1e10)
         options(survey.adjust.domain.lonely = TRUE)
@@ -179,7 +179,7 @@ with_progress({
       }
     } else {
       tab_m_nr4 = tab_m_nr1 %>% select(Agg,admin,level,contains("everattended_new"))
-      tab_m_nr4 = tab_m_nr4 %>% mutate(across(contains("everattended_new"),~NA))
+      tab_m_nr4 = tab_m_nr4 %>% mutate(across(contains("everattended_new"),~as.double(NA)))
       names(tab_m_nr4) = sub("anyviolence_byh_12m_","health_exp_hh_",names(tab_m_nr4))
     }
     
@@ -238,7 +238,7 @@ with_progress({
       tab = dck2b %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{admin}}) %>%
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
     }
-    if(sum(!is.na(dck2c$health_exp_hh))>0) {
+    if(sum(!is.na(dck2c$variables$health_exp_hh))>0) {
       tab_P4_nr3 = foreach(dom_grp=dom_a, .options.future = list(packages = c("tidyverse","haven")),.combine = "rbind") %dofuture% {
         options(future.globals.maxSize = 1e10)
         options(survey.adjust.domain.lonely = TRUE)
@@ -250,10 +250,10 @@ with_progress({
       }
     } else {
       tab_P4_nr3 = tab_P4_nr1 %>% select(domain,admin,level,contains("everattended_new"))
-      tab_P4_nr3 = tab_P4_nr3 %>% mutate(across(contains("everattended_new"),~NA))
+      tab_P4_nr3 = tab_P4_nr3 %>% mutate(across(contains("everattended_new"),~as.double(NA)))
       names(tab_P4_nr3) = sub("everattended_new_","health_exp_hh_",names(tab_P4_nr3))
     }
-    if(sum(!is.na(dck2d$anyviolence_byh_12m))>0) {
+    if(sum(!is.na(dck2d$variables$anyviolence_byh_12m))>0) {
       tab_P4_nr4 = foreach(dom_grp=dom_a, .options.future = list(packages = c("tidyverse","haven")),.combine = "rbind") %dofuture% {
         options(future.globals.maxSize = 1e10)
         options(survey.adjust.domain.lonely = TRUE)
@@ -265,7 +265,7 @@ with_progress({
       }
     } else {
       tab_P4_nr4 = tab_P4_nr1 %>% select(domain,admin,level,contains("everattended_new"))
-      tab_P4_nr4 = tab_P4_nr4 %>% mutate(across(contains("everattended_new"),~NA))
+      tab_P4_nr4 = tab_P4_nr4 %>% mutate(across(contains("everattended_new"),~as.double(NA)))
       names(tab_P4_nr4) = sub("anyviolence_byh_12m_","health_exp_hh_",names(tab_P4_nr4))
     }
     
