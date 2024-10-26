@@ -180,7 +180,7 @@ with_progress({
     } else {
       tab_m_nr4 = tab_m_nr1 %>% select(Agg,admin,level,contains("everattended_new"))
       tab_m_nr4 = tab_m_nr4 %>% mutate(across(contains("everattended_new"),~as.double(NA)))
-      names(tab_m_nr4) = sub("anyviolence_byh_12m_","health_exp_hh_",names(tab_m_nr4))
+      names(tab_m_nr4) = sub("everattended_new_","anyviolence_byh_12m",names(tab_m_nr4))
     }
     
     tab_m_nr = full_join(full_join(full_join(tab_m_nr1,tab_m_nr2),tab_m_nr3),tab_m_nr4)
@@ -266,7 +266,7 @@ with_progress({
     } else {
       tab_P4_nr4 = tab_P4_nr1 %>% select(domain,admin,level,contains("everattended_new"))
       tab_P4_nr4 = tab_P4_nr4 %>% mutate(across(contains("everattended_new"),~as.double(NA)))
-      names(tab_P4_nr4) = sub("anyviolence_byh_12m_","health_exp_hh_",names(tab_P4_nr4))
+      names(tab_P4_nr4) = sub("everattended_new_","anyviolence_byh_12m",names(tab_P4_nr4))
     }
     
     tab_P4_nr = full_join(full_join(full_join(tab_P4_nr1,tab_P4_nr2),tab_P4_nr3),tab_P4_nr4)
