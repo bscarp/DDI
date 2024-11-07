@@ -80,8 +80,9 @@ ui <- page_navbar(
   nav_panel(title = "Detailed results", 
             layout_sidebar(
               sidebar = sidebar(selectInput("country", "Country", choices = unique(ddi_2024$Country))),
-              DTOutput("table2"))
+              DTOutput("table2")
             )
+  )
 )
 
 # Define server logic required to draw a histogram
@@ -124,7 +125,8 @@ server <- function(input, output) {
   })
   
   output$table2 <- renderDT({
-    ddi_2024 %>% filter(Country == input$country) %>% select(Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference from WG-SS`) %>% arrange(Dataset,Year,Notes) %>% datatable()
+    ddi_2024 %>% filter(Country == input$country) %>% select(Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference from WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
+      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;","Notes: WG-SS - The Washington Group Short Set on Functioning; (1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain; # - Communication and cognition domains are in a single question"))
   })
 }
 
