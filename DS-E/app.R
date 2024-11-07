@@ -165,7 +165,7 @@ server <- function(session, input, output) {
   
   data_sel0 = reactive({data0 %>% filter(Country %in% input$country, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>%
     mutate(DifficultyName = factor(DifficultyName,levels = dis_grp()))})
-  data_sel1 = reactive({data1 %>% filter(admin=="admin1",Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp())})
+  data_sel1 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp())})
   data_sel2 = reactive({data1 %>% filter(admin=="admin1",Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
   
   output$stat_top_gra <- renderGirafe({
