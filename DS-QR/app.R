@@ -39,49 +39,102 @@ sf_use_s2(use_s2 = FALSE)
 
 # Define UI for application that draws a histogram
 ui <- page_navbar(
-  title = "DS-QR",
-  tags$style(
-    "img {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 50%
-    }"
-  ),
+  title = "Disability Statistics Database (DS-QR)",
+  theme = bs_theme(bootswatch = "flatly", primary = "#0072B5", secondary = "#E9ECEF"),
   
-  # sidebar = sidebar(),
+  tags$style(HTML("
+    .header {text-align: center; padding: 20px;}
+    .filter-area {display: flex; justify-content: center; gap: 20px; margin-top: 20px;}
+						
+						 
+    .data-area {padding: 20px; max-width: 1200px; margin: auto;}
+    .card {margin: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;}
+    .download-btn {background-color: #0072B5; color: white; border: none; margin-top: 10px; width: 200px;}
+  ")),
   
   # Landing page
-  nav_panel(title = "Home",
-            img(src="DDI_Logo.png", align = "center"),
-            h1("The Disability Statistics Database", align = "center"),
-            h4("The Disability Statistics (DS) Databases provide internationally comparable statistics to monitor the rights of persons with disabilities.", align = "center"),
-            layout_columns(
-              card(card_header(h1(tags$a("Disability Statistics – Estimates (DS-E)", href = "https://bscarp.shinyapps.io/DS-E/", target = "_blank"))),
-                   card_body(h4("The Disability Statistics – Estimates (DS-E) Database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."))
-              ),
-              card(card_header(h1(tags$a("Disability Statistics – Questionnaire Review (DS-QR)", href = "https://bscarp.shinyapps.io/DS-QR/", target = "_blank"))),
-                   card_body(h4("The Disability Statistics – Questionnaire Review Database (DS-QR) reports on whether population and housing censuses and household surveys include internationally recommended disability questions."))
-              )
-            )
+  nav_panel(
+    title = "Home",
+    div(class = "header",
+        style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
+        img(src = "DDI_Logo.png", style = "width: 250px; margin-bottom: 20px;"),
+        h1("The Disability Statistics Database", style = "font-weight: 700; color: #0072B5;"),
+        p("Providing internationally comparable statistics to monitor the rights of persons with disabilities.")
+    ),
+    div(class = "data-area",
+        style = "display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 800px; margin: auto;",
+        div(class = "card",
+            h3("Disability Statistics – Estimates (DS-E)"),
+            p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
+            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-E/', '_blank')", class = "download-btn")
+        ),
+        div(class = "card",
+            h3("Disability Statistics – Questionnaire Review (DS-QR)"),
+            p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-QR/', '_blank')", class = "download-btn")
+        )
+    )
   ),
-  nav_panel(title = "Overview of results",
-            layout_sidebar(
-              sidebar = sidebar(selectInput("region", "Region", choices = c("World", unique(ddi_2024_s$Region)), selected = "World")),
-              navset_card_underline(
-                nav_panel("Map",
-                          h4("Do the datasets reviewed in each country include functional difficulty questions?", align = "center"),
-                          girafeOutput("map", width = "100%")
-                ),
-                nav_panel("Table", DTOutput("table1"))
-              )
-            )
+  
+  nav_panel(
+    title = "Overview of Results",
+    div(class = "header",
+        h2("Overview of Disability Statistics"),
+        p("Select a region to view disability statistics by country.")
+    ),
+    
+    div(class = "filter-area",
+        style = "display: flex; justify-content: center; margin-top: 20px;",
+        selectInput("region", "Region", choices = c("World", unique(ddi_2024_s$Region)), selected = "World", width = "200px")
   ),
-  nav_panel(title = "Detailed results", 
-            layout_sidebar(
-              sidebar = sidebar(selectInput("country", "Country", choices = unique(ddi_2024$Country))),
-              DTOutput("table2")
-            )
+  
+  # Map and Table side by side
+  fluidRow(
+    column(
+      width = 6,
+      div(class = "data-area",
+          style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
+          h4("Map of Disability Questions by Country"),
+          div(style = "width: 100%; max-width: 800px;",
+              girafeOutput("map", width = "100%")
+          ),
+          #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
+      )
+    ),
+    column(
+      width = 6,
+      div(class = "data-area",
+          style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
+          h4("Table of Disability Questions by Country"),
+          div(style = "width: 100%; max-width: 800px;",
+              DTOutput("table1")
+          )
+      )
+    )
+  )
+  ),
+  
+  nav_panel(
+    title = "Detailed results", 
+    div(class = "header",
+        h2("Detailed Country Statistics"),
+        p("Select a country to view detailed information on disability questions.")
+    ),
+    
+    div(class = "filter-area",
+        style = "display: flex; justify-content: center; margin-top: 10px;",
+        selectInput("country", "Country", choices = unique(ddi_2024$Country), width = "200px")
+    ),
+    
+    # Data table 
+    div(class = "data-area",
+        style = "display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px;",
+        div(style = "width: 100%; max-width: 800px;",
+            DTOutput("table2")
+        ),
+        #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
+        
+    )
   )
 )
 
