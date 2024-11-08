@@ -86,6 +86,7 @@ ui <- page_navbar(
   
   # Landing page
   nav_panel(
+    id = "home",
     title = "Home",
     div(class = "header",
         style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
