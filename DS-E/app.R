@@ -39,7 +39,7 @@ library(sf)
 #                                values_to = "Value")
 # 
 # data0 = data %>% filter(admin == "admin0")
-# data1 = data %>% filter(admin == "admin1")
+# data1 = data
 # data0 = data0 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(c("Prevalence",unique(data_n$IndicatorName)), unique(data0$IndicatorName))))
 # data0 = data0 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(data_n$DifficultyName)[c(3:11,2,1)],unique(data0$DifficultyName)[c(3,10,11,4,5,8,7,9,6,2,1)])))
 # data0 = data0 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(data_n$PopulationName),"Adults ages 25 to 29"),unique(data0$PopulationName)[c(1,4,5,2,3,6:10)])))
@@ -55,9 +55,9 @@ library(sf)
 # df_disability2 = unique(data1$DifficultyName)
 # 
 # map_df = read_sf(paste0(cen_dir,"/Downloads/world shp/ne_10m_admin_1_states_provinces.shp"))
-# iso = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","admin1","ISOCode"))
-# data1 = left_join(data1,iso %>% filter(!country == "Vietnam"), by = join_by("country","level"=="admin1"))
-
+# iso = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","level","ISOCode"))
+# data1 = left_join(data1,iso %>% filter(!country == "Vietnam"), by = c("country","level"))
+# 
 # data0 = data0 %>% rename("Country" = "country")
 # data1 = data1 %>% rename("Country" = "country")
 # 
@@ -71,42 +71,52 @@ load("Test.Rbin")
 # Define UI for application that draws a histogram
 ui <- page_navbar(
   id = "nav",
-  title = "DS-E",
-  tags$style(
-    "img {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      max-width: 50%
-    }"
-  ),
+  title = "Disability Statistics Database (DS-E)",
+  theme = bs_theme(bootswatch = "flatly", primary = "#0072B5", secondary = "#E9ECEF"),
+  
+  tags$style(HTML("
+    .header {text-align: center; padding: 20px;}
+    .filter-area {display: flex; justify-content: center; gap: 20px; margin-top: 20px;}
+						
+						 
+    .data-area {padding: 20px; max-width: 1200px; margin: auto;}
+    .card {margin: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;}
+    .download-btn {background-color: #0072B5; color: white; border: none; margin-top: 10px; width: 200px;}
+  ")),
   
   # Landing page
-  nav_panel(value = "home", title = "Home",
-            # useShinyjs(),
-            # extendShinyjs(text = 'shinyjs.hideSidebar = function(params) { $("body").addClass("sidebar-collapsed") }', functions = c("hideSidebar")),
-            img(src="DDI_Logo.png", `max-width` = "50%", align = "center"),
-            h1("The Disability Statistics Database", align = "center"),
-            h4("The Disability Statistics (DS) Databases provide internationally comparable statistics to monitor the rights of persons with disabilities.", align = "center"),
-            layout_columns(
-              card(card_header(h1(tags$a("Disability Statistics – Estimates (DS-E)", href = "https://bscarp.shinyapps.io/DS-E/", target = "_blank"))),
-                   card_body(h4("The Disability Statistics – Estimates (DS-E) Database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."))
-              ),
-              card(card_header(h1(tags$a("Disability Statistics – Questionnaire Review (DS-QR)", href = "https://bscarp.shinyapps.io/DS-QR/", target = "_blank"))),
-                   card_body(h4("The Disability Statistics – Questionnaire Review Database (DS-QR) reports on whether population and housing censuses and household surveys include internationally recommended disability questions."))
-              )
-            )
+  nav_panel(
+    title = "Home",
+    div(class = "header",
+        style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
+        img(src = "DDI_Logo.png", style = "width: 250px; margin-bottom: 20px;"),
+        h1("The Disability Statistics Database", style = "font-weight: 700; color: #0072B5;"),
+        p("The Disability Statistics (DS) Databases provide internationally comparable statistics to monitor the rights of persons with disabilities.")
+    ),
+    div(class = "data-area",
+        style = "display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 800px; margin: auto;",
+        div(class = "card",
+            h3("Disability Statistics – Estimates (DS-E)"),
+            p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
+            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-E/', '_blank')", class = "download-btn")
+        ),
+        div(class = "card",
+            h3("Disability Statistics – Questionnaire Review (DS-QR)"),
+            p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-QR/', '_blank')", class = "download-btn")
+        )
+    )
   ),
   
   #Selectors
   sidebar = sidebar(id = "sidebar",
                     conditionalPanel(condition = "input.nav == 'across'", selectInput("country", "Countries (select multiple)", df_country, multiple = TRUE, selected = "Namibia"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select All")),
+                    conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries")),
                     conditionalPanel(condition = "input.nav == 'within'", selectInput("country_sin", "Country (select single)", df_country, selected = "Namibia"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", selectInput("indicator", "Indicators", df_indicator,selected = "Multidimensional poverty"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", selectInput("group", "Population Groups", df_group,selected = "All adults (ages 15 and older)"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", selectInput("disability", "Disability groups", df_disability,selected = 1), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", selectInput("disability2", "Disability groups", df_disability2,selected = "Disability"), ns = NS(NULL))
+                    conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", selectInput("disability", "Disability breakdown", df_disability,selected = 1), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", selectInput("disability2", "Disability group", df_disability2,selected = "Disability"), ns = NS(NULL))
   ),
   nav_panel("Cross-country estimates", value = "across",
             navset_card_underline(id = "h1",
@@ -127,8 +137,10 @@ server <- function(session, input, output) {
     if(input$selectall == 0) return(NULL) 
     else if (input$selectall%%2 == 0) {
       updateSelectInput(session,"country","Countries (select multiple)",choices=df_country)
+      updateActionLink("selectall","Select no countries")
     } else {
       updateSelectInput(session,"country","Countries (select multiple)",choices=df_country,selected=df_country)
+      updateActionLink("selectall","Select all countries")
     }
   })
   
@@ -170,24 +182,26 @@ server <- function(session, input, output) {
   
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
-    plot = ggplot(data = data_sel0()) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = paste0(Country,"\n",DifficultyName,"\n",round(Value,1),"%"), data_id = Country), position = "dodge") + theme(legend.title=element_blank())
+    plot = ggplot(data = data_sel0()) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = paste0(Country,"\n",DifficultyName,"\n",round(Value,1),"%"), data_id = Country), position = "dodge") + 
+      scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + theme(axis.title = element_blank(),legend.title = element_blank())
     girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
   })
   
   output$stat_top_tab <- renderDT({
     # draw the plot using data
-    data_sel0() %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% datatable() %>% formatRound(columns = dis_grp())
+    data_sel0() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% datatable() %>% formatPercentage(columns = dis_grp(), digits = 1)
   })
   
   output$stat_cou_map <- renderGirafe({
     map <- inner_join(map_df, data_sel2(), by = join_by(iso_3166_2 == ISOCode))
-    plot = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = paste0(name,"\n",round(Value,1),"%"), data_id = level),colour="black")
+    plot = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = paste0(name,"\n",round(Value,1),"%"), data_id = level),colour="black") + 
+      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + theme(axis.text = element_blank(),axis.ticks = element_blank())
     girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
     })
   
   output$stat_cou_tab <- renderDT({
     # draw the plot using data
-    data_sel1() %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% datatable() %>% formatRound(columns = dis_grp())
+    data_sel1() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% datatable() %>% formatPercentage(columns = dis_grp(), digits = 1)
   })
   
   # observe({
