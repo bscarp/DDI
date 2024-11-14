@@ -5,7 +5,7 @@ account: bscarp
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12723384
-bundleId: 9326255
+bundleId: 9364220
 url: https://bscarp.shinyapps.io/DS-E/
 version: 1
 asMultiple: FALSE

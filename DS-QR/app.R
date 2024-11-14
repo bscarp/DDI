@@ -11,29 +11,12 @@
 library(shiny)
 library(bslib)
 library(tidyverse)
-library(readxl)
 library(ggiraph)
 library(DT)
 library(sf)
 library(terra)
 
-ddi_2024 = read_xlsx("Dataset_Review_Results_2024_full.xlsx", sheet = 1)
-ddi_2024 = ddi_2024 %>% mutate(ISO3 = countrycode::countryname(Country, "iso3c"), .after = Country)
-ddi_2024_s = ddi_2024 %>% group_by(ISO3) %>% summarise(Region = first(Region), Country = first(Country), WG = max(WG, na.rm = TRUE), FL = max(FL, na.rm = TRUE)) %>% select(Region,Country,ISO3,WG,FL)
-ddi_2024_s = ddi_2024_s %>% mutate(Summary = case_when(WG == 1 ~ "Washington Group\nShort Set",
-                                                       FL == 1 ~ "Other functional\ndifficulty questions",
-                                                       WG == 0 & FL == 0 ~ "No",
-                                                       TRUE ~ NA))
-
-ddi_2024 = ddi_2024 %>% mutate(WG = case_when(WG==1~"Yes", WG==0~"No", TRUE~NA), FL = case_when(FL==1~"Yes", FL==0~"No", TRUE~NA)) %>% 
-  rename(Year = Years, `WG-SS` = WG, `Other functional difficulty questions` = FL)
-
-# map_df = st_read("C:/Users/bscar/Downloads/geodata/gadm_410-levels.gpkg", layer = "ADM_0")
-# map_df = left_join(map_df,ddi_2024_s %>% select(!Country), by = join_by(GID_0 == ISO3))
-map_df = read_sf("ne_110m_admin_0_countries.shp")
-map_df = map_df %>% mutate(ISO3 = if_else(ISO_A3=="-99", ADM0_A3, ISO_A3))
-map_df = left_join(map_df,ddi_2024_s, by = join_by(ISO3)) %>% mutate(Summary = factor(if_else(is.na(Summary),"Not assessed",Summary), levels = c("Washington Group\nShort Set", "Other functional\ndifficulty questions", "No", "Not assessed")))
-map_df = map_df %>% filter(!NAME == "Antarctica")
+load("Data.RData")
 
 sf_use_s2(use_s2 = FALSE)
 
@@ -47,7 +30,7 @@ ui <- page_navbar(
     .filter-area {display: flex; justify-content: center; gap: 20px; margin-top: 20px;}
 						
 						 
-    .data-area {padding: 20px; max-width: 1200px; margin: auto;}
+    .data-area {padding: 20px; margin: auto;}
     .card {margin: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;}
     .download-btn {background-color: #0072B5; color: white; border: none; margin-top: 10px; width: 200px;}
   ")),
@@ -76,39 +59,23 @@ ui <- page_navbar(
     )
   ),
   
-  nav_panel(
-    title = "Overview of Results",
-    div(class = "header",
-        h2("Overview of Disability Statistics"),
-        p("Select a region to view disability statistics by country.")
-    ),
-    
-    div(class = "filter-area",
-        style = "display: flex; justify-content: center; margin-top: 20px;",
-        selectInput("region", "Region", choices = c("World", unique(ddi_2024_s$Region)), selected = "World", width = "200px")
-  ),
+  nav_panel(title = "Overview of Results",
   
   # Map and Table side by side
-  fluidRow(
-    column(
-      width = 6,
+  navset_card_pill(title = h3("Overview of Disability Statistics"),
+    nav_panel(title = h5("Map of Disability Questions by Country"),
+      layout_sidebar(sidebar = sidebar(selectInput("region", "Region", choices = c("World", as.character(unique(ddi_2024_s$Region))), selected = "World")),
+                     p(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+                     girafeOutput("map", width = "100%"))
+    ),
+    nav_panel(h5("Table of Disability Questions by Country"),
       div(class = "data-area",
-          style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
-          h4("Map of Disability Questions by Country"),
-          div(style = "width: 100%; max-width: 800px;",
-              girafeOutput("map", width = "100%")
+          style = "align-items: center; text-align: center; padding: 20px;",
+          div(style = "width: 100%; max-width: 1600px;",
+              p(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+              DTOutput("table1")
           ),
           #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
-      )
-    ),
-    column(
-      width = 6,
-      div(class = "data-area",
-          style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
-          h4("Table of Disability Questions by Country"),
-          div(style = "width: 100%; max-width: 800px;",
-              DTOutput("table1")
-          )
       )
     )
   )
@@ -121,15 +88,10 @@ ui <- page_navbar(
         p("Select a country to view detailed information on disability questions.")
     ),
     
-    div(class = "filter-area",
-        style = "display: flex; justify-content: center; margin-top: 10px;",
-        selectInput("country", "Country", choices = unique(ddi_2024$Country), width = "200px")
-    ),
-    
     # Data table 
     div(class = "data-area",
-        style = "display: flex; flex-direction: column; align-items: center; text-align: center; padding: 20px;",
-        div(style = "width: 100%; max-width: 800px;",
+        style = "align-items: center; text-align: center; padding: 20px;",
+        div(style = "width: 100%;",
             DTOutput("table2")
         ),
         #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
@@ -170,16 +132,17 @@ server <- function(input, output) {
   output$map <- renderGirafe({
     map = data_sel_map()
     plot = ggplot(data = map) + geom_sf_interactive(aes(fill=Summary, tooltip = paste0(NAME,"\n",Summary)),colour="black") + labs(fill = "") + scale_fill_manual_interactive(values = c("green4", "steelblue", "firebrick", "grey40")) + theme(legend.position = "bottom")
-    girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
+    girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
   })
   
   output$table1 <- renderDT({
-    data_sel_tab() %>% select(Region,Country,ISO3,Summary) %>% arrange(ISO3) %>% datatable()
+    ddi_2024_s %>% arrange(ISO3) %>% select(Region,Country,Summary) %>% datatable(filter = "top")
   })
   
   output$table2 <- renderDT({
-    ddi_2024 %>% filter(Country == input$country) %>% select(Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference from WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
-      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;","Notes: WG-SS - The Washington Group Short Set on Functioning; (1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain; # - Communication and cognition domains are in a single question"))
+    ddi_2024 %>% select(Region,Country,Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference from WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
+      datatable(filter = "top",
+                caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;","Notes: WG-SS - The Washington Group Short Set on Functioning; (1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain; # - Communication and cognition domains are in a single question"))
   })
 }
 

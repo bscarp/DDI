@@ -10,63 +10,13 @@
 
 library(shiny)
 library(bslib)
-library(shinyjs)
 library(tidyverse)
-library(readxl)
-library(stringi)
 library(ggiraph)
 library(DT)
-library(terra)
 library(sf)
+library(terra)
 
-# cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
-# df_country_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/StatisticsCountry/region_names.xlsx"))
-# df_indicator_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/Types/indicators_types.xlsx"))
-# df_group_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/Types/population_types.xlsx"))
-# df_disability_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/Types/difficulty_types.xlsx"))
-# data_n = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/StatisticsTopics/satistics_national.xlsx"))
-# data_n = left_join(left_join(left_join(data_n,df_indicator_t),df_group_t),df_disability_t)
-# data_n = data_n %>% select(Country,IndicatorName,PopulationName,DifficultyName,Value)
-# data2 = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/StatisticsCountry/statistics_admin1_level.xlsx"))
-# data2 = left_join(left_join(left_join(data2,df_indicator_t),df_group_t),df_disability_t)
-# data2 = data2 %>% select(Country,Region,IndicatorName,PopulationName,DifficultyName,Value)
-# 
-# data = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))
-# names(data) = names(data) %>% sub("Household_Prevalence_","Household_Prevalence ",.)
-# names(data)[4:84] = names(data)[4:84] %>% paste0("Prevalence ",.)
-# names(data)[!grepl(" .* ",names(data))][-c(1:3)] = names(data)[!grepl(" .* ",names(data))][-c(1:3)] %>% sub("(\\()(.*)(\\))","\\2 \\1all_adults\\3",.)
-# data = data %>% pivot_longer(.,names(.)[-c(1:3)],names_to = c("IndicatorName","DifficultyName","PopulationName"),names_pattern = "(.*) (.*) \\((.*)\\)",
-#                                values_to = "Value")
-# 
-# data0 = data %>% filter(admin == "admin0")
-# data1 = data
-# data0 = data0 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(c("Prevalence",unique(data_n$IndicatorName)), unique(data0$IndicatorName))))
-# data0 = data0 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(data_n$DifficultyName)[c(3:11,2,1)],unique(data0$DifficultyName)[c(3,10,11,4,5,8,7,9,6,2,1)])))
-# data0 = data0 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(data_n$PopulationName),"Adults ages 25 to 29"),unique(data0$PopulationName)[c(1,4,5,2,3,6:10)])))
-# data1 = data1 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(c("Prevalence",unique(data_n$IndicatorName)), unique(data1$IndicatorName))))
-# data1 = data1 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(data_n$DifficultyName)[c(3:11,2,1)],unique(data1$DifficultyName)[c(3,10,11,4,5,8,7,9,6,2,1)])))
-# data1 = data1 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(data_n$PopulationName),"Adults ages 25 to 29"),unique(data1$PopulationName)[c(1,4,5,2,3,6:10)])))
-# 
-# df_country = df_country_t$Country
-# df_indicator = c("Prevalence",df_indicator_t$IndicatorName)
-# df_group = df_group_t$PopulationName
-# df_disability = c("Disability versus no disability" = 1, "Severe versus moderate versus no disability" = 2, "Severe versus moderate or no disability" = 3,
-#                   "Disability by type" = 4)
-# df_disability2 = unique(data1$DifficultyName)
-# 
-# map_df = read_sf(paste0(cen_dir,"/Downloads/world shp/ne_10m_admin_1_states_provinces.shp"))
-# iso = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","level","ISOCode"))
-# data1 = left_join(data1,iso %>% filter(!country == "Vietnam"), by = c("country","level"))
-# 
-# data0 = data0 %>% rename("Country" = "country")
-# data1 = data1 %>% rename("Country" = "country")
-# 
-# save(data0,data1,map_df,df_country,df_indicator,df_group,df_disability,df_disability2,file = "DS-E/Test.Rbin")
-# rm(list = ls())
-# 
-# map_df %>% filter(iso_3166_2 %in% iso$ISOCode)
-
-load("Test.Rbin")
+load("Data.RData")
 
 # Define UI for application that draws a histogram
 ui <- page_navbar(
@@ -94,15 +44,12 @@ ui <- page_navbar(
         h1("The Disability Statistics Database", style = "font-weight: 700; color: #0072B5;"),
         p("The Disability Statistics (DS) Databases provide internationally comparable statistics to monitor the rights of persons with disabilities.")
     ),
-    div(class = "data-area",
-        style = "display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 800px; margin: auto;",
-        div(class = "card",
-            h3("Disability Statistics – Estimates (DS-E)"),
+    layout_columns(fill = FALSE,
+    card(h4("Disability Statistics – Estimates (DS-E)"),
             p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
             actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-E/', '_blank')", class = "download-btn")
         ),
-        div(class = "card",
-            h3("Disability Statistics – Questionnaire Review (DS-QR)"),
+        card(h4("Disability Statistics – Questionnaire Review (DS-QR)"),
             p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
             actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-QR/', '_blank')", class = "download-btn")
         )
@@ -121,13 +68,13 @@ ui <- page_navbar(
   ),
   nav_panel("Cross-country estimates", value = "across",
             navset_card_underline(id = "h1",
-                                  nav_panel(value = 't1', "Graph", girafeOutput("stat_top_gra")),
-                                  nav_panel(value = 't1', "Table", DTOutput("stat_top_tab"))
+                                  nav_panel(value = 't1', "Graph", girafeOutput("stat_top_gra"), textOutput("key1"),textOutput("ind1")),
+                                  nav_panel(value = 't1', "Table", DTOutput("stat_top_tab"), textOutput("key2"),textOutput("ind2"))
             )),
   nav_panel("Estimates within countries", value = "within",
             navset_card_underline(id = "h2",
-                                  nav_panel(value = 't2', "Map", girafeOutput("stat_cou_map")),
-                                  nav_panel(value = 't3', "Table", DTOutput("stat_cou_tab"))
+                                  nav_panel(value = 't2', "Map", girafeOutput("stat_cou_map"), textOutput("ind3")),
+                                  nav_panel(value = 't3', "Table", DTOutput("stat_cou_tab"), textOutput("ind4"))
             )),
 )
 
@@ -135,13 +82,14 @@ ui <- page_navbar(
 server <- function(session, input, output) {
   #Select all countries
   observe({
-    if(input$selectall == 0) return(NULL) 
-    else if (input$selectall%%2 == 0) {
-      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country)
-      updateActionLink("selectall","Select no countries")
+    if(input$selectall == 0) {
+      return(NULL)
+    } else if (input$selectall%%2 == 0) {
+      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country, selected = "Namibia")
+      updateActionLink(session,"selectall","Select all countries")
     } else {
-      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country,selected=df_country)
-      updateActionLink("selectall","Select all countries")
+      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country, selected = df_country)
+      updateActionLink(session,"selectall","Select no countries")
     }
   })
   
@@ -183,9 +131,19 @@ server <- function(session, input, output) {
   
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
-    plot = ggplot(data = data_sel0()) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = paste0(Country,"\n",DifficultyName,"\n",round(Value,1),"%"), data_id = Country), position = "dodge") + 
-      scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + theme(axis.title = element_blank(),legend.title = element_blank())
+    data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
+    plot = ggplot(data = data_g) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = label, data_id = Country), position = "dodge") + 
+      scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
+      theme(axis.title = element_blank(), legend.title = element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
     girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
+  })
+  
+  output$key1 <- output$key2 <- renderText({
+    paste0("Key message: ",key_m %>% filter(Original == input$indicator) %>% select(`Key messages`) %>% as.character())
+  })
+  
+  output$ind1 <- output$ind2 <- output$ind3 <- output$ind4 <- renderText({
+    paste0("Indicator definition: ", key_m %>% filter(Original == input$indicator) %>% select(Tooltip) %>% as.character())
   })
   
   output$stat_top_tab <- renderDT({
@@ -194,10 +152,12 @@ server <- function(session, input, output) {
   })
   
   output$stat_cou_map <- renderGirafe({
-    map <- inner_join(map_df, data_sel2(), by = join_by(iso_3166_2 == ISOCode))
-    plot = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = paste0(name,"\n",round(Value,1),"%"), data_id = level),colour="black") + 
-      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + theme(axis.text = element_blank(),axis.ticks = element_blank())
-    girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
+    data_m = data_sel2() %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
+    map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
+    plot = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
+      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
+      theme(axis.text = element_blank(), axis.ticks = element_blank())
+    girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
     })
   
   output$stat_cou_tab <- renderDT({
