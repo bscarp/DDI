@@ -10,6 +10,7 @@
 
 library(shiny)
 library(bslib)
+library(shinyWidgets)
 library(tidyverse)
 library(ggiraph)
 library(DT)
@@ -58,10 +59,10 @@ ui <- page_navbar(
   
   #Selectors
   sidebar = sidebar(id = "sidebar",
-                    conditionalPanel(condition = "input.nav == 'across'", selectInput("country", "Countries (select multiple)", df_country, multiple = TRUE, selected = "Namibia"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries")),
-                    conditionalPanel(condition = "input.nav == 'within'", selectInput("country_sin", "Country (select single)", df_country, selected = "Namibia"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav != 'home'", selectInput("indicator", "Indicators", df_indicator,selected = "Multidimensional poverty"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'across'", virtualSelectInput("country", "Countries (select multiple)", df_country, multiple = TRUE, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries"), actionLink("reset","Reset countries")),
+                    conditionalPanel(condition = "input.nav == 'within'", virtualSelectInput("country_sin", "Country (select single)", df_country, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav != 'home'", virtualSelectInput("indicator", "Indicators", df_indicator, search = TRUE, selected = "Multidimensional poverty"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", selectInput("group", "Population Groups", df_group,selected = "All adults (ages 15 and older)"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", selectInput("disability", "Disability breakdown", df_disability,selected = 1), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", selectInput("disability2", "Disability group", df_disability2,selected = "Disability"), ns = NS(NULL))
@@ -74,7 +75,7 @@ ui <- page_navbar(
   nav_panel("Estimates within countries", value = "within",
             navset_card_underline(id = "h2",
                                   nav_panel(value = 't2', "Map", girafeOutput("stat_cou_map"), textOutput("ind3")),
-                                  nav_panel(value = 't3', "Table", DTOutput("stat_cou_tab"), textOutput("ind4"))
+                                  nav_panel(value = 't3', "Table", DTOutput("stat_cou_tab"), verbatimTextOutput("test"), textOutput("ind4"))
             )),
 )
 
@@ -85,18 +86,28 @@ server <- function(session, input, output) {
     if(input$selectall == 0) {
       return(NULL)
     } else if (input$selectall%%2 == 0) {
-      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country, selected = "Namibia")
+      updateVirtualSelect("country", "Countries (select multiple)", choices = df_country, selected = "Namibia", session = session)
       updateActionLink(session,"selectall","Select all countries")
     } else {
-      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country, selected = df_country)
+      updateVirtualSelect("country", "Countries (select multiple)", choices = df_country, selected = as.character(unlist(df_country)), session = session)
       updateActionLink(session,"selectall","Select no countries")
+    }
+  })
+  
+  #Reset countries
+  observe({
+    if(input$reset == 0) {
+      return(NULL)
+    } else {
+      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country, selected = "Namibia")
+      updateSelectInput(session,"region","Region (select multiple)",choices=names(df_country))
     }
   })
   
   #Change categories for indicator selector
   observe({
     temp = input$indicator
-    updateSelectInput(session,"indicator", "Indicators", choices = unique(data0$IndicatorName[data0$Country %in% input$country & data0$PopulationName == input$group & data0$DifficultyName %in% dis_grp() & !is.na(data0$Value)]), selected = temp)
+    updateVirtualSelect("indicator", "Indicators", choices = unique(data0$IndicatorName[data0$Country %in% input$country & data0$PopulationName == input$group & data0$DifficultyName %in% dis_grp() & !is.na(data0$Value)]), selected = temp, session = session)
   })
   
   #Change categories for grouping selector
@@ -129,6 +140,8 @@ server <- function(session, input, output) {
   data_sel1 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp())})
   data_sel2 = reactive({data1 %>% filter(admin=="admin1",Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
   
+  output$test <- renderPrint(c(input$country_sin,input$indicator,input$group, names(data_sel1()), data_sel1() %>% select(DifficultyName) %>% unique()))
+  
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
     data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
@@ -139,7 +152,7 @@ server <- function(session, input, output) {
   })
   
   output$key1 <- output$key2 <- renderText({
-    paste0("Key message: ",key_m %>% filter(Original == input$indicator) %>% select(`Key messages`) %>% as.character())
+    paste0("Key message: ",key_m %>% filter(Original == input$indicator) %>% select(`Key message`) %>% as.character())
   })
   
   output$ind1 <- output$ind2 <- output$ind3 <- output$ind4 <- renderText({
