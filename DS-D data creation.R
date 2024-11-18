@@ -27,8 +27,8 @@ data1 = data
 data0 = data0 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName[c(2:29,1)], unique(data0$IndicatorName)[c(2:6,15:18,7:14,19:29,1)])))
 data0 = data0 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(df_disability_t$DifficultyName)[c(1,3,4,6:11,2,5)],unique(data0$DifficultyName)[c(10,11,3,4,5,8,9,7,6,2,1)])))
 data0 = data0 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(df_group_t$PopulationName),"Adults ages 25 to 29"),unique(data0$PopulationName))))
-data1 = data1 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName[c(2:29,1)], unique(data0$IndicatorName)[c(2:6,15:18,7:14,19:29,1)])))
-data1 = data1 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(df_disability_t$DifficultyName)[c(1,3,4,6:11,2,5)],unique(data0$DifficultyName)[c(10,11,3,4,5,8,9,7,6,2,1)])))
+data1 = data1 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName[c(2:29,1)], unique(data1$IndicatorName)[c(2:6,15:18,7:14,19:29,1)])))
+data1 = data1 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(df_disability_t$DifficultyName)[c(1,3,4,6:11,2,5)],unique(data1$DifficultyName)[c(10,11,3,4,5,8,9,7,6,2,1)])))
 data1 = data1 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(df_group_t$PopulationName),"Adults ages 25 to 29"),unique(data1$PopulationName))))
 
 df_country = data0 %>% select(country) %>% filter(!duplicated(country))

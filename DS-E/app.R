@@ -138,9 +138,9 @@ server <- function(session, input, output) {
   data_sel0 = reactive({data0 %>% filter(Country %in% input$country, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>%
     mutate(DifficultyName = factor(DifficultyName,levels = dis_grp()))})
   data_sel1 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp())})
-  data_sel2 = reactive({data1 %>% filter(admin=="admin1",Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
+  data_sel2 = reactive({data1 %>% filter(admin=="admin1", Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
   
-  output$test <- renderPrint(c(input$country_sin,input$indicator,input$group, names(data_sel1()), data_sel1() %>% select(DifficultyName) %>% unique()))
+  output$test <- renderPrint(c(input$country_sin,input$indicator,input$group, paste0(names(data_sel1()), collapse = ","), paste0(data_sel1() %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ","), paste0(names(data1), collapse = ","), paste0(data1 %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ",")))
   
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
