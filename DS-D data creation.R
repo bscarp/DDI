@@ -27,9 +27,11 @@ data1 = data
 data0 = data0 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName[c(2:29,1)], unique(data0$IndicatorName)[c(2:6,15:18,7:14,19:29,1)])))
 data0 = data0 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(df_disability_t$DifficultyName)[c(1,3,4,6:11,2,5)],unique(data0$DifficultyName)[c(10,11,3,4,5,8,9,7,6,2,1)])))
 data0 = data0 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(df_group_t$PopulationName),"Adults ages 25 to 29"),unique(data0$PopulationName))))
+data0 = data0 %>% mutate(admin = str_replace_all(admin,setNames(c("National","Subnational division 1","Subnational division 2","Alternative subnational division"), c("admin0","admin1","admin2","admin_alt"))))
 data1 = data1 %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName[c(2:29,1)], unique(data1$IndicatorName)[c(2:6,15:18,7:14,19:29,1)])))
 data1 = data1 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setNames(unique(df_disability_t$DifficultyName)[c(1,3,4,6:11,2,5)],unique(data1$DifficultyName)[c(10,11,3,4,5,8,9,7,6,2,1)])))
 data1 = data1 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(df_group_t$PopulationName),"Adults ages 25 to 29"),unique(data1$PopulationName))))
+data1 = data1 %>% mutate(admin = str_replace_all(admin,setNames(c("National","Subnational division 1","Subnational division 2","Alternative subnational division"), c("admin0","admin1","admin2","admin_alt"))))
 
 df_country = data0 %>% select(country) %>% filter(!duplicated(country))
 ddi_2024 = read_xlsx("DS-D files/Dataset_Review_Results_2024_full.xlsx", sheet = 1) %>% select(Region,Country) %>% filter(!duplicated(Country))
@@ -38,7 +40,7 @@ df_country = df_country %>% mutate(Region = case_when(is.na(Region)&country=="Ga
 rm(ddi_2024)
 df_country = lapply(split(df_country$country, df_country$Region, drop = TRUE), function(x) as.list(x))
 
-df_indicator = split(df_indicator_t$IndicatorName, df_indicator_t$Group, drop = TRUE)[c(5,1,2,4,6,3)]
+df_indicator = lapply(split(df_indicator_t$IndicatorName, df_indicator_t$Group, drop = TRUE), function(x) as.list(x))
 df_group = df_group_t$PopulationName
 df_disability = c("Disability versus no disability" = 1, "Severe versus moderate versus no disability" = 2, "Severe versus moderate or no disability" = 3,
                   "Disability by type" = 4)
@@ -60,18 +62,18 @@ ddi_2024 = ddi_2024 %>% mutate(ISO3 = countrycode::countryname(Country, "iso3c")
 ddi_2024_s = ddi_2024 %>% group_by(ISO3) %>% summarise(Region = first(Region), Country = first(Country), WG = max(WG, na.rm = TRUE), FL = max(FL, na.rm = TRUE)) %>% select(Region,Country,ISO3,WG,FL)
 ddi_2024_s = ddi_2024_s %>% mutate(Summary = case_when(WG == 1 ~ "Washington Group\nShort Set",
                                                        FL == 1 ~ "Other functional\ndifficulty questions",
-                                                       WG == 0 & FL == 0 ~ "No",
+                                                       WG == 0 & FL == 0 ~ "No functional\ndifficulty questions",
                                                        TRUE ~ NA))
 ddi_2024 = ddi_2024 %>% mutate(WG = case_when(WG==1~"Yes", WG==0~"No", TRUE~NA), FL = case_when(FL==1~"Yes", FL==0~"No", TRUE~NA))
 
-ddi_2024 = ddi_2024 %>% mutate(across(c(Region, Country, Years, WG, FL),as_factor))
+ddi_2024 = ddi_2024 %>% mutate(across(c(Region, Country, WG, FL),as_factor))
 ddi_2024_s = ddi_2024_s %>% mutate(across(c(Region, Country, Summary),as_factor))
 
 ddi_2024 = ddi_2024 %>% rename(Year = Years, `WG-SS` = WG, `Other functional difficulty questions` = FL)
 
 map_df = read_sf("DS-D files/ne_110m_admin_0_countries.shp")
 map_df = map_df %>% mutate(ISO3 = if_else(ISO_A3=="-99", ADM0_A3, ISO_A3))
-map_df = left_join(map_df,ddi_2024_s, by = join_by(ISO3)) %>% mutate(Summary = factor(if_else(is.na(Summary),"Not assessed",Summary), levels = c("Washington Group\nShort Set", "Other functional\ndifficulty questions", "No", "Not assessed")))
+map_df = left_join(map_df,ddi_2024_s, by = join_by(ISO3)) %>% mutate(Summary = factor(if_else(is.na(Summary),"Not assessed",Summary), levels = c("Washington Group\nShort Set", "Other functional\ndifficulty questions", "No functional\ndifficulty questions", "Not assessed")))
 map_df = map_df %>% filter(!NAME == "Antarctica")
 
 save(ddi_2024, ddi_2024_s, map_df, file = "DS-QR/Data.RData")
