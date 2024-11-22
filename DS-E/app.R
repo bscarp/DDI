@@ -62,21 +62,24 @@ ui <- page_navbar(
                     conditionalPanel(condition = "input.nav == 'across'", virtualSelectInput("country", "Countries (select multiple)", df_country, multiple = TRUE, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries"), actionLink("reset","Reset countries")),
                     conditionalPanel(condition = "input.nav == 'within'", virtualSelectInput("country_sin", "Country (select single)", df_country, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav != 'home'", virtualSelectInput("indicator", "Indicators", df_indicator, search = TRUE, selected = "Multidimensional poverty"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav != 'home'", selectInput("group", "Population Groups", df_group,selected = "All adults (ages 15 and older)"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", selectInput("disability", "Disability breakdown", df_disability,selected = 1), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", selectInput("disability2", "Disability group", df_disability2,selected = "Disability"), ns = NS(NULL))
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(virtualSelectInput("admin", "Select the subdivision to display:", c("National", "Subnational division 1", "Subnational division 2", "Alternative subnational division"), search = TRUE, selected = "Subnational division 1"),"The Methods tab above has definitions and details about breakdowns", placement = "bottom"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav != 'home'", tooltip(virtualSelectInput("indicator", "Indicators", df_indicator, search = TRUE, selected = "Multidimensional poverty"),"The Methods tab above has definitions and details about breakdowns", placement = "bottom"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav != 'home'", tooltip(selectInput("group", "Population Groups", df_group,selected = "All adults (ages 15 and older)"),"The Methods tab above has definitions and details about breakdowns", placement = "bottom"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", tooltip(selectInput("disability", "Disability breakdown", df_disability,selected = 1),"The Methods tab above has definitions and details about breakdowns", placement = "bottom"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", tooltip(selectInput("disability2", "Disability group", df_disability2,selected = "Disability"),"The Methods tab above has definitions and details about breakdowns", placement = "bottom"), ns = NS(NULL))
   ),
   nav_panel("Cross-country estimates", value = "across",
             navset_card_underline(id = "h1",
-                                  nav_panel(value = 't1', "Graph", girafeOutput("stat_top_gra"), textOutput("key1"),textOutput("ind1")),
-                                  nav_panel(value = 't1', "Table", DTOutput("stat_top_tab"), textOutput("key2"),textOutput("ind2"))
+                                  nav_panel(value = 't1', "Graph", h4(textOutput("title1")), h6(textOutput("key1")), h6(textOutput("ind1")), girafeOutput("stat_top_gra")),
+                                  nav_panel(value = 't1', "Table", h4(textOutput("title2")), h6(textOutput("key2")), h6(textOutput("ind2")), DTOutput("stat_top_tab"))
             )),
   nav_panel("Estimates within countries", value = "within",
             navset_card_underline(id = "h2",
-                                  nav_panel(value = 't2', "Map", girafeOutput("stat_cou_map"), textOutput("ind3")),
-                                  nav_panel(value = 't3', "Table", DTOutput("stat_cou_tab"), verbatimTextOutput("test"), textOutput("ind4"))
+                                  nav_panel(value = 't2', "Map",   h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
+                                  nav_panel(value = 't3', "Table", h4(textOutput("title4")), textOutput("ind4"), DTOutput("stat_cou_tab"))
             )),
+  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/methods", "Methods", target="_blank")),
+  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/access", "Accessibility", target="_blank"))
 )
 
 # Define server logic required to draw a histogram
@@ -99,15 +102,21 @@ server <- function(session, input, output) {
     if(input$reset == 0) {
       return(NULL)
     } else {
-      updateSelectInput(session,"country","Countries (select multiple)",choices=df_country, selected = "Namibia")
-      updateSelectInput(session,"region","Region (select multiple)",choices=names(df_country))
+      updateVirtualSelect("country", "Countries (select multiple)", choices=df_country, selected = "Namibia", session = session)
+      updateActionLink(session,"selectall","Select all countries")
     }
+  })
+  
+  #Change categories for admin selector
+  observe({
+    temp = if_else(input$admin %in% unique(data1$admin[data1$Country %in% input$country_sin & !is.na(data1$Value)]), input$admin, "Subnational division 1")
+    updateVirtualSelect("admin", "Select the subdivision to display:", choices = unique(data1$admin[data1$Country %in% input$country_sin & !is.na(data1$Value)]), selected = temp, session = session)
   })
   
   #Change categories for indicator selector
   observe({
     temp = input$indicator
-    updateVirtualSelect("indicator", "Indicators", choices = unique(data0$IndicatorName[data0$Country %in% input$country & data0$PopulationName == input$group & data0$DifficultyName %in% dis_grp() & !is.na(data0$Value)]), selected = temp, session = session)
+    updateVirtualSelect("indicator", "Indicators", disabledChoices = data0 %>% filter(data0$Country %in% input$country & data0$PopulationName == input$group & data0$DifficultyName %in% dis_grp()) %>% summarise(Value = mean(is.na(Value)), .by = IndicatorName) %>% filter(Value == 1) %>% select(IndicatorName), selected = temp, session = session)
   })
   
   #Change categories for grouping selector
@@ -135,12 +144,20 @@ server <- function(session, input, output) {
                                                     "Self-care Disability", "Communication Disability","No Disability"))))
     })
   
+  adm_grp = reactive({
+    unlist(case_when(input$admin == "National" ~ list(c("National")),
+                     input$admin == "Subnational division 1" ~ list(c("National","Subnational division 1")),
+                     input$admin == "Subnational division 2" ~ list(c("National","Subnational division 2")),
+                     input$admin == "Alternative subnational division" ~ list(c("National","Alternative subnational division"))
+    ))
+  })
+  
   data_sel0 = reactive({data0 %>% filter(Country %in% input$country, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>%
     mutate(DifficultyName = factor(DifficultyName,levels = dis_grp()))})
-  data_sel1 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp())})
-  data_sel2 = reactive({data1 %>% filter(admin=="admin1", Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
+  data_sel1 = reactive({data1 %>% filter(admin %in% adm_grp(), Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
+  data_sel2 = reactive({data1 %>% filter(admin == "Subnational division 1", Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
   
-  output$test <- renderPrint(c(input$country_sin,input$indicator,input$group, paste0(names(data_sel1()), collapse = ","), paste0(data_sel1() %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ","), paste0(names(data1), collapse = ","), paste0(data1 %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ",")))
+  # output$test <- renderPrint(c(input$country_sin,input$indicator,input$group, paste0(names(data_sel1()), collapse = ","), paste0(data_sel1() %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ","), paste0(names(data1), collapse = ","), paste0(data1 %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ",")))
   
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
@@ -149,6 +166,22 @@ server <- function(session, input, output) {
       scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
       theme(axis.title = element_blank(), legend.title = element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
     girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
+  })
+  
+  output$title1 <- renderText({
+    paste0("Graph showing ", input$indicator, " for ", ifelse(length(input$country)==1,input$country,paste0(length(input$country), " countries")), " by ", paste0(dis_grp(), collapse = ", "))
+  })
+  
+  output$title2 <- renderText({
+    paste0("Table showing ", input$indicator, " for ", ifelse(length(input$country)==1,input$country,paste0(length(input$country), " countries")), " by ", paste0(dis_grp(), collapse = ", "))
+  })
+  
+  output$title3 <- renderText({
+    paste0("Map showing ", input$indicator, " for ", input$country_sin, " for ", input$disability2)
+  })
+  
+  output$title4 <- renderText({
+    paste0("Table showing ", input$indicator, " for ", input$country_sin, " at ", input$admin, " by ", paste0(dis_grp(), collapse = ", "))
   })
   
   output$key1 <- output$key2 <- renderText({
@@ -161,7 +194,9 @@ server <- function(session, input, output) {
   
   output$stat_top_tab <- renderDT({
     # draw the plot using data
-    data_sel0() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% datatable() %>% formatPercentage(columns = dis_grp(), digits = 1)
+    data_sel0() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% 
+      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
+      formatPercentage(columns = dis_grp(), digits = 1)
   })
   
   output$stat_cou_map <- renderGirafe({
@@ -175,7 +210,9 @@ server <- function(session, input, output) {
   
   output$stat_cou_tab <- renderDT({
     # draw the plot using data
-    data_sel1() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% datatable() %>% formatPercentage(columns = dis_grp(), digits = 1)
+    data_sel1() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% 
+      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
+      formatPercentage(columns = dis_grp(), digits = 1)
   })
   
   # observe({

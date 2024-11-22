@@ -62,17 +62,15 @@ ui <- page_navbar(
   nav_panel(title = "Overview of Results",
   
   # Map and Table side by side
-  navset_card_pill(title = h3("Overview of Disability Statistics"),
+  navset_card_pill(
     nav_panel(title = h5("Map of Disability Questions by Country"),
       layout_sidebar(sidebar = sidebar(selectInput("region", "Region", choices = c("World", as.character(unique(ddi_2024_s$Region))), selected = "World")),
-                     p(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+                     h5(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
                      girafeOutput("map", width = "100%"))
     ),
     nav_panel(h5("Table of Disability Questions by Country"),
-      div(class = "data-area",
-          style = "align-items: center; text-align: center; padding: 20px;",
-          div(style = "width: 100%; max-width: 1600px;",
-              p(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+      div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
+              h5(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
               DTOutput("table1")
           ),
           #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
@@ -82,12 +80,7 @@ ui <- page_navbar(
   ),
   
   nav_panel(
-    title = "Detailed results", 
-    div(class = "header",
-        h2("Detailed Country Statistics"),
-        p("Select a country to view detailed information on disability questions.")
-    ),
-    
+    title = "Detailed results",
     # Data table 
     div(class = "data-area",
         style = "align-items: center; text-align: center; padding: 20px;",
@@ -97,7 +90,9 @@ ui <- page_navbar(
         #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
         
     )
-  )
+  ),
+  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/methods", "Methods", target="_blank")),
+  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/access", "Accessibility", target="_blank"))
 )
 
 # Define server logic required to draw a histogram
@@ -141,8 +136,8 @@ server <- function(input, output) {
   
   output$table2 <- renderDT({
     ddi_2024 %>% select(Region,Country,Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference from WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
-      datatable(filter = "top",
-                caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;","Notes: WG-SS - The Washington Group Short Set on Functioning; (1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain; # - Communication and cognition domains are in a single question"))
+      datatable(filter = "top", options = list(autoWidth = TRUE),
+                caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("Notes: WG-SS stands for the Washington Group Short<br/>(1) - Yes/No answer<br/>(2) - Answer scale is different from that in the WG-SS<br/>(3) - Wording of questions is different from the WG-SS<br/>(4) - Does not have the selfcare domain<br/>(5) - Does not have the communication domain")))
   })
 }
 
