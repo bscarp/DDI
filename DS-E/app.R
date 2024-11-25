@@ -194,7 +194,7 @@ server <- function(session, input, output) {
   
   output$stat_top_tab <- renderDT({
     # draw the plot using data
-    data_sel0() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% 
+    data_sel0() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% select(-c(admin,level)) %>%
       datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
       formatPercentage(columns = dis_grp(), digits = 1)
   })
@@ -214,12 +214,7 @@ server <- function(session, input, output) {
       datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
       formatPercentage(columns = dis_grp(), digits = 1)
   })
-  
-  # observe({
-  #   if (input$nav == "home") {
-  #     js$hideSidebar()
-  #   }
-  # })
+
 }
 
 # Run the application 
