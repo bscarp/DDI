@@ -59,7 +59,7 @@ ui <- page_navbar(
   ),
   
   #Selectors
-  sidebar = sidebar(id = "sidebar",
+  sidebar = sidebar(id = "sidebar", open = "closed",
                     conditionalPanel(condition = "input.nav == 'across'", virtualSelectInput("country", "Countries (select multiple)", df_country, multiple = TRUE, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries"), actionLink("reset","Reset countries")),
                     conditionalPanel(condition = "input.nav == 'within'", virtualSelectInput("country_sin", "Country (select single)", df_country, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
@@ -71,7 +71,7 @@ ui <- page_navbar(
   ),
   nav_panel("Cross-country estimates", value = "across",
             navset_card_underline(id = "h1",
-                                  nav_panel(value = 't1', "Graph", h4(textOutput("title1")), h6(textOutput("key1")), h6(textOutput("ind1")), girafeOutput("stat_top_gra")),
+                                  nav_panel(value = 't1', "Graph", textOutput("test"), h4(textOutput("title1")), h6(textOutput("key1")), h6(textOutput("ind1")), girafeOutput("stat_top_gra")),
                                   nav_panel(value = 't1', "Table", h4(textOutput("title2")), h6(textOutput("key2")), h6(textOutput("ind2")), DTOutput("stat_top_tab"))
             )),
   nav_panel("Estimates within countries", value = "within",
@@ -158,7 +158,7 @@ server <- function(session, input, output) {
   data_sel1 = reactive({data1 %>% filter(admin %in% adm_grp(), Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
   data_sel2 = reactive({data1 %>% filter(admin == "Subnational division 1", Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
   
-  # output$test <- renderPrint(c(input$country_sin,input$indicator,input$group, paste0(names(data_sel1()), collapse = ","), paste0(data_sel1() %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ","), paste0(names(data1), collapse = ","), paste0(data1 %>% select(DifficultyName) %>% unique() %>% as.vector(), collapse = ",")))
+  output$test <- renderPrint(c(input$sidebar))
   
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
@@ -215,7 +215,16 @@ server <- function(session, input, output) {
       datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
       formatPercentage(columns = dis_grp(), digits = 1)
   })
-
+  
+  observe({
+    temp = input$sidebar
+    sidebar_toggle("sidebar", open = ifelse(input$nav == "home", FALSE, temp))
+  })
+  
+  observeEvent(input$nav, ignoreInit = TRUE, once = TRUE,{
+    sidebar_toggle("sidebar", open = NULL)
+  })
+  
 }
 
 # Run the application 
