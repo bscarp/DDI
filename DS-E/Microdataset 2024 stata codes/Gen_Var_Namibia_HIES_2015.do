@@ -300,6 +300,16 @@ gen work_informal = 0
 replace work_informal = 1 if q06_03 ==1 | q06_04 ==1
 *assumes that paid work is formal and self-employed or family business is informal, and other productive activities (trader, selling in the market, collecting wood or dung to sell, making handicrafts for sale, etc.?)
 
+
+gen work_managerial2=0 if ind_emp==1 & female==1
+replace work_managerial2= 1 if ind_emp==1 & work_managerial==1 & female==1
+replace work_managerial2= . if (ind_emp==. & work_managerial==.) 
+
+gen work_informal2=.
+replace work_informal2=0 if ind_emp==1
+replace work_informal2=1 if ind_emp==1 & work_informal==1
+replace work_informal2=. if ind_emp==. & work_informal==.
+
 *social protection
 *Did ..[NAME] receive any social welfare pensions or allowances in the past 12 months?
 gen social_prot = 1 if q10_08==1
