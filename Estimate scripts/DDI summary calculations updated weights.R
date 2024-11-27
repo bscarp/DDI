@@ -46,13 +46,13 @@ file.remove(paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"))
 drive_download(file = "https://docs.google.com/spreadsheets/d/16gJhGR7dlIiWxCeNlLSqcWcCFZFLaEz2/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
                path = paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"),overwrite = TRUE)
 psu = read_xlsx(paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"),sheet = "Sampling Design")
-psu = psu %>% filter(!is.na(`Stata code July 9th 2024`))
+psu = psu %>% filter(!is.na(`Stata code FINAL`))
 
 #Check for unprocessed datasets
 r_list = dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))
 sum_list = dir(paste0(cen_dir,"Downloads/Census/Summaries/"))
 sum_list = sub("\\_Summary.RData","\\.RData",sum_list)
-r_list2 = r_list[!r_list %in% sum_list&!grepl("DHS",r_list)&!sub(".RData","",r_list) %in% psu$Country_Survey_Date[!grepl("svyset",psu$`Stata code July 17th 2024`)]]
+r_list2 = r_list[!r_list %in% sum_list&!grepl("DHS",r_list)&!sub(".RData","",r_list) %in% psu$Country_Survey_Date[!grepl("svyset",psu$`Stata code FINAL`)]]
 
 library(srvyr)
 options(survey.adjust.domain.lonely = TRUE)
@@ -137,7 +137,7 @@ with_progress({
 
   psu2 = psu %>% filter(Country_Survey_Date==dataset)
   
-  if(grepl("ssu", psu2$`Stata code July 17th 2024`)) {
+  if(grepl("ssu", psu2$`Stata code FINAL`)) {
     if(!"ssu" %in% names(dck)) {
       dck = dck %>% mutate(ssu = hh_id)
     }
@@ -148,7 +148,7 @@ with_progress({
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
     rm(dck)
-  } else if(grepl("psu", psu2$`Stata code July 17th 2024`)) {
+  } else if(grepl("psu", psu2$`Stata code FINAL`)) {
     psu_a = psu_a[!grepl("ssu|sample_strata",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a ),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ind_weight))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(hh_weight))
@@ -157,7 +157,7 @@ with_progress({
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
     rm(dck)
-  } else if(grepl("admin", psu2$`Stata code July 17th 2024`)) {
+  } else if(grepl("admin", psu2$`Stata code FINAL`)) {
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a ),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
@@ -171,7 +171,7 @@ with_progress({
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
     rm(dck)
-  } else if(grepl("sample_strata", psu2$`Stata code July 17th 2024`)) {
+  } else if(grepl("sample_strata", psu2$`Stata code FINAL`)) {
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a ),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a2),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
