@@ -67,16 +67,17 @@ ui <- page_navbar(
                     conditionalPanel(condition = "input.nav != 'home'", tooltip(virtualSelectInput("indicator", "Indicators", df_indicator, search = TRUE, selected = "Multidimensional poverty"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", tooltip(selectInput("group", "Population Groups", df_group,selected = "All adults (ages 15 and older)"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", tooltip(selectInput("disability", "Disability breakdown", df_disability,selected = 1),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", tooltip(selectInput("disability2", "Disability group", df_disability2,selected = "Disability"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL))
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", tooltip(selectInput("disability2", "Disability group", df_disability2,selected = "Disability"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", noUiSliderInput("scale", "Indicator scale", min = 0, max = 100, c(0,100)), ns = NS(NULL))
   ),
   nav_panel("Cross-country estimates", value = "across",
             navset_card_underline(id = "h1",
-                                  nav_panel(value = 't1', "Graph", textOutput("test"), h4(textOutput("title1")), h6(textOutput("key1")), h6(textOutput("ind1")), girafeOutput("stat_top_gra")),
+                                  nav_panel(value = 't1', "Graph", h4(textOutput("title1")), h6(textOutput("key1")), h6(textOutput("ind1")), girafeOutput("stat_top_gra")),
                                   nav_panel(value = 't1', "Table", h4(textOutput("title2")), h6(textOutput("key2")), h6(textOutput("ind2")), DTOutput("stat_top_tab"))
             )),
   nav_panel("Estimates within countries", value = "within",
             navset_card_underline(id = "h2",
-                                  nav_panel(value = 't2', "Map",   h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
+                                  nav_panel(value = 't2', "Map", textOutput("test"), h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
                                   nav_panel(value = 't3', "Table", h4(textOutput("title4")), textOutput("ind4"), DTOutput("stat_cou_tab"))
             )),
   nav_item(a(href="http://www.disabilitydatainitiative.org/databases/methods", "Methods", target="_blank")),
@@ -158,15 +159,16 @@ server <- function(session, input, output) {
   data_sel1 = reactive({data1 %>% filter(admin %in% adm_grp(), Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
   data_sel2 = reactive({data1 %>% filter(admin == "Subnational division 1", Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
   
-  output$test <- renderPrint(c(input$sidebar))
+  output$test <- renderPrint(c(data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T)) %>% as.vector()))
   
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
     data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     plot = ggplot(data = data_g) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = label, data_id = Country), position = "dodge") + 
       scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
-      theme(axis.title = element_blank(), legend.title = element_blank(), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-    girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
+      theme(axis.title = element_blank(), legend.title = element_blank(), legend.position = "bottom", legend.key.size = unit(2, "cm"), legend.key.spacing = unit(5, "mm"),
+            text = element_text(size=60), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+    girafe(ggobj = plot, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
   })
   
   output$title1 <- renderText({
@@ -204,9 +206,9 @@ server <- function(session, input, output) {
     data_m = data_sel2() %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
     plot = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
-      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
-      theme(axis.text = element_blank(), axis.ticks = element_blank())
-    girafe(ggobj = plot, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
+      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(input$scale[1], input$scale[2])) + 
+      theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60))
+    girafe(ggobj = plot, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
     })
   
   output$stat_cou_tab <- renderDT({
@@ -214,6 +216,11 @@ server <- function(session, input, output) {
     data_sel1() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% 
       datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
       formatPercentage(columns = dis_grp(), digits = 1)
+  })
+  
+  observe({
+    temp = data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T))
+    updateNoUiSliderInput(session = session, "scale", "Indicator scale", value = c(temp$min, temp$max), range = c(0,100))
   })
   
   observe({
