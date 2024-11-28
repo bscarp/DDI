@@ -77,7 +77,7 @@ ui <- page_navbar(
             )),
   nav_panel("Estimates within countries", value = "within",
             navset_card_underline(id = "h2",
-                                  nav_panel(value = 't2', "Map", textOutput("test"), h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
+                                  nav_panel(value = 't2', "Map", h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
                                   nav_panel(value = 't3', "Table", h4(textOutput("title4")), textOutput("ind4"), DTOutput("stat_cou_tab"))
             )),
   nav_item(a(href="http://www.disabilitydatainitiative.org/databases/methods", "Methods", target="_blank")),
@@ -134,10 +134,10 @@ server <- function(session, input, output) {
   
   # process inputs to filter data
   dis_grp = reactive({
-    unlist(case_when(input$disability == 1 & grepl("Prevalence", input$indicator, ignore.case = TRUE)  ~ list(c("Disability")),
-                     input$disability == 2 & grepl("Prevalence", input$indicator, ignore.case = TRUE)  ~ list(c("Moderate Disability","Severe Disability")),
-                     input$disability == 3 & grepl("Prevalence", input$indicator, ignore.case = TRUE)  ~ list(c("Severe Disability")),
-                     input$disability == 4 & grepl("Prevalence", input$indicator, ignore.case = TRUE)  ~ list(c("Seeing Disability","Hearing Disability","Mobility Disability", "Cognition Disability",
+    unlist(case_when(input$disability == 1 & grepl("disab", input$indicator, ignore.case = TRUE)  ~ list(c("Disability")),
+                     input$disability == 2 & grepl("disab", input$indicator, ignore.case = TRUE)  ~ list(c("Moderate Disability","Severe Disability")),
+                     input$disability == 3 & grepl("disab", input$indicator, ignore.case = TRUE)  ~ list(c("Severe Disability")),
+                     input$disability == 4 & grepl("disab", input$indicator, ignore.case = TRUE)  ~ list(c("Seeing Disability","Hearing Disability","Mobility Disability", "Cognition Disability",
                                                     "Self-care Disability", "Communication Disability")),
                      input$disability == 1 ~ list(c("No Disability","Disability")),
                      input$disability == 2 ~ list(c("No Disability","Moderate Disability","Severe Disability")),
@@ -159,17 +159,7 @@ server <- function(session, input, output) {
   data_sel1 = reactive({data1 %>% filter(admin %in% adm_grp(), Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
   data_sel2 = reactive({data1 %>% filter(admin == "Subnational division 1", Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
   
-  output$test <- renderPrint(c(data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T)) %>% as.vector()))
-  
-  output$stat_top_gra <- renderGirafe({
-    # draw the plot using data
-    data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
-    plot = ggplot(data = data_g) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = label, data_id = Country), position = "dodge") + 
-      scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
-      theme(axis.title = element_blank(), legend.title = element_blank(), legend.position = "bottom", legend.key.size = unit(2, "cm"), legend.key.spacing = unit(5, "mm"),
-            text = element_text(size=60), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-    girafe(ggobj = plot, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
-  })
+  # output$test <- renderPrint(c(data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T)) %>% as.vector()))
   
   output$title1 <- renderText({
     paste0("Graph showing ", input$indicator, " for ", ifelse(length(input$country)==1,input$country,paste0(length(input$country), " countries")), " by ", paste0(dis_grp(), collapse = ", "))
@@ -195,6 +185,16 @@ server <- function(session, input, output) {
     paste0("Indicator definition: ", key_m %>% filter(Original == input$indicator) %>% select(Tooltip) %>% as.character())
   })
   
+  output$stat_top_gra <- renderGirafe({
+    # draw the plot using data
+    data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
+    plot = ggplot(data = data_g) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = label, data_id = Country), position = "dodge") + 
+      scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
+      theme(axis.title = element_blank(), legend.title = element_blank(), legend.position = "bottom", legend.key.size = unit(2, "cm"), legend.key.spacing = unit(5, "mm"),
+            text = element_text(size=60), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+    girafe(ggobj = plot, width_svg = 2*length(dis_grp())+18, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
+  })
+  
   output$stat_top_tab <- renderDT({
     # draw the plot using data
     data_sel0() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% select(-c(admin,level)) %>%
@@ -205,10 +205,10 @@ server <- function(session, input, output) {
   output$stat_cou_map <- renderGirafe({
     data_m = data_sel2() %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
-    plot = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
+    plot1 = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
       scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(input$scale[1], input$scale[2])) + 
       theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60))
-    girafe(ggobj = plot, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
+    girafe(ggobj = plot1, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
     })
   
   output$stat_cou_tab <- renderDT({
@@ -219,8 +219,16 @@ server <- function(session, input, output) {
   })
   
   observe({
-    temp = data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T))
+    temp = df_static %>% filter(Country == input$country_sin, IndicatorName == input$indicator)
     updateNoUiSliderInput(session = session, "scale", "Indicator scale", value = c(temp$min, temp$max), range = c(0,100))
+  })
+  
+  source = reactive({
+    paste0(df_static %>% filter(Country == input$country, IndicatorName == input$indicator) %>% select(source), collapse = ", ")
+  })
+  
+  source_sin = reactive({
+    df_static %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% select(source)
   })
   
   observe({
