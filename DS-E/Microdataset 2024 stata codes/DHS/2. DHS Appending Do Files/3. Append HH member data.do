@@ -1,3 +1,14 @@
+/*******************************************************************************
+********************************DHS*********************************************
+********************************************************************************
+This do file was written to code variables to generate estimates for the Disability Statistics – Estimates database, available at https://www.ds-e.disabilitydatainitiative.org/
+Reference to appendix and paper:
+For more information on indicators, see the appendices on the website above as well as Carpenter et al (2024).
+Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, GVS, Pinilla-Roncancio, M.,  Rivas Velarde, M., Teodoro, D.,  and Mitra, S. (2024). The Disability Statistics – Estimates Database: an innovative database of internationally comparable statistics on disability inequalities. International Journal of Population Data Science.
+Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
+Author: Katherine Theiss
+Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
+*******************************************************************************/
 ********************************************************************************
 *Globals 
 ********************************************************************************
