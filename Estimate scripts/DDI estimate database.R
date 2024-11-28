@@ -289,8 +289,8 @@ names(temp3b) = sub("ind_mdp","Multid_poverty",names(temp3b))
 # temp2 |> filter((!(Subnational_1_feasible=="X" | Subnational_1_feasible=="x") | !(Subnational_2_feasible=="X" | Subnational_2_feasible=="x") | is.na(Subnational_1_feasible) | is.na(Subnational_2_feasible)) & File_Name %in% temp3$`File name`)
 # Build check for ineligible 1's that have alternative data
 
-db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
-db_s = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
+db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"), col_types = c(rep("text",3),rep("numeric",1467)))
+db_s = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"), col_types = c(rep("text",3),rep("numeric",1467)))
 
 admin0_m = db_m %>% filter(admin == "admin0") %>% select(-admin)
 admin1_m = db_m %>% filter(admin == "admin1") %>% select(-admin)
@@ -301,14 +301,8 @@ admin1_se = db_s %>% filter(admin == "admin1") %>% select(-admin)
 admin2_se = db_s %>% filter(admin == "admin2") %>% select(-admin)
 admina_se = db_s %>% filter(admin == "admin_alt") %>% select(-admin)
 
-multicountry = bind_cols(temp3 %>% select(`File name`), rep(temp3 %>% select(dis_a),27), rep(temp3 %>% select(dom_a),54), rep(temp3 %>% select(Household_Prevalence),9), rep(temp3 %>% select(Ever_attended_school:Multid_poverty),each=51),.name_repair = "minimal")
-names(multicountry) = names(admin0_m)[-2]
-multicountry = multicountry %>% filter(survey %in% admin0_m$survey)
-
 admin0_mb = admin0_m %>% filter(survey %in% temp2$File_Name) %>% rename(country=survey)
-admin1_mb = admin1_m %>% filter(survey %in% temp2$File_Name[temp2$Subnational_1_feasible=="X"|temp2$Subnational_1_feasible=="x"]) %>%
-                         filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
-                         mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
+admin1_mb = admin1_m %>% filter(survey %in% temp2$File_Name[temp2$Subnational_1_feasible=="X"|temp2$Subnational_1_feasible=="x"]) %>% rename(country=survey)
 admin2_mb = admin2_m %>% filter(survey %in% temp2$File_Name[temp2$Subnational_2_feasible=="X"|temp2$Subnational_2_feasible=="x"]) %>%
                          filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
                          mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
@@ -316,14 +310,19 @@ admina_mb = admina_m %>% filter(survey %in% temp2$File_Name) %>% filter(!survey 
                          mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
 
 admin0_seb = admin0_se %>% filter(survey %in% temp2$File_Name) %>% rename(country=survey)
-admin1_seb = admin1_se %>% filter(survey %in% temp2$File_Name[temp2$Subnational_1_feasible=="X"|temp2$Subnational_1_feasible=="x"]) %>%
-                           filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
-                           mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
+admin1_seb = admin1_se %>% filter(survey %in% temp2$File_Name[temp2$Subnational_1_feasible=="X"|temp2$Subnational_1_feasible=="x"]) %>% rename(country=survey)
 admin2_seb = admin2_se %>% filter(survey %in% temp2$File_Name[temp2$Subnational_2_feasible=="X"|temp2$Subnational_2_feasible=="x"]) %>%
                            filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
                            mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
 admina_seb = admina_se %>% filter(survey %in% temp2$File_Name) %>% filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
                            mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
+
+multicountry = bind_cols(temp3 %>% select(`File name`), rep(temp3 %>% select(dis_a),27), rep(temp3 %>% select(dom_a),54), rep(temp3 %>% select(Household_Prevalence),9), rep(temp3 %>% select(Ever_attended_school:Multid_poverty),each=51),.name_repair = "minimal")
+names(multicountry) = names(admin0_m)[-2]
+multicountry = multicountry %>% filter(survey %in% admin0_m$survey)
+
+multicountry2 = admin1_mb %>% filter(country %in% multicountry$survey) %>% select(1:2)
+multicountry2 = left_join(multicountry2,multicountry,by = join_by(country == survey))
 
 rm(admin0_m,admin1_m,admin2_m,admina_m,admin0_se,admin1_se,admin2_se,admina_se)
 
@@ -331,10 +330,10 @@ admin0_mc = admin0_mb %>% filter(country %in% temp3$`File name`)
 admin0_mb = admin0_mb %>% filter(!country %in% temp3$`File name`)
 admin0_sec = admin0_seb %>% filter(country %in% temp3$`File name`)
 admin0_seb = admin0_seb %>% filter(!country %in% temp3$`File name`)
-# admin1_mc = admin1_mb %>% filter(country %in% temp3$`File name`)
-# admin1_mb = admin1_mb %>% filter(!country %in% temp3$`File name`)
-# admin1_sec = admin1_seb %>% filter(country %in% temp3$`File name`)
-# admin1_seb = admin1_seb %>% filter(!country %in% temp3$`File name`)
+admin1_mc = admin1_mb %>% filter(country %in% temp3$`File name`)
+admin1_mb = admin1_mb %>% filter(!country %in% temp3$`File name`)
+admin1_sec = admin1_seb %>% filter(country %in% temp3$`File name`)
+admin1_seb = admin1_seb %>% filter(!country %in% temp3$`File name`)
 # admin2_mc = admin2_mb %>% filter(country %in% temp3$`File name`)
 # admin2_mb = admin2_mb %>% filter(!country %in% temp3$`File name`)
 # admin2_sec = admin2_seb %>% filter(country %in% temp3$`File name`)
@@ -342,17 +341,27 @@ admin0_seb = admin0_seb %>% filter(!country %in% temp3$`File name`)
 
 temp5 = bind_cols(admin0_mc[1:2],admin0_mc[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
 temp6 = bind_cols(admin0_sec[1:2],admin0_sec[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
+temp7 = bind_cols(admin1_mc[1:2],admin1_mc[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix())
+temp8 = bind_cols(admin1_sec[1:2],admin1_sec[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix())
 temp5 = temp5 %>% mutate(country = str_extract(country,".+?(?=_)"))
 temp6 = temp6 %>% mutate(country = str_extract(country,".+?(?=_)"))
+temp7 = temp7 %>% mutate(country = str_extract(country,".+?(?=_)"))
+temp8 = temp8 %>% mutate(country = str_extract(country,".+?(?=_)"))
 admin0_mc = temp5 %>% group_by(country) %>% summarise(level = first(level),across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
 admin0_sec = temp6 %>% group_by(country) %>% summarise(level = first(level),across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
+admin1_mc = temp7 %>% group_by(country, level) %>% summarise(across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
+admin1_sec = temp8 %>% group_by(country, level) %>% summarise(across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
 admin0_mb = admin0_mb %>% mutate(country = str_extract(country,".+?(?=_)"))
 admin0_seb = admin0_seb %>% mutate(country = str_extract(country,".+?(?=_)"))
+admin1_mb = admin1_mb %>% mutate(country = str_extract(country,".+?(?=_)"))
+admin1_seb = admin1_seb %>% mutate(country = str_extract(country,".+?(?=_)"))
 
 admin0_mb = full_join(admin0_mb,admin0_mc,by = names(admin0_mb)) %>% arrange(country)
-admin0_seb = full_join(admin0_seb,admin0_sec,by = names(admin0_mb)) %>% arrange(country)
+admin0_seb = full_join(admin0_seb,admin0_sec,by = names(admin0_seb)) %>% arrange(country)
+admin1_mb = full_join(admin1_mb,admin1_mc,by = names(admin1_mb)) %>% arrange(country)
+admin1_seb = full_join(admin1_seb,admin1_sec,by = names(admin1_seb)) %>% arrange(country)
 
-rm(admin0_mc,admin0_sec,temp2,temp3,temp4,temp5,temp6,multicountry)
+rm(admin0_mc,admin0_sec,temp2,temp3,temp4,temp5,temp6,multicountry,multicountry2)
 
 # Use locations from excel to identify blocks of values to assign into ordered list
 
