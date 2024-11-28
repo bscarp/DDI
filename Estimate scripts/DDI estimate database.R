@@ -339,6 +339,17 @@ admin1_seb = admin1_seb %>% filter(!country %in% temp3$`File name`)
 # admin2_sec = admin2_seb %>% filter(country %in% temp3$`File name`)
 # admin2_seb = admin2_seb %>% filter(!country %in% temp3$`File name`)
 
+static = multicountry
+names(static) = names(static) %>% sub("Household_Prevalence_","Household_Prevalence ",.)
+names(static)[2:82] = names(static)[2:82] %>% paste0("Prevalence ",.)
+names(static)[!grepl(" .* ",names(static))][-1] = names(static)[!grepl(" .* ",names(static))][-1] %>% sub("(\\()(.*)(\\))","\\2 \\1all_adults\\3",.)
+static = static %>% pivot_longer(.,names(.)[-1],names_to = c("IndicatorName","DifficultyName","PopulationName"),names_pattern = "(.*) (.*) \\((.*)\\)",
+                                 values_to = "Value")
+static = static %>% filter(PopulationName == "all_adults", DifficultyName == "disability",!is.na(Value)) %>% select(-DifficultyName,-PopulationName,-Value)
+static = static %>% mutate(source = survey) %>% rename(Country=survey)
+static = static %>% add_row(tibble(Country = rep(admin0_mb$country, each = n_distinct(static$IndicatorName)), IndicatorName = rep(unique(static$IndicatorName), times = n_distinct(admin0_mb$country)), source = rep(admin0_mb$country, each = n_distinct(static$IndicatorName))))
+static = static %>% mutate(Country = str_extract(Country,".+?(?=_)")) %>% complete(Country, IndicatorName)
+
 temp5 = bind_cols(admin0_mc[1:2],admin0_mc[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
 temp6 = bind_cols(admin0_sec[1:2],admin0_sec[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
 temp7 = bind_cols(admin1_mc[1:2],admin1_mc[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix())
@@ -361,7 +372,16 @@ admin0_seb = full_join(admin0_seb,admin0_sec,by = names(admin0_seb)) %>% arrange
 admin1_mb = full_join(admin1_mb,admin1_mc,by = names(admin1_mb)) %>% arrange(country)
 admin1_seb = full_join(admin1_seb,admin1_sec,by = names(admin1_seb)) %>% arrange(country)
 
-rm(admin0_mc,admin0_sec,temp2,temp3,temp4,temp5,temp6,multicountry,multicountry2)
+rm(admin0_mc,admin0_sec,admin1_mc,admin1_sec,temp2,temp3,temp3b,temp4,temp5,temp6,temp7,temp8,multicountry,multicountry2)
+
+static2 = admin1_mb %>% rename("Country" = "country")
+names(static2) = names(static2) %>% sub("Household_Prevalence_","Household_Prevalence ",.)
+names(static2)[3:83] = names(static2)[3:83] %>% paste0("Prevalence ",.)
+names(static2)[!grepl(" .* ",names(static2))][-c(1:2)] = names(static2)[!grepl(" .* ",names(static2))][-c(1:2)] %>% sub("(\\()(.*)(\\))","\\2 \\1all_adults\\3",.)
+static2 = static2 %>% pivot_longer(.,names(.)[-c(1:2)],names_to = c("IndicatorName","DifficultyName","PopulationName"),names_pattern = "(.*) (.*) \\((.*)\\)",
+                             values_to = "Value")
+static2 = static2 %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T), .by = c(Country, IndicatorName))
+static = left_join(static,static2)
 
 # Use locations from excel to identify blocks of values to assign into ordered list
 
@@ -369,10 +389,13 @@ db_mb = bind_rows(admin0 = admin0_mb,admin1 = admin1_mb,admin2 = admin2_mb,admin
 db_sb = bind_rows(admin0 = admin0_seb,admin1 = admin1_seb,admin2 = admin2_seb,admin_alt = admina_seb, .id = "admin") %>% select(country, names(db_s)[-1]) %>% arrange(country,admin,level)
 
 if(file.exists(paste0(cen_dir,"Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))) {
-file.remove(paste0(cen_dir,"Downloads/Census/Database/S2_Default_Estimates_SE.xlsx"))
+  file.remove("DS-D files/Static.xlsx")
+  file.remove(paste0(cen_dir,"Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))
+  file.remove(paste0(cen_dir,"Downloads/Census/Database/S2_Default_Estimates_SE.xlsx"))
 }
+write_xlsx(static,"DS-D files/Static.xlsx")
 write_xlsx(db_mb,paste0(cen_dir,"Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))
 write_xlsx(db_sb,paste0(cen_dir,"Downloads/Census/Database/S2_Default_Estimates_SE.xlsx"))
 
-rm(admin0_mb,admin1_mb,admin2_mb,admina_mb,admin0_seb,admin1_seb,admin2_seb,admina_seb)
+rm(admin0_mb,admin1_mb,admin2_mb,admina_mb,admin0_seb,admin1_seb,admin2_seb,admina_seb, static, static2, db_m, db_mb, db_s, db_sb)
 gc()

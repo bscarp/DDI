@@ -8,14 +8,14 @@ library(terra)
 
 #DS-E
 cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
-# df_country_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/StatisticsCountry/region_names.xlsx"))
-df_indicator_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/Types/indicators_types.xlsx"))
+# df_country_t = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/PowerBI/StatisticsCountry/region_names.xlsx"))
+df_indicator_t = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/PowerBI/Types/indicators_types.xlsx"))
 key_m = read_xlsx("DS-D files/Key messages.xlsx")
 df_indicator_t = key_m %>% select(Group,IndicatorName,Original)
-df_group_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/Types/population_types.xlsx"))
-df_disability_t = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/PowerBI/Types/difficulty_types.xlsx"))
+df_group_t = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/PowerBI/Types/population_types.xlsx"))
+df_disability_t = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/PowerBI/Types/difficulty_types.xlsx"))
 
-data = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))
+data = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))
 names(data) = names(data) %>% sub("Household_Prevalence_","Household_Prevalence ",.)
 names(data)[4:84] = names(data)[4:84] %>% paste0("Prevalence ",.)
 names(data)[!grepl(" .* ",names(data))][-c(1:3)] = names(data)[!grepl(" .* ",names(data))][-c(1:3)] %>% sub("(\\()(.*)(\\))","\\2 \\1all_adults\\3",.)
@@ -46,14 +46,17 @@ df_disability = c("Disability versus no disability" = 1, "Severe versus moderate
                   "Disability by type" = 4)
 df_disability2 = unique(data1$DifficultyName)
 
-map_df = read_sf(paste0(cen_dir,"/Downloads/world shp/ne_10m_admin_1_states_provinces.shp"))
-iso = read_xlsx(paste0(cen_dir,"/Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","level","ISOCode"))
+map_df = read_sf(paste0(cen_dir,"Downloads/world shp/ne_10m_admin_1_states_provinces.shp"))
+iso = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","level","ISOCode"))
 data1 = left_join(data1,iso %>% filter(!country == "Vietnam"), by = c("country","level"))
 
 data0 = data0 %>% rename("Country" = "country")
 data1 = data1 %>% rename("Country" = "country")
 
-save(data0, data1, map_df, df_country, df_indicator, df_group, df_disability, df_disability2, key_m, file = "DS-E/Data.RData")
+df_static = read_xlsx("DS-D files/Static.xlsx")
+df_static = df_static %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName, unique(IndicatorName)[c(23,15,9,3:4,18,28,24,10,2,6,17,22,8,29,20,19,16,7,5,1,25,14,13,27,11,26,12,21)])))
+
+save(data0, data1, map_df, df_country, df_indicator, df_group, df_disability, df_disability2, key_m, df_static, file = "DS-E/Data.RData")
 rm(list = ls())
 
 #DS-QR
