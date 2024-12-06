@@ -65,12 +65,12 @@ ui <- page_navbar(
   navset_card_pill(
     nav_panel(title = h5("Map of Disability Questions by Country"),
       layout_sidebar(sidebar = sidebar(selectInput("region", "Region", choices = c("World", as.character(unique(ddi_2024_s$Region))), selected = "World")),
-                     h5(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+                     h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
                      girafeOutput("map", width = "100%"))
     ),
     nav_panel(h5("Table of Disability Questions by Country"),
       div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
-              h5(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+              h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
               DTOutput("table1")
           ),
           #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
@@ -135,9 +135,9 @@ server <- function(input, output) {
   })
   
   output$table2 <- renderDT({
-    ddi_2024 %>% select(Region,Country,Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference from WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
+    ddi_2024 %>% select(Region,Country,Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference of Other functional difficulty questions versus WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
       datatable(filter = "top", options = list(autoWidth = TRUE),
-                caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("Notes: WG-SS stands for the Washington Group Short<br/>(1) - Yes/No answer<br/>(2) - Answer scale is different from that in the WG-SS<br/>(3) - Wording of questions is different from the WG-SS<br/>(4) - Does not have the selfcare domain<br/>(5) - Does not have the communication domain")))
+                caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("Notes: WG-SS stands for the Washington Group Short<br/>(1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain")))
   })
 }
 
