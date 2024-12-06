@@ -38,7 +38,7 @@ Vietnam-2009	704200901
 Tanzania-2012	834201201
 */
          
-use "D:\DDI\ipumsi_00053.dta\ipumsi_00053.dta",clear
+use "D:\DDI\ipumsi_00055.dta\ipumsi_00055.dta",clear
 
 ********************************************************************************
 *keep only households
@@ -289,7 +289,7 @@ replace work_manufacturing=. if ind_emp==0 | inlist(country, 710, 858, 800)
 
 *Informal Work
 
-gen work_informal=cond(mi(classwkd),.,cond(inlist(classwkd, 100, 101, 120, 121, 122, 208, 230, 300, 320, 310, 350, 400, 208, 220),1,0))
+gen work_informal=cond(mi(classwkd),.,cond(inlist(classwkd, 100, 101, 120, 121, 122, 124, 208, 230, 300, 320, 310, 350, 400, 208, 220),1,0))
 
 gen work_managerial2=0 if ind_emp==1 & female==1
 replace work_managerial2= 1 if ind_emp==1 & work_managerial==1 & female==1
