@@ -134,6 +134,7 @@ with_progress({
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin3","admin_alt"))) %>% names()
   psu_a = c("hh_id","ind_weight","hh_weight","psu","ssu","sample_strata")
   dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
+  df_age_sex = dck %>% mutate(n = sum(ind_weight)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
   
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
@@ -146,7 +147,7 @@ with_progress({
     }
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight )&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(hh_weight  )&!is.na(sample_strata))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = c(psu, ssu), weights = c(ind_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = c(psu, ssu), weights = c(hh_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2c = survey::svydesign(ids = ~psu + ssu, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
@@ -158,7 +159,7 @@ with_progress({
     psu_a = psu_a[!grepl("ssu|sample_strata",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ind_weight))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(hh_weight))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ind_weight))
+    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ind_weight)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = psu, weights = ind_weight, strata = NULL, nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = psu, weights = hh_weight, strata = NULL, nest = TRUE)
     dck2c = survey::svydesign(ids = ~psu, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
@@ -170,7 +171,7 @@ with_progress({
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     if (dataset == "South Africa_IPUMS_2011") {
       dck2a = dck2a %>% as_survey_design(ids = admin3, weights = ind_weight, strata = sample_strata, nest = TRUE)
       dck2b = dck2b %>% as_survey_design(ids = admin3, weights = hh_weight, strata = sample_strata, nest = TRUE)      
@@ -188,7 +189,7 @@ with_progress({
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = hh_id, weights = ind_weight, strata = sample_strata, nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = hh_id, weights = hh_weight, strata = sample_strata, nest = TRUE)
     dck2c = survey::svydesign(ids = ~hh_id, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
@@ -200,7 +201,7 @@ with_progress({
     psu_a = psu_a[!grepl("ssu|psu|sample_strata",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(ind_weight))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_weight))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(ind_weight))
+    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(ind_weight)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = NULL, weights = ind_weight)
     dck2b = dck2b %>% as_survey_design(ids = NULL, weights = hh_weight)
     dck2c = survey::svydesign(ids = ~0, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
@@ -312,7 +313,7 @@ with_progress({
     rm(tab_P4_nr1,tab_P4_nr2)
     
     #Prevalences for age-sex adjustment
-    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
+    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
       p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%

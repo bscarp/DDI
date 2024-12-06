@@ -53,6 +53,7 @@ with_progress({
                        disability_sev = factor(disability_some + 2*disability_atleast,labels = c("no","some","atleast")),
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
                        disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
+                       fpc = n(),
                        age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")),
                        age_group10 = cut(age, c(14,24,34,44,54,64,Inf),c("15 to 24","25 to 34","35 to 44","45 to 54","55 to 64","65+")),
                        male = factor(1 - female, labels = c("Female","Male")),
@@ -99,13 +100,15 @@ with_progress({
   oth_a = c("disability_any_hh","disability_some_hh","disability_atleast_hh")
   oth_a2 = c("age_sex", "as_weight")
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin_alt"))) %>% names()
-  psu_a = c("ind_weight","hh_weight","hh_id")
+  psu_a = c("ind_weight","hh_weight","hh_id", "fpc")
   dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
+  df_age_sex = dck %>% mutate(n = sum(ind_weight)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
   
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
-  dck2 = survey::svydesign(ids = ~0, weights = NULL, strata = NULL, nest = TRUE, data = dck2e) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
+  dck2 = dck %>% filter(!is.na(ind_weight)&!is.na(age_sex))
+  dck2 = survey::svydesign(ids = ~0, weights = NULL, strata = NULL, nest = TRUE, fpc = ~fpc, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% srvyr::as_survey()
   
   p(sprintf("%s processed", r_name))
   
@@ -170,10 +173,10 @@ with_progress({
     }
     
     #Prevalences for age-sex adjustment
-    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
+    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
       p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-      tab = dck2 %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+      tab = dck2 %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>% mutate(across(contains("mean_se"),~as.double(NA))) %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
@@ -211,7 +214,12 @@ with_progress({
                        disability_sev = factor(disability_some + 2*disability_atleast,labels = c("no","some","atleast")),
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
                        disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
-                       age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")))
+                       fpc = n(),
+                       age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")),
+                       age_group10 = cut(age, c(14,24,34,44,54,64,Inf),c("15 to 24","25 to 34","35 to 44","45 to 54","55 to 64","65+")),
+                       male = factor(1 - female, labels = c("Female","Male")),
+                       age_sex = interaction(age_group10, male, lex.order = T, sep = " "), 
+                       as_weight = case_when(age_sex=="15 to 24 Female" ~ 0.107823219959552, age_sex=="15 to 24 Male" ~ 0.114985391312909, age_sex=="25 to 34 Female" ~ 0.104530062206990, age_sex=="25 to 34 Male" ~ 0.109379985244955, age_sex=="35 to 44 Female" ~ 0.090482564098174, age_sex=="35 to 44 Male" ~ 0.092693136884689, age_sex=="45 to 54 Female" ~ 0.077908667689967, age_sex=="45 to 54 Male" ~ 0.077798687417348, age_sex=="55 to 64 Female" ~ 0.059590620455815, age_sex=="55 to 64 Male" ~ 0.056425978108021, age_sex=="65+ Female" ~ 0.060324813942667 , age_sex=="65+ Male" ~ 0.048056872678913, TRUE ~ NA))
   dck = dck %>% mutate(across(any_of(c("admin1","admin2","admin_alt")),~as.character(as_factor(.x))))
   # dck = dck %>% mutate(across(any_of(c("admin1","admin2","admin_alt")),~as.factor(.x)),across(any_of(c("admin1","admin2","admin_alt")),~factor(as.character(.x))))
   # dck = dck %>% mutate(across(any_of(c("country_name","country_abrev","country_dataset_year","admin1","admin2","admin_alt")),~as.character(as_factor(.x))))
@@ -257,11 +265,13 @@ with_progress({
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin_alt"))) %>% names()
   psu_a = c("ind_weight","hh_weight","hh_id")
   dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
+  df_age_sex = dck %>% mutate(n = sum(ind_weight)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
   
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
-  dck2 = survey::svydesign(ids = ~0, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2e) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
+  dck2 = dck %>% filter(!is.na(ind_weight)&!is.na(age_sex))
+  dck2 = survey::svydesign(ids = ~0, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% srvyr::as_survey()
   
   p(sprintf("%s processed", r_name))
   
@@ -339,7 +349,7 @@ with_progress({
     rm(tab_P4_nr1,tab_P4_nr2)
     
     #Prevalences for age-sex adjustment
-    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
+    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
       p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck2 %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%

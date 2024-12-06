@@ -107,7 +107,7 @@ with_progress({
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind2_weight)&!is.na(sample_strata))
     dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a3),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(hh_weight)&!is.na(sample_strata))
     dck2d = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a4)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(dv_weight)&!is.na(sample_strata))
-    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey(ids = c(psu, ssu, tsu), weights = c(ind_weight , NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey(ids = c(psu, ssu, tsu), weights = c(ind2_weight, NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
     dck2c = dck2c %>% as_survey(ids = c(psu, ssu, tsu), weights = c(hh_weight  , NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
@@ -119,7 +119,7 @@ with_progress({
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind2_weight)&!is.na(sample_strata))
     dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a3),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(hh_weight)&!is.na(sample_strata))
     dck2d = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a4)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(dv_weight)&!is.na(sample_strata))
-    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey(ids = c(psu, ssu), weights = c(ind_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey(ids = c(psu, ssu), weights = c(ind2_weight, NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2c = dck2c %>% as_survey(ids = c(psu, ssu), weights = c(hh_weight  , NULL), strata = c(sample_strata, NULL), nest = TRUE)
@@ -272,7 +272,7 @@ with_progress({
     rm(tab_P4_nr1,tab_P4_nr2,tab_P4_nr3,tab_P4_nr4)
     
     #Prevalences for age-sex adjustment
-    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
+    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
       p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
