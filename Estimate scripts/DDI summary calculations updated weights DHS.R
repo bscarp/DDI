@@ -37,7 +37,6 @@ with_progress({
   r_sum_name = paste0(data_loc2,sub("\\.RData","\\_Summary.RData",r_name))
   dataset = sub(pattern = ".RData", replacement = "", x = r_name)
   
-  # write.table(tibble(x = dataset, time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
   p(sprintf("Loading %s",r_name))
   
   load(file = file_name)
@@ -129,7 +128,6 @@ with_progress({
     rm(dck)
   }
   
-  # write.table(tibble(x = "Dataset prepared", time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
   p(sprintf("%s processed", r_name))
   
   tabs = foreach(admin_grp = c("admin0",cou_a)) %dofuture% {
@@ -195,8 +193,6 @@ with_progress({
     tab_m_nr = full_join(full_join(full_join(tab_m_nr1,tab_m_nr2),tab_m_nr3),tab_m_nr4)
     rm(tab_m_nr1,tab_m_nr2,tab_m_nr3,tab_m_nr4)
     
-    # write.table(tibble(x = paste0("Table 1", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
-    
     #Summary for P1
     tab_P1_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
       p(sprintf("%s, Tab2, %s, %s", r_name, admin_grp, agg_grp))
@@ -204,8 +200,6 @@ with_progress({
       tab = dck2a %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
-    
-    # write.table(tibble(x = paste0("Table 2", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Summary for P2
     tab_P2_nr = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
@@ -215,8 +209,6 @@ with_progress({
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
-    # write.table(tibble(x = paste0("Table 3", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
-    
     dck3c = dck2c %>% filter(!duplicated(hh_id))
     
     #Summary for P3
@@ -225,8 +217,6 @@ with_progress({
                             mutate(Agg = "All = All", admin = {{admin_grp}}, level = as.character({{admin}}), .after= 1) %>% select(-1),
                           dck3c %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
                             arrange(urban_new, {{admin}}) %>% mutate(Agg = paste0("urban_new = ",urban_new), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2)))
-    
-    # write.table(tibble(x = paste0("Table 4", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
     
     #Indicators by domain
     tab_P4_nr1 = foreach(dom_grp=dom_a, .options.future = list(packages = c("tidyverse","haven")),.combine = "rbind") %dofuture% {
@@ -281,15 +271,17 @@ with_progress({
     tab_P4_nr = full_join(full_join(full_join(tab_P4_nr1,tab_P4_nr2),tab_P4_nr3),tab_P4_nr4)
     rm(tab_P4_nr1,tab_P4_nr2,tab_P4_nr3,tab_P4_nr4)
     
-    # write.table(tibble(x = paste0("Table 5", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
-    
     #Prevalences for age-sex adjustment
-    p(sprintf("%s, Tab6, %s", r_name, admin_grp))
-    tab_as_adj1 = dck2a %>% group_by(age_sex) %>% summarise(weight = first(as_weight), across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>% select(-1) %>% summarise(across(contains("mean"), ~weighted.mean(.x,weight)))
-    tab_as_adj2 = dck2e %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop")
-    tab_as_adj3 = dck2a2 %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))))
-    
-    # write.table(tibble(x = paste0("Table 6", admin, "complete", collapse = " "), time = Sys.time()), file = "~/progress.csv", sep = ",", col.names = FALSE, row.names = FALSE, append = TRUE)
+    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
+      p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
+      agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
+      tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+        arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
+    }
+    # p(sprintf("%s, Tab6, %s", r_name, admin_grp))
+    # tab_as_adj1 = dck2a %>% group_by(age_sex) %>% summarise(weight = first(as_weight), across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>% select(-1) %>% summarise(across(contains("mean"), ~weighted.mean(.x,weight)))
+    # tab_as_adj2 = dck2e %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop")
+    # tab_as_adj3 = dck2a2 %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))))
     
     return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj))
   }
