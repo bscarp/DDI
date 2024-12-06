@@ -34,13 +34,13 @@ data1 = data1 %>% mutate(PopulationName = str_replace_all(PopulationName,setName
 data1 = data1 %>% mutate(admin = str_replace_all(admin,setNames(c("National","Subnational division 1","Subnational division 2","Alternative subnational division"), c("admin0","admin1","admin2","admin_alt"))))
 
 df_country = data0 %>% select(country) %>% filter(!duplicated(country))
-ddi_2024 = read_xlsx("DS-D files/Dataset_Review_Results_2024_full.xlsx", sheet = 1) %>% select(Region,Country) %>% filter(!duplicated(Country))
+ddi_2024 = read_xlsx("DS-D files/DS-QR Database.xlsx", sheet = 2) %>% select(Region,Country) %>% filter(!duplicated(Country))
 df_country = left_join(df_country,ddi_2024, by = join_by("country"=="Country")) %>% select(Region,country)
 df_country = df_country %>% mutate(Region = case_when(is.na(Region)&country=="Gambia"~"Sub-Saharan Africa",TRUE~Region))
 rm(ddi_2024)
 df_country = lapply(split(df_country$country, df_country$Region, drop = TRUE), function(x) as.list(x))
 
-df_indicator = lapply(split(df_indicator_t$IndicatorName, df_indicator_t$Group, drop = TRUE), function(x) as.list(x))
+df_indicator = lapply(split(df_indicator_t$IndicatorName, df_indicator_t$Group, drop = TRUE), function(x) as.list(x))[c("Proportion with disabilities (Prevalence)", "Education", "Personal activities","Health","Standard of living","Insecurity","Multidimensional poverty")]
 df_group = df_group_t$PopulationName
 df_disability = c("Disability versus no disability" = 1, "Severe versus moderate versus no disability" = 2, "Severe versus moderate or no disability" = 3,
                   "Disability by type" = 4)
