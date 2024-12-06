@@ -82,6 +82,7 @@ ui <- page_navbar(
             )),
   nav_item(a(href="http://www.disabilitydatainitiative.org/databases/methods", "Methods", target="_blank")),
   nav_item(a(href="http://www.disabilitydatainitiative.org/databases/access", "Accessibility", target="_blank"))
+  # nav_panel("Test",tableOutput('show_inputs'), textOutput('show_data'))
 )
 
 # Define server logic required to draw a histogram
@@ -109,6 +110,11 @@ server <- function(session, input, output) {
     }
   })
   
+  #Change country based on country_sin
+  observe({
+    updateVirtualSelect("country", "Select the subdivision to display:", choices=df_country, selected = input$country_sin, session = session)
+  })
+  
   #Change categories for admin selector
   observe({
     temp = if_else(input$admin %in% unique(data1$admin[data1$Country %in% input$country_sin & !is.na(data1$Value)]), input$admin, "Subnational division 1")
@@ -118,7 +124,7 @@ server <- function(session, input, output) {
   #Change categories for indicator selector
   observe({
     temp = input$indicator
-    updateVirtualSelect("indicator", "Indicators", disabledChoices = data0 %>% filter(data0$Country %in% input$country & data0$PopulationName == input$group & data0$DifficultyName %in% dis_grp()) %>% summarise(Value = mean(is.na(Value)), .by = IndicatorName) %>% filter(Value == 1) %>% select(IndicatorName), selected = temp, session = session)
+    updateVirtualSelect("indicator", "Indicators", disabledChoices = (df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf"))$IndicatorName, selected = temp, session = session)
   })
   
   #Change categories for grouping selector
@@ -240,6 +246,22 @@ server <- function(session, input, output) {
     sidebar_toggle("sidebar", open = NULL)
   })
   
+  # AllInputs <- reactive({
+  #   myvalues <- NULL
+  #   for(i in 1:length(names(input))){
+  #     myvalues <- as.data.frame(rbind(myvalues,(cbind(names(input)[i],input[[names(input)[i]]]))))
+  #   }
+  #   names(myvalues) <- c("Variable","Selected Value")
+  #   myvalues
+  # })
+  # 
+  # output$show_inputs <- renderTable({
+  #   AllInputs()
+  # })
+  # 
+  # output$show_data <- renderPrint({
+  #   (df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf"))$IndicatorName
+  # })
 }
 
 # Run the application 
