@@ -124,7 +124,7 @@ server <- function(session, input, output) {
   #Change categories for indicator selector
   observe({
     temp = input$indicator
-    updateVirtualSelect("indicator", "Indicators", disabledChoices = (df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf"))$IndicatorName, selected = temp, session = session)
+    updateVirtualSelect("indicator", "Indicators", disabledChoices = df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf") %>% pull(IndicatorName), selected = temp, session = session)
   })
   
   #Change categories for grouping selector
@@ -184,27 +184,28 @@ server <- function(session, input, output) {
   })
   
   output$key1 <- output$key2 <- renderText({
-    paste0("Key message: ",key_m %>% filter(Original == input$indicator) %>% select(`Key message`) %>% as.character())
+    key_m %>% filter(Original == input$indicator) %>% pull(`Key message`) %>% paste0("Key message: ", .)
   })
   
   output$ind1 <- output$ind2 <- output$ind3 <- output$ind4 <- renderText({
-    paste0("Indicator definition: ", key_m %>% filter(Original == input$indicator) %>% select(Tooltip) %>% as.character())
+    key_m %>% filter(Original == input$indicator) %>% pull(Tooltip) %>% paste0("Indicator definition: ", .)
   })
   
   output$stat_top_gra <- renderGirafe({
     # draw the plot using data
     data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     plot = ggplot(data = data_g) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = label, data_id = Country), position = "dodge") + 
-      scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + 
+      scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + labs(caption = source_all()) + 
       theme(axis.title = element_blank(), legend.title = element_blank(), legend.position = "bottom", legend.key.size = unit(2, "cm"), legend.key.spacing = unit(5, "mm"),
-            text = element_text(size=60), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+            text = element_text(size=60), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
+            plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
     girafe(ggobj = plot, width_svg = 2*length(dis_grp())+18, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;")))
   })
   
   output$stat_top_tab <- renderDT({
     # draw the plot using data
     data_sel0() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% select(-c(admin,level)) %>%
-      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
+      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML(paste0(source_all(), "<br/>A blank cell indicates that the estimate is not available.")))) %>% 
       formatPercentage(columns = dis_grp(), digits = 1)
   })
   
@@ -212,15 +213,16 @@ server <- function(session, input, output) {
     data_m = data_sel2() %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
     plot1 = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
-      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(input$scale[1], input$scale[2])) + 
-      theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60))
+      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(input$scale[1], input$scale[2])) + labs(caption = source_sin()) + 
+      theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60), 
+            plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
     girafe(ggobj = plot1, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
     })
   
   output$stat_cou_tab <- renderDT({
     # draw the plot using data
     data_sel1() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% 
-      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("A blank cell indicates that the estimate is not available."))) %>% 
+      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML(paste0(source_sin(), "<br/>A blank cell indicates that the estimate is not available.")))) %>% 
       formatPercentage(columns = dis_grp(), digits = 1)
   })
   
@@ -229,12 +231,12 @@ server <- function(session, input, output) {
     updateNoUiSliderInput(session = session, "scale", "Indicator scale", value = c(temp$min, temp$max), range = c(0,100))
   })
   
-  source = reactive({
-    paste0(df_static %>% filter(Country == input$country, IndicatorName == input$indicator) %>% select(source), collapse = ", ")
+  source_all = reactive({
+    df_static %>% filter(Country %in% input$country, IndicatorName == input$indicator) %>% pull(source) %>% paste0(collapse = ", ") %>% gsub("_"," ",.) %>% paste0("Data source(s): ", .)
   })
   
   source_sin = reactive({
-    df_static %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% select(source)
+    df_static %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% pull(source) %>% gsub("_"," ",.) %>% paste0("Data source: ", .)
   })
   
   observe({
@@ -260,7 +262,7 @@ server <- function(session, input, output) {
   # })
   # 
   # output$show_data <- renderPrint({
-  #   (df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf"))$IndicatorName
+  #   df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf") %>% pull(IndicatorName)
   # })
 }
 
