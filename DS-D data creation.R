@@ -60,7 +60,7 @@ save(data0, data1, map_df, df_country, df_indicator, df_group, df_disability, df
 rm(list = ls())
 
 #DS-QR
-ddi_2024 = read_xlsx("DS-D files/Dataset_Review_Results_2024_full.xlsx", sheet = 1)
+ddi_2024 = read_xlsx("DS-D files/DS-QR Database.xlsx", sheet = 2) %>% rename(WG = `WG-SS`, FL = `Other functional difficulty questions`) %>% select(!sum)
 ddi_2024 = ddi_2024 %>% mutate(ISO3 = countrycode::countryname(Country, "iso3c"), .after = Country)
 ddi_2024_s = ddi_2024 %>% group_by(ISO3) %>% summarise(Region = first(Region), Country = first(Country), WG = max(WG, na.rm = TRUE), FL = max(FL, na.rm = TRUE)) %>% select(Region,Country,ISO3,WG,FL)
 ddi_2024_s = ddi_2024_s %>% mutate(Summary = case_when(WG == 1 ~ "Washington Group\nShort Set",
@@ -72,7 +72,7 @@ ddi_2024 = ddi_2024 %>% mutate(WG = case_when(WG==1~"Yes", WG==0~"No", TRUE~NA),
 ddi_2024 = ddi_2024 %>% mutate(across(c(Region, Country, WG, FL),as_factor))
 ddi_2024_s = ddi_2024_s %>% mutate(across(c(Region, Country, Summary),as_factor))
 
-ddi_2024 = ddi_2024 %>% rename(Year = Years, `WG-SS` = WG, `Other functional difficulty questions` = FL)
+ddi_2024 = ddi_2024 %>% rename(Year = `Year(s)`, `WG-SS` = WG, `Other functional difficulty questions` = FL)
 
 map_df = read_sf("DS-D files/ne_110m_admin_0_countries.shp")
 map_df = map_df %>% mutate(ISO3 = if_else(ISO_A3=="-99", ADM0_A3, ISO_A3))
