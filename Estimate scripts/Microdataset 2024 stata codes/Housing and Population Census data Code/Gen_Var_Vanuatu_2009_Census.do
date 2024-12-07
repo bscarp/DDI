@@ -50,6 +50,9 @@ decode island , gen(admin2)
 egen hh_id= concat(province island ea hhno), format(%25.0g) punct(_)
 egen ind_id= concat(province island ea hhno p1 p2 p3 dob p4age), format(%25.0g) punct(_)
 
+gen ind_weight=1
+gen hh_weight=1
+
 ***Age_Group**
 
 gen age= p4age
