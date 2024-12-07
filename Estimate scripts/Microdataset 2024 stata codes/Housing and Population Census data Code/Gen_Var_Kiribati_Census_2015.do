@@ -52,6 +52,8 @@ decode island_village , gen(admin2)
 
 gen ind_id=string(island_village)+"_"+string(ea)+"_"+string(hhno)+"_"+string(p_num)+"_"+string(sex)+"_"+string(age)+"_"+string(relationship)+"_"+string(home_island)
 
+gen ind_weight=1
+gen hh_weight=1
 
 ***Gender***
 
