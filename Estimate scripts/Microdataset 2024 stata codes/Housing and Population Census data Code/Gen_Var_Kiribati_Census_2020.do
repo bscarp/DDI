@@ -58,6 +58,9 @@ gen hh_id= interview__key
 
 egen ind_id= concat( interview__key person_roster__id ), format(%25.0g) punct(-)
 
+gen ind_weight=1
+gen hh_weight=1
+
 ***Urban/Rural***
 
 gen urban_new=1 if urbrur ==1
