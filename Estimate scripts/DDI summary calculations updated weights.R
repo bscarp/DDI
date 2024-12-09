@@ -324,7 +324,6 @@ with_progress({
   }
   
   tabs = pmap(tabs,bind_rows)
-  tabs$tab_as_adj = tabs$tab_as_adj %>% filter(!duplicated(age_sex))
   
   #write to R
   save(tabs,file = r_sum_name)
