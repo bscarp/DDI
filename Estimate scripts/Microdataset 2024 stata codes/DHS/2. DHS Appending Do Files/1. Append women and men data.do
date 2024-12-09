@@ -1,4 +1,3 @@
-********************************************************************************
 /*******************************************************************************
 ********************************DHS*********************************************
 ********************************************************************************
@@ -10,6 +9,7 @@ Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
 Author: Katherine Theiss
 Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
 *******************************************************************************/
+********************************************************************************
 *Globals 
 ********************************************************************************
 clear
@@ -17,9 +17,13 @@ clear matrix
 clear mata 
 set maxvar 30000
 
-global survey_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
+global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
+global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+
 ********************************************************************************
 *Append Household Member Data for all DHS countries
 ********************************************************************************
@@ -41,13 +45,14 @@ global KH2_SR 2021_2022
 global TZ_SR 2022
 global NP_SR 2022
 
-use "${combined_data}\HT_2016_2017_Women_and_Men.dta", clear
+use "${combined_data}\KH2_2021_2022_Women_and_Men.dta", clear
 
-local country_list PK ML KH SN ZA RW NG MR TL UG MV KE KH2 TZ NP
+local country_list HT PK ML KH SN ZA RW NG MR TL UG MV KE TZ NP
 
 foreach country of local country_list  {
 		
-append using "${combined_data}/`country'_${`country'_SR}_Women_and_Men.dta", force
+append using "${combined_data}/`country'_${`country'_SR}_Women_and_Men.dta"
+*, force
 
 }
 
@@ -55,15 +60,17 @@ append using "${combined_data}/`country'_${`country'_SR}_Women_and_Men.dta", for
 gen country_abrev = substr(v000,1,2)
 replace country_abrev = "KH2" if v000=="KH8"
 
+/*
 *Set region name in SN equal to zone. SN DHS 2018 was representative at the zone level. 
 decode(szone), gen(szone_str)
 decode(smezone), gen(smezone_str)
 
 replace Admin1 = szone_str if country_abrev=="SN"&female==1
 replace Admin1 = smezone_str if country_abrev=="SN"&female==0
-
+*/
 encode Admin1, gen(Admin1_encode)
 
+/*
 ********************************************************************************
 *Clean and code indicators
 ********************************************************************************
@@ -78,6 +85,7 @@ lab var ind_emp "Employed"
 
 gen lit_new = (v155==2)
 replace lit_new = . if v155==.|v155==3
+*/
 ********************************************************************************
 *Save
 ********************************************************************************

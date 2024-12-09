@@ -12,12 +12,19 @@ Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Databa
 ********************************************************************************
 *Globals 
 ********************************************************************************
-global survey_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
-global tonga_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\Cleaning Do-files\5. TON_PHC_2016\Datasets\2023 Report Clean Data
+global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
+global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
+global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
 
-cd "\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\Cleaning Do-files\8. World Bank Collaboration\Output - Spring 2024"
+global tonga_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\Cleaning Do-files\5. TON_PHC_2016\Datasets\2023 Report Clean Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\Cleaning Do-files\5. TON_PHC_2016\Datasets\2023 Report Clean Data
+
+cd "C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\Cleaning Do-files\8. World Bank Collaboration\Output - Spring 2024"
+*"\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\Cleaning Do-files\8. World Bank Collaboration\Output - Spring 2024"
+
 
 *Append individual level data
 ********************************************************************************
@@ -51,11 +58,24 @@ replace mobile_own=. if age>=45
 replace fp_demsat_mod=. if age>=45
 replace anyviolence_byh_12m=. if age>=45
 
+gen ssu = country_dataset_year+ hh_id if country_abrev!="MR"
+replace ssu = country_dataset_year+cluster_id if country_abrev=="MR"
+
+gen tsu = country_dataset_year+cluster_id+ hh_id if country_abrev=="MR"
+replace tsu = "" if country_abrev!="MR"
+
 replace admin1 = "azad jammu and Kashmir" if admin1=="ajk"&country_abrev=="PK"
 replace admin1 = "gilgit baltistan" if admin1=="gb"&country_abrev=="PK"
 replace admin1 = "islamabad capital territory" if admin1=="ict"&country_abrev=="PK"
 replace admin1 = "khyber pakhtunkhwa" if admin1=="kpk"&country_abrev=="PK"
 replace admin1 = "federally administered tribal areas" if admin1=="fata"&country_abrev=="PK"
+
+gen admin_alt = admin1 if country_abrev=="MV"|country_abrev=="MR"|country_abrev=="HT"|country_abrev=="PK"
+
+replace admin1 = sample_strata if country_abrev=="MV"
+replace admin1 = "inchiri" if (sample_strata == "inchiri - rural" | sample_strata == "inchiri - urban")&country_abrev=="MR"
+replace admin1 = "rest-ouest" if admin1 =="aire metropolitaine"&country_abrev=="HT"
+replace admin1 = "khyber pakhtunkhwa" if admin1=="federally administered tribal areas"&country_abrev=="PK"
 
 save "${combined_data}\Final_Individual_DHS_only.dta", replace
 
@@ -91,10 +111,23 @@ replace mobile_own=. if age>=45
 replace fp_demsat_mod=. if age>=45
 replace anyviolence_byh_12m=. if age>=45
 
+gen ssu = country_dataset_year+ hh_id if country_abrev!="MR"
+replace ssu = country_dataset_year+cluster_id if country_abrev=="MR"
+
+gen tsu = country_dataset_year+cluster_id+ hh_id if country_abrev=="MR"
+replace tsu = "" if country_abrev!="MR"
+
 replace admin1 = "azad jammu and Kashmir" if admin1=="ajk"&country_abrev=="PK"
 replace admin1 = "gilgit baltistan" if admin1=="gb"&country_abrev=="PK"
 replace admin1 = "islamabad capital territory" if admin1=="ict"&country_abrev=="PK"
 replace admin1 = "khyber pakhtunkhwa" if admin1=="kpk"&country_abrev=="PK"
 replace admin1 = "federally administered tribal areas" if admin1=="fata"&country_abrev=="PK"
+
+gen admin_alt = admin1 if country_abrev=="MV"|country_abrev=="MR"|country_abrev=="HT"|country_abrev=="PK"
+
+replace admin1 = sample_strata if country_abrev=="MV"
+replace admin1 = "inchiri" if (sample_strata == "inchiri - rural" | sample_strata == "inchiri - urban")&country_abrev=="MR"
+replace admin1 = "rest-ouest" if admin1 =="aire metropolitaine"&country_abrev=="HT"
+replace admin1 = "khyber pakhtunkhwa" if admin1=="federally administered tribal areas"&country_abrev=="PK"
 
 save "${combined_data}\Final_Household_DHS_only.dta", replace
