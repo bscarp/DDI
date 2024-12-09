@@ -432,9 +432,7 @@ replace work_managerial2= . if (ind_emp==. & work_managerial==.)
 *work_informal is a binary variable for informal work status among all adults while work_informal2 codes informal work among workers only. We use work_informal2 to generate the informal work indicator for the DS-E database.
 
 gen work_informal2=.
-replace work_informal2=0 if ind_emp==1
-replace work_informal2=1 if ind_emp==1 & work_informal==1
-replace work_informal2=. if ind_emp==. & work_informal==.
+
 
 save "${CLEAN}\Bangladesh_HIES_2016_Clean.dta" , replace
 
