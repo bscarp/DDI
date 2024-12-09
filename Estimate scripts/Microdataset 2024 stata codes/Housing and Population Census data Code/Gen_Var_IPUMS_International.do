@@ -293,12 +293,14 @@ gen work_informal=cond(mi(classwkd),.,cond(inlist(classwkd, 100, 101, 120, 121, 
 
 gen work_managerial2=0 if ind_emp==1 & female==1
 replace work_managerial2= 1 if ind_emp==1 & work_managerial==1 & female==1
-replace work_managerial2= . if (ind_emp==. & work_managerial==.) 
+replace work_managerial2= . if ind_emp==. & work_managerial==. 
+replace work_managerial2= . if country==800
 
 gen work_informal2=.
 replace work_informal2=0 if ind_emp==1
 replace work_informal2=1 if ind_emp==1 & work_informal==1
 replace work_informal2=. if ind_emp==. & work_informal==.
+replace work_informal2=. if country==104
 
 *Not in schools
 gen school_new=(school==1)
