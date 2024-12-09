@@ -17,9 +17,12 @@ clear matrix
 clear mata 
 set maxvar 30000
 
-global survey_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
+global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
+global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
 
 *******************************************************************
 *Household Level Analysis: Create Indicators and Clean data
@@ -47,15 +50,17 @@ local country_list PK ML HT KH SN ZA RW NG MR TL UG MV KE KH2 TZ NP
 foreach country of local country_list  {
 
 use "${survey_data}\\`country'_${`country'_SR}\\`country'_Household.dta", clear
-	
+
 if hv000!= "KH6"  {
 decode hv201, gen(water_source)
 }
 
 if hv000== "KH6"  {
-	decode sh102, gen(water_source)
+decode sh102, gen(water_source)
 }
+
 decode hv205, gen(sanit_source)
+decode hv226, gen(fuel_type)
 
 if  hv000 == "MV5"|hv000 == "KH6" {
 	
@@ -105,7 +110,10 @@ if v000== "PK7" | v000== "ML7" | v000== "RW7" | v000== "NG7" | v000== "MR7" | v0
 	gen clean_cook_fuel=1 if hv226==1|hv226==2|hv226==3|hv226==4
 	replace  clean_cook_fuel=0 if hv226==5|hv226==6|hv226==7|hv226==8|hv226==9|hv226==10|hv226==11|hv226==12|hv226==13|hv226==95|hv226==96
 	replace  clean_cook_fuel=. if hv226==.
-		
+	replace  clean_cook_fuel=1 if hv226==5 & (v000== "NP8"|v000== "KH8"|v000== "TZ8")
+	replace  clean_cook_fuel=1 if hv226==6 & (v000== "TZ8")
+	replace  clean_cook_fuel=1 if hv226==12 & (v000== "KE8")
+	
 	rename hv207 ind_radio 
 	rename hv208 ind_tv
 	rename hv209 ind_refrig
@@ -292,10 +300,14 @@ if v000== "MV5" {
 	
 	gen safe_water=1
 	replace safe_water=0 if hv201==32|hv201==42|hv201==43|hv201==61|hv201==62|hv201==96
+	
+	replace hv225=0 if hv205==31
+	
 	gen safe_sanitation=1
 	replace safe_sanitation=0 if hv205==14|hv205==15|hv205==31|hv205==23|hv205==42|hv205==43|hv205==96
 	*replace safe_sanitation=0 if hv238a==3
 	replace safe_sanitation=. if hv205==.
+	replace safe_sanitation=0 if hv225==1
 	
 	gen clean_cook_fuel=1 if hv226==1|hv226==2|hv226==3|hv226==4
 	replace  clean_cook_fuel=0 if hv226==5|hv226==6|hv226==7|hv226==8|hv226==9|hv226==10|hv226==11|hv226==12|hv226==13|hv226==95|hv226==96
@@ -480,8 +492,8 @@ if v000== "ZA7"  {
 	
 	gen safe_sanitation=1
 	replace safe_sanitation=. if hv205==.
-	replace safe_sanitation=1 if hv205==11|hv205==12|hv205==13|hv205==21|hv205==41
-	replace safe_sanitation=0 if hv205==14|hv205==15|hv205==22|hv205==23|hv205==31|hv205==42|hv205==43|hv205==51|hv205==61|hv205==96
+	replace safe_sanitation=1 if hv205==11|hv205==12|hv205==13|hv205==21|hv205==22|hv205==41
+	replace safe_sanitation=0 if hv205==14|hv205==15|hv205==23|hv205==31|hv205==42|hv205==43|hv205==51|hv205==61|hv205==96
 	
 	*replace safe_sanitation=0 if hv238a==3
 	replace safe_sanitation=0 if hv225==1
@@ -581,7 +593,7 @@ rename hv802 hh_surveytime_end
 
 save "${clean_data}//`country'_${`country'_SR}_Household_Updated_Intermediate.dta", replace
 
-keep hh_line hh_weight hv022 hv803 hv804 v000 v001 v002 hv003 deprive_sl_asset ind_cleanfuel ind_electric water_source sanit_source hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond roof_source floor_source wall_source hh_surveytime_start hh_surveytime_end
+keep hh_line hh_weight hv022 hv023 hv024 hv025 hv803 hv804 v000 v001 v002 hv003 deprive_sl_asset ind_cleanfuel ind_electric water_source sanit_source fuel_type hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond roof_source floor_source wall_source hh_surveytime_start hh_surveytime_end
 
 sort v000 v001 v002 
 
@@ -594,8 +606,7 @@ merge 1:m v001 v002 using "${clean_data}//`country'_${`country'_SR}_Household_Me
 
 duplicates drop v001 v002, force
 
-keep hhid hh_weight v000 v001 v002 hv005 hv022 survey_month survey_year hv025 func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh hv206 hv207 hv208 hv221 ind_cleanfuel ind_electric water_source sanit_source hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond roof_source roof_source floor_source wall_source hh_surveytime_start hh_surveytime_end
-
+keep hhid hh_weight v000 v001 v002 hv005 hv022 hv023 hv024 hv025 survey_month survey_year hv025 func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh hv206 hv207 hv208 hv221 ind_cleanfuel ind_electric water_source sanit_source fuel_type hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond roof_source roof_source floor_source wall_source hh_surveytime_start hh_surveytime_end
 rename hv025 ResidenceType
 rename v001 cluster_number
 rename v002 hh_number

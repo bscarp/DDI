@@ -1,4 +1,3 @@
-*******************************************************************************
 /*******************************************************************************
 ********************************DHS*********************************************
 ********************************************************************************
@@ -10,6 +9,7 @@ Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
 Author: Katherine Theiss
 Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
 *******************************************************************************/
+*******************************************************************************
 *Globals 
 ********************************************************************************
 clear
@@ -17,9 +17,13 @@ clear matrix
 clear mata 
 set maxvar 30000
 
-global survey_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
+global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
+global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+
 
 ********************************************************************************
 *Merge with Disability Data and Append Men's Data
@@ -57,6 +61,7 @@ merge 1:1 v001 v002 v003 using "${clean_data}//`country'_${`country'_SR}_Househo
 
 append using "${clean_data}//`country'_${`country'_SR}_Men_Updated.dta"
 
+/*
 *Create sample weights
 gen ind2_weight=v005/1000000
 lab var ind2_weight "DHS Individual Sample weight"
@@ -65,8 +70,8 @@ if v000!="MV5" {
 gen dv_weight=d005/1000000
 lab var dv_weight "DHS Domestic Violence sample weight"
 }
+*/
 
-rename v025 ResidenceType
 rename v001 cluster_number
 rename v002 hh_number
 

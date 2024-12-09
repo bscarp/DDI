@@ -17,9 +17,12 @@ clear matrix
 clear mata 
 set maxvar 30000
 
-global survey_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
+global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
+global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
 
 ********************************************************************************
 *Household Member: Create Indicators and Clean data
@@ -88,10 +91,10 @@ decode hv024, gen(admin1)
 lab var admin1 "Admin 1 level"
 
 if hv000!="KH8" {
-decode hv022, gen(sample_strata)
+decode hv023, gen(sample_strata)
 }
 else {
-gen sample_strata = hv022
+tostring hv023, gen(sample_strata)
 }
 
 if hv000 == "SN7" {
@@ -488,7 +491,9 @@ replace hh_resp_educ_track = -999999 if hh_resp==0
 replace hh_resp_educ_track = -999999 if edattain_new==.
 egen hh_resp_educ = max(hh_resp_educ_track), by(hv001 hv002)
 
-keep shv005 sample_strata hv021 hv000 hv001 idxh4 hv006 hv016 hv007 hvidx v000 v001 v002 v003 v000 hv005 hv024 hv121 hv218 admin1 hdis1 hdis2 hdis3 hdis4 hdis5 hdis6 hdis7 hdis8 hdis9 func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh hv206 hv207 hv208 hv221 hv243a hdis2_any hdis4_any hdis5_any hdis6_any hdis7_any hdis8_any hdis9_any hdis2_some hdis4_some hdis5_some hdis6_some hdis7_some hdis8_some hdis9_some hdis2_atleast_alot hdis4_atleast_alot hdis5_atleast_alot hdis6_atleast_alot hdis7_atleast_alot hdis8_atleast_alot hdis9_atleast_alot country_name country_dataset_year admin1 female sex_new age age_group_label age_group urban_new everattended_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary hv002 hv027 hh_id ind_id hh_resp hh_resp_female hh_resp_age hh_resp_educ
+rename hv021 psu 
+
+keep shv005 sample_strata psu hv022 hv000 hv001 idxh4 hv006 hv016 hv007 hvidx v000 v001 v002 v003 v000 hv005 hv023 hv024 hv025 hv121 hv218 admin1 hdis1 hdis2 hdis3 hdis4 hdis5 hdis6 hdis7 hdis8 hdis9 func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh hv206 hv207 hv208 hv221 hv243a hdis2_any hdis4_any hdis5_any hdis6_any hdis7_any hdis8_any hdis9_any hdis2_some hdis4_some hdis5_some hdis6_some hdis7_some hdis8_some hdis9_some hdis2_atleast_alot hdis4_atleast_alot hdis5_atleast_alot hdis6_atleast_alot hdis7_atleast_alot hdis8_atleast_alot hdis9_atleast_alot country_name country_dataset_year admin1 female sex_new age age_group_label age_group urban_new everattended_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary hv002 hv027 hh_id ind_id hh_resp hh_resp_female hh_resp_age hh_resp_educ
 
 gen survey ="DHS"
 

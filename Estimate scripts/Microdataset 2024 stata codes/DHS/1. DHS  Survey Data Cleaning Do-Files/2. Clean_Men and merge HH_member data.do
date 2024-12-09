@@ -1,4 +1,3 @@
-********************************************************************************
 /*******************************************************************************
 ********************************DHS*********************************************
 ********************************************************************************
@@ -10,6 +9,7 @@ Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
 Author: Katherine Theiss
 Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
 *******************************************************************************/
+********************************************************************************
 *Globals 
 ********************************************************************************
 clear
@@ -17,9 +17,13 @@ clear matrix
 clear mata 
 set maxvar 30000
 
-global survey_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data \\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
+global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
+global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+*\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+
 *******************************************************************
 *Mens: Create Indicators and Clean data
 *******************************************************************
@@ -60,9 +64,17 @@ gen gender="male"
 gen female=0
 
 *Men's sample weight
-gen v005=mv005
+*Create sample weights
+gen ind2_weight=mv005/1000000
+lab var ind2_weight "DHS Individual Sample weight"
 
-decode mv024, gen(Admin1)
+if  mv000== "SN7" {
+decode(smezone), gen(smezone_str)
+gen Admin1 = smezone_str 
+}
+else {
+	decode mv024, gen(Admin1)
+}
 
 gen survey_month=mv006
 gen survey_year=mv007
@@ -85,6 +97,7 @@ gen v731 = mv731
 gen v732 = mv731
 gen v741 = mv717
 
+rename mv481 health_insurance
 *********************
 //Internet Use
 if mv000 !="KH6"&mv000!="MV5" {
@@ -102,9 +115,35 @@ gen internet =  sm109 if female==0
 recode internet (1 2 3 = 1)
 }
 
+la var internet "Individual uses internet"
+
 rename mv012 age
 label var v013 "age in 5-year groups"
 label var v014 "completeness of age information"
+
+*********************
+//Mobile Phone Ownership
+if mv000=="KH6"|mv000=="MV5" {
+gen mobile_own=.
+}
+else { 
+	rename mv169a mobile_own
+}
+*********************
+//Currently working indicator
+gen ind_emp=mv714 
+replace ind_emp=. if female==0&age>54
+lab var ind_emp "Employed"
+
+*********************
+//Literacy
+gen lit_new = (mv155==2)
+replace lit_new = . if mv155==.|mv155==3
+la var lit_new "Literacy"
+
+rename mv025 ResidenceType
+
+keep v001 v002 v003 Admin1 ResidenceType health_insurance gender female age internet mobile_own lit_new ind2_weight ind_emp
 
 merge 1:1 v001 v002 v003 using "${clean_data}//`country'_${`country'_SR}_Household_Member_Updated.dta", keep(match)
 
