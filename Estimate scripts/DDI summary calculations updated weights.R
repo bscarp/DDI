@@ -10,7 +10,7 @@ library(googledrive)
 library(rms)
 library(tableone)
 
-plan(list(sequential,sequential,tweak(multisession, workers = 4)))
+plan(list(sequential,sequential,tweak(multisession, workers = 3)))
 
 library(progressr)
 handlers(global = TRUE)
