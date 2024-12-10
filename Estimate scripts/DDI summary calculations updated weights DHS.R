@@ -272,10 +272,16 @@ with_progress({
     rm(tab_P4_nr1,tab_P4_nr2,tab_P4_nr3,tab_P4_nr4)
     
     #Prevalences for age-sex adjustment
-    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
+    tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
       p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
       tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+        arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
+    }
+    tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
+      p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
+      agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
+      tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     # p(sprintf("%s, Tab6, %s", r_name, admin_grp))
@@ -283,7 +289,7 @@ with_progress({
     # tab_as_adj2 = dck2e %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop")
     # tab_as_adj3 = dck2a2 %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))))
     
-    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj))
+    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
   }
 
   tabs = pmap(tabs,bind_rows)
