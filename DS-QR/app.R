@@ -91,8 +91,7 @@ ui <- page_navbar(
         
     )
   ),
-  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/methods", "Methods", target="_blank")),
-  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/access", "Accessibility", target="_blank"))
+  nav_item(a(href="http://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
 )
 
 # Define server logic required to draw a histogram
