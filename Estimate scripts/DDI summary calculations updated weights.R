@@ -98,6 +98,9 @@ with_progress({
   if("informal2" %in% names(dck)) {
     dck = dck %>% select(-any_of(c("work_informal"))) %>% rename(work_informal = informal2)
   } 
+  if("work_informal2" %in% names(dck)) {
+    dck = dck %>% select(-any_of(c("work_informal"))) %>% rename(work_informal = work_informal2)
+  } 
   if("work_managerial2" %in% names(dck)) {
     dck = dck %>% select(-any_of(c("work_managerial"))) %>% rename(work_managerial = work_managerial2)
   } 
