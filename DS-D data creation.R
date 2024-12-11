@@ -33,18 +33,18 @@ data1 = data1 %>% mutate(DifficultyName = str_replace_all(DifficultyName,setName
 data1 = data1 %>% mutate(PopulationName = str_replace_all(PopulationName,setNames(c(unique(df_group_t$PopulationName),"Adults ages 25 to 29"),unique(data1$PopulationName))))
 data1 = data1 %>% mutate(admin = str_replace_all(admin,setNames(c("National","Subnational division 1","Subnational division 2","Alternative subnational division"), c("admin0","admin1","admin2","admin_alt"))))
 
-df_country = data0 %>% select(country) %>% filter(!duplicated(country))
+list_country = data0 %>% select(country) %>% filter(!duplicated(country))
 ddi_2024 = read_xlsx("DS-D files/DS-QR Database.xlsx", sheet = 2) %>% select(Region,Country) %>% filter(!duplicated(Country))
-df_country = left_join(df_country,ddi_2024, by = join_by("country"=="Country")) %>% select(Region,country)
-df_country = df_country %>% mutate(Region = case_when(is.na(Region)&country=="Gambia"~"Sub-Saharan Africa",TRUE~Region))
+list_country = left_join(list_country,ddi_2024, by = join_by("country"=="Country")) %>% select(Region,country)
+list_country = list_country %>% mutate(Region = case_when(is.na(Region)&country=="Gambia"~"Sub-Saharan Africa",TRUE~Region))
 rm(ddi_2024)
-df_country = lapply(split(df_country$country, df_country$Region, drop = TRUE), function(x) as.list(x))
+list_country = lapply(split(list_country$country, list_country$Region, drop = TRUE), function(x) as.list(x))
 
-df_indicator = lapply(split(df_indicator_t$IndicatorName, df_indicator_t$Group, drop = TRUE), function(x) as.list(x))[c("Proportion with disabilities (Prevalence)", "Education", "Personal activities","Health","Standard of living","Insecurity","Multidimensional poverty")]
-df_group = df_group_t$PopulationName
-df_disability = c("Disability versus no disability" = 1, "Severe versus moderate versus no disability" = 2, "Severe versus moderate or no disability" = 3,
+list_indicator = lapply(split(df_indicator_t$IndicatorName, df_indicator_t$Group, drop = TRUE), function(x) as.list(x))[c("Proportion with disabilities (Prevalence)", "Education", "Personal activities","Health","Standard of living","Insecurity","Multidimensional poverty")]
+list_group = df_group_t$PopulationName
+list_disability = c("Disability versus no disability" = 1, "Severe versus moderate versus no disability" = 2, "Severe versus moderate or no disability" = 3,
                   "Disability by type" = 4)
-df_disability2 = unique(data1$DifficultyName)
+list_disability2 = unique(data1$DifficultyName)
 
 map_df = read_sf(paste0(cen_dir,"Downloads/world shp/ne_10m_admin_1_states_provinces.shp"))
 iso = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","level","ISOCode"))
@@ -53,10 +53,13 @@ data1 = left_join(data1,iso %>% filter(!country == "Vietnam"), by = c("country",
 data0 = data0 %>% rename("Country" = "country")
 data1 = data1 %>% rename("Country" = "country")
 
+df_country = data1 %>% select(Country,admin) %>% distinct()
+df_indicator = data0 %>% select(Country,IndicatorName,PopulationName) %>% distinct()
+
 df_static = read_xlsx("DS-D files/Static.xlsx")
 df_static = df_static %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName, unique(IndicatorName)[c(23,15,9,3:4,18,28,24,10,2,6,17,22,8,29,20,19,16,7,5,1,25,14,13,27,11,26,12,21)])))
 
-save(data0, data1, map_df, df_country, df_indicator, df_group, df_disability, df_disability2, key_m, df_static, file = "DS-E/Data.RData")
+save(data0, data1, map_df, list_country, list_indicator, list_group, list_disability, list_disability2, key_m, df_country, df_static, file = "DS-E/Data.RData")
 rm(list = ls())
 
 #DS-QR
