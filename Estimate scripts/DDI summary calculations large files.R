@@ -5,12 +5,20 @@ library(foreach)
 library(tidyverse)
 library(haven)
 library(readxl)
+library(googledrive)
 library(rms)
 library(tableone)
 
 library(progressr)
 handlers(global = TRUE)
 handlers("progress")
+
+drive_auth("bradley.carpenter@mrc.ac.za")
+file.remove(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"))
+drive_download(file = "https://docs.google.com/spreadsheets/d/1rCcLMLu4eaakTW76it5vojo6o2Z6Nxzy/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
+               path = paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),overwrite = TRUE)
+data_list = read_xlsx(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),"Sheet1",.name_repair = function(x) {gsub(" ","_",gsub("-","",x))}) |> filter(!is.na(Country))
+data_list = data_list |> select(File_Name,Subnational_1_feasible,Subnational_2_feasible)
 
 data_loc = paste0(cen_dir,"Downloads/Census/R Datasets/")
 data_loc2 = paste0(cen_dir,"Downloads/Census/Summaries/")
@@ -31,6 +39,12 @@ if("IPUMS_Cleaned_Individual_Data_Trimmed.dta" %in% dta_list) {
   foreach(i = datasets) %do% {
     # dck %>% filter(country_dataset_year==i) %>% write_dta(path = paste0(data_loc3,i,dta_append))
     dck = dck2 %>% filter(country_dataset_year==i)
+    if(is.na(data_list$Subnational_1_feasible[data_list$File_Name == i]) & "admin1" %in% names(dck)) {
+      dck = dck %>% select(-admin1)
+    }
+    if(is.na(data_list$Subnational_2_feasible[data_list$File_Name == i]) & "admin2" %in% names(dck)) {
+      dck = dck %>% select(-admin2)
+    }
     save(dck, file = paste0(data_loc,i,r_append))
   }
   file.remove(file_name)
@@ -48,11 +62,17 @@ if("Final_Individual_DHS_only.dta" %in% dta_list) {
   foreach(i = datasets, .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
     # dck %>% filter(country_dataset_year==i) %>% write_dta(path = paste0(data_loc3,i,dta_append))
     dck = dck2 %>% filter(country_dataset_year==i)
+    if(is.na(data_list$Subnational_1_feasible[data_list$File_Name == i]) & "admin1" %in% names(dck)) {
+      dck = dck %>% select(-admin1)
+    }
+    if(is.na(data_list$Subnational_2_feasible[data_list$File_Name == i]) & "admin2" %in% names(dck)) {
+      dck = dck %>% select(-admin2)
+    }
     save(dck, file = paste0(data_loc,i,r_append))
   }
   file.remove(file_name)
   rm(dta,file_name,dck2,datasets)
 }
 
-rm(data_loc,data_loc2,data_loc3,dta_list,r_append)
+rm(data_loc,data_loc2,data_loc3,dta_list,r_append,data_list)
 gc()
