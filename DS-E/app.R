@@ -15,7 +15,6 @@ library(tidyverse)
 library(ggiraph)
 library(DT)
 library(sf)
-library(terra)
 
 load("Data.RData")
 
@@ -49,11 +48,11 @@ ui <- page_navbar(
     layout_columns(fill = FALSE,
     card(h4("Disability Statistics – Estimates (DS-E)"),
             p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
-            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-E/', '_blank')", class = "download-btn")
+            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://ds-e.disabilitydatainitiative.org/DS-E/', '_blank')", class = "download-btn")
         ),
         card(h4("Disability Statistics – Questionnaire Review (DS-QR)"),
             p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
-            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-QR/', '_blank')", class = "download-btn")
+            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://ds-qr.disabilitydatainitiative.org/DS-QR/', '_blank')", class = "download-btn")
         )
     )
   ),
@@ -87,6 +86,8 @@ ui <- page_navbar(
 
 # Define server logic required to draw a histogram
 server <- function(session, input, output) {
+  session$allowReconnect(TRUE)
+  
   #Select all countries
   observe({
     if(input$selectall == 0) {
@@ -194,8 +195,11 @@ server <- function(session, input, output) {
   
   data_sel0 = reactive({data0 %>% filter(Country %in% input$country, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>%
     mutate(DifficultyName = factor(DifficultyName,levels = dis_grp()))})
-  data_sel1 = reactive({data1 %>% filter(admin %in% adm_grp(), Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
-  data_sel2 = reactive({data1 %>% filter(admin == "Subnational division 1", Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName == input$disability2)})
+  data_sel1_p1 = reactive({data1 %>% filter(Country == input$country_sin)})
+  data_sel1_p2 = reactive({data_sel1_p1() %>% filter(PopulationName == input$group)})
+  data_sel1 = reactive({data_sel1_p2() %>% filter(IndicatorName == input$indicator)})
+  # data_sel1 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, admin %in% adm_grp(), DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
+  # data_sel2 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, admin == "Subnational division 1", DifficultyName == input$disability2)})
   
   # output$test <- renderPrint(c(data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T)) %>% as.vector()))
   
@@ -242,7 +246,7 @@ server <- function(session, input, output) {
   })
   
   output$stat_cou_map <- renderGirafe({
-    data_m = data_sel2() %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
+    data_m = data_sel1() %>% filter(admin == "Subnational division 1", DifficultyName == input$disability2) %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
     plot1 = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
       scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(input$scale[1], input$scale[2])) + labs(caption = source_sin()) + 
@@ -252,9 +256,10 @@ server <- function(session, input, output) {
     })
   
   output$stat_cou_tab <- renderDT({
+    data_t = data_sel1() %>% filter(admin %in% adm_grp(), DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))
     # draw the plot using data
-    data_sel1() %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% 
-      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML(paste0(source_sin(), "<br/>A blank cell indicates that the estimate is not available.")))) %>% 
+    data_t %>% mutate(Value = Value/100) %>% pivot_wider(names_from = c(IndicatorName,DifficultyName,PopulationName),names_glue = "{DifficultyName}",values_from = Value) %>% 
+      datatable(caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;", HTML(paste0(source_sin(), "<br/>A blank cell indicates that the estimate is not available.")))) %>% 
       formatPercentage(columns = dis_grp(), digits = 1)
   })
   

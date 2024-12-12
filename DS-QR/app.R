@@ -14,7 +14,6 @@ library(tidyverse)
 library(ggiraph)
 library(DT)
 library(sf)
-library(terra)
 
 load("Data.RData")
 
@@ -49,12 +48,12 @@ ui <- page_navbar(
         div(class = "card",
             h3("Disability Statistics – Estimates (DS-E)"),
             p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
-            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-E/', '_blank')", class = "download-btn")
+            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://ds-e.disabilitydatainitiative.org/DS-E/', '_blank')", class = "download-btn")
         ),
         div(class = "card",
             h3("Disability Statistics – Questionnaire Review (DS-QR)"),
             p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
-            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-QR/', '_blank')", class = "download-btn")
+            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://ds-qr.disabilitydatainitiative.org/DS-QR/', '_blank')", class = "download-btn")
         )
     )
   ),
@@ -96,6 +95,8 @@ ui <- page_navbar(
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  session$allowReconnect(TRUE)
+  
   data_sel_map = reactive({if(input$region == "World"){
     map_df
   } else if(input$region == "East Asia & Pacific") {
