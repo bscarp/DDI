@@ -14,7 +14,6 @@ library(tidyverse)
 library(ggiraph)
 library(DT)
 library(sf)
-library(terra)
 
 load("Data.RData")
 
@@ -49,12 +48,12 @@ ui <- page_navbar(
         div(class = "card",
             h3("Disability Statistics – Estimates (DS-E)"),
             p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
-            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-E/', '_blank')", class = "download-btn")
+            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://ds-e.disabilitydatainitiative.org/DS-E/', '_blank')", class = "download-btn")
         ),
         div(class = "card",
             h3("Disability Statistics – Questionnaire Review (DS-QR)"),
             p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
-            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://bscarp.shinyapps.io/DS-QR/', '_blank')", class = "download-btn")
+            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://ds-qr.disabilitydatainitiative.org/DS-QR/', '_blank')", class = "download-btn")
         )
     )
   ),
@@ -65,12 +64,12 @@ ui <- page_navbar(
   navset_card_pill(
     nav_panel(title = h5("Map of Disability Questions by Country"),
       layout_sidebar(sidebar = sidebar(selectInput("region", "Region", choices = c("World", as.character(unique(ddi_2024_s$Region))), selected = "World")),
-                     h5(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+                     h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
                      girafeOutput("map", width = "100%"))
     ),
     nav_panel(h5("Table of Disability Questions by Country"),
       div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
-              h5(style = "text-align: center;", "This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
+              h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
               DTOutput("table1")
           ),
           #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
@@ -91,12 +90,13 @@ ui <- page_navbar(
         
     )
   ),
-  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/methods", "Methods", target="_blank")),
-  nav_item(a(href="http://www.disabilitydatainitiative.org/databases/access", "Accessibility", target="_blank"))
+  nav_item(a(href="http://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
+  session$allowReconnect(TRUE)
+  
   data_sel_map = reactive({if(input$region == "World"){
     map_df
   } else if(input$region == "East Asia & Pacific") {
@@ -135,9 +135,9 @@ server <- function(input, output) {
   })
   
   output$table2 <- renderDT({
-    ddi_2024 %>% select(Region,Country,Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference from WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
+    ddi_2024 %>% select(Region,Country,Dataset,Year,Notes,`WG-SS`,`Other functional difficulty questions`,`Difference of Other functional difficulty questions versus WG-SS`) %>% arrange(Dataset,Year,Notes) %>% 
       datatable(filter = "top", options = list(autoWidth = TRUE),
-                caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("Notes: WG-SS stands for the Washington Group Short<br/>(1) - Yes/No answer<br/>(2) - Answer scale is different from that in the WG-SS<br/>(3) - Wording of questions is different from the WG-SS<br/>(4) - Does not have the selfcare domain<br/>(5) - Does not have the communication domain")))
+                caption = htmltools::tags$caption(style = "caption-side: bottom; text-align: left;",HTML("Notes: WG-SS stands for the Washington Group Short<br/>(1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain")))
   })
 }
 

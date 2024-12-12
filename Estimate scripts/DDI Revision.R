@@ -15,7 +15,7 @@ file.remove(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"))
 drive_download(file = "https://docs.google.com/spreadsheets/d/1rCcLMLu4eaakTW76it5vojo6o2Z6Nxzy/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
                path = paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),overwrite = TRUE)
 data_list = read_xlsx(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),"Sheet1",.name_repair = function(x) {gsub(" ","_",gsub("-","",x))}) |> filter(!is.na(Country))
-data_list = data_list |> select(File_Name,url,Clean_data_file__date_of_last_version,Output__date_of_last_version,Output_needs_revision)
+data_list = data_list |> select(File_Name,new_url,Clean_data_file__date_of_last_version,Output__date_of_last_version,Output_needs_revision) %>% rename(url = new_url)
 data_list = data_list |> mutate(Clean_data_file__date_of_last_version = convert_to_date(Clean_data_file__date_of_last_version,character_fun = lubridate::dmy),
                       Output__date_of_last_version = convert_to_date(Output__date_of_last_version,character_fun = lubridate::dmy))
 temp = data_list |> filter(!File_Name %in% sub(".RData","",dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))))
@@ -50,13 +50,15 @@ if(length(bac_list2)>0) {
 }
 rm(bac_list,bac_list2)
 
-if(!file.exists(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"))) {
-  file.copy(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"))
+if(!file.exists(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))) {
+  file.copy(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
+  file.copy(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
 }
 
-db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"),"Means") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-db_se = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"),"Standard Errors") %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
-write_xlsx(list("Means" = db_m, "Standard Errors" = db_se),paste0(cen_dir,"Downloads/Census/Database/Wide_Table_Output.xlsx"))
+db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx")) %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
+db_se = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx")) %>% filter(!survey %in% temp$File_Name&survey %in% data_list$File_Name)
+write_xlsx(db_m, paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
+write_xlsx(db_se,paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
 rm(db_m,db_se)
 
 temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietnam.*2019|Cambodia",File_Name),"IPUMS_Cleaned_Individual_Data_Trimmed",File_Name),

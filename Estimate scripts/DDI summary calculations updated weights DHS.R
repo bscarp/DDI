@@ -64,6 +64,9 @@ with_progress({
   if("informal2" %in% names(dck)) {
     dck = dck %>% select(-any_of(c("work_informal"))) %>% rename(work_informal = informal2)
   } 
+  if("work_informal2" %in% names(dck)) {
+    dck = dck %>% select(-any_of(c("work_informal"))) %>% rename(work_informal = work_informal2)
+  } 
   if("work_managerial2" %in% names(dck)) {
     dck = dck %>% select(-any_of(c("work_managerial"))) %>% rename(work_managerial = work_managerial2)
   } 
@@ -97,7 +100,7 @@ with_progress({
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin_alt"))) %>% names()
   psu_a = c("ind_id","hh_id","ind_weight","ind2_weight","hh_weight","dv_weight","psu","ssu","tsu","sample_strata","country_abrev")
   dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
-  df_age_sex = dck %>% mutate(n = sum(ind_weight)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
+  df_age_sex = dck %>% mutate(n = sum(ind_weight, na.rm = TRUE)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
   
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% mutate(hh_id = cur_group_id(), .by = "hh_id")
@@ -107,7 +110,7 @@ with_progress({
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind2_weight)&!is.na(sample_strata))
     dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a3),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(hh_weight)&!is.na(sample_strata))
     dck2d = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a4)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(dv_weight)&!is.na(sample_strata))
-    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey(ids = c(psu, ssu, tsu), weights = c(ind_weight , NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey(ids = c(psu, ssu, tsu), weights = c(ind2_weight, NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
     dck2c = dck2c %>% as_survey(ids = c(psu, ssu, tsu), weights = c(hh_weight  , NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
@@ -119,7 +122,7 @@ with_progress({
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind2_weight)&!is.na(sample_strata))
     dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a3),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(hh_weight)&!is.na(sample_strata))
     dck2d = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a4)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(dv_weight)&!is.na(sample_strata))
-    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata))
+    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey(ids = c(psu, ssu), weights = c(ind_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey(ids = c(psu, ssu), weights = c(ind2_weight, NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2c = dck2c %>% as_survey(ids = c(psu, ssu), weights = c(hh_weight  , NULL), strata = c(sample_strata, NULL), nest = TRUE)
@@ -272,22 +275,42 @@ with_progress({
     rm(tab_P4_nr1,tab_P4_nr2,tab_P4_nr3,tab_P4_nr4)
     
     #Prevalences for age-sex adjustment
-    tab_as_adj = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %do% {
-      p(sprintf("%s, Tab6, %s, %s", r_name, admin_grp, agg_grp))
-      agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-      tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-        arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
+    if(admin_grp == "admin0") {
+      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
+        p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
+        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
+        tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
+      }
+      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
+        p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
+        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
+        tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
+      }
+    } else {
+      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
+        p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
+        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
+        tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2),list(mean = ~as.double(NA), mean_se = ~as.double(NA))),.groups = "drop") %>%
+          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
+      }
+      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
+        p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
+        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
+        tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~as.double(NA), mean_se = ~as.double(NA))),.groups = "drop") %>%
+          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
+      }
     }
     # p(sprintf("%s, Tab6, %s", r_name, admin_grp))
     # tab_as_adj1 = dck2a %>% group_by(age_sex) %>% summarise(weight = first(as_weight), across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>% select(-1) %>% summarise(across(contains("mean"), ~weighted.mean(.x,weight)))
     # tab_as_adj2 = dck2e %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop")
     # tab_as_adj3 = dck2a2 %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))))
     
-    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj))
+    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
   }
 
   tabs = pmap(tabs,bind_rows)
-  tabs$tab_as_adj = tabs$tab_as_adj %>% filter(!duplicated(age_sex))
   
   #write to R
   save(tabs,file = r_sum_name)
