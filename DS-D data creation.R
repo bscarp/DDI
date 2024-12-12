@@ -53,7 +53,7 @@ data1 = left_join(data1,iso %>% filter(!country == "Vietnam"), by = c("country",
 data0 = data0 %>% rename("Country" = "country")
 data1 = data1 %>% rename("Country" = "country")
 
-df_country = data1 %>% select(Country,admin) %>% distinct()
+df_country = data1 %>% select(Country,admin) %>% distinct() %>% filter(!admin == "National")
 df_indicator = data0 %>% select(Country,IndicatorName,PopulationName) %>% distinct()
 
 df_static = read_xlsx("DS-D files/Static.xlsx")

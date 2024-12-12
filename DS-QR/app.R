@@ -35,28 +35,7 @@ ui <- page_navbar(
   ")),
   
   # Landing page
-  nav_panel(
-    title = "Home",
-    div(class = "header",
-        style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
-        img(src = "DDI_Logo.png", style = "width: 250px; margin-bottom: 20px;"),
-        h1("The Disability Statistics Database", style = "font-weight: 700; color: #0072B5;"),
-        p("Providing internationally comparable statistics to monitor the rights of persons with disabilities.")
-    ),
-    div(class = "data-area",
-        style = "display: flex; flex-direction: column; align-items: center; text-align: center; max-width: 800px; margin: auto;",
-        div(class = "card",
-            h3("Disability Statistics – Estimates (DS-E)"),
-            p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
-            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://ds-e.disabilitydatainitiative.org/DS-E/', '_blank')", class = "download-btn")
-        ),
-        div(class = "card",
-            h3("Disability Statistics – Questionnaire Review (DS-QR)"),
-            p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
-            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://ds-qr.disabilitydatainitiative.org/DS-QR/', '_blank')", class = "download-btn")
-        )
-    )
-  ),
+  nav_item(a(href="https://ds-qr.disabilitydatainitiative.org", "Home")),
   
   nav_panel(title = "Overview of Results",
   
@@ -90,11 +69,11 @@ ui <- page_navbar(
         
     )
   ),
-  nav_item(a(href="http://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
+  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
 )
 
 # Define server logic required to draw a histogram
-server <- function(input, output) {
+server <- function(session, input, output) {
   session$allowReconnect(TRUE)
   
   data_sel_map = reactive({if(input$region == "World"){

@@ -35,34 +35,14 @@ ui <- page_navbar(
   ")),
   
   # Landing page
-  nav_panel(
-    id = "home",
-    value = "home",
-    title = "Home",
-    div(class = "header",
-        style = "display: flex; flex-direction: column; align-items: center; text-align: center;",
-        img(src = "DDI_Logo.png", style = "width: 250px; margin-bottom: 20px;"),
-        h1("The Disability Statistics Database", style = "font-weight: 700; color: #0072B5;"),
-        p("The Disability Statistics (DS) Databases provide internationally comparable statistics to monitor the rights of persons with disabilities.")
-    ),
-    layout_columns(fill = FALSE,
-    card(h4("Disability Statistics – Estimates (DS-E)"),
-            p("This database includes national and subnational descriptive statistics based on the analysis and disaggregation of national population and housing censuses and household surveys."),
-            actionButton("ds_e_button", "Explore DS-E Database", onclick = "window.open('https://ds-e.disabilitydatainitiative.org/DS-E/', '_blank')", class = "download-btn")
-        ),
-        card(h4("Disability Statistics – Questionnaire Review (DS-QR)"),
-            p("This database reports on whether population and housing censuses and household surveys include internationally recommended disability questions."),
-            actionButton("ds_qr_button", "Explore DS-QR Database", onclick = "window.open('https://ds-qr.disabilitydatainitiative.org/DS-QR/', '_blank')", class = "download-btn")
-        )
-    )
-  ),
+  nav_item(a(href="https://ds-e.disabilitydatainitiative.org", "Home")),
   
   #Selectors
-  sidebar = sidebar(id = "sidebar", open = "closed",
-                    conditionalPanel(condition = "input.nav == 'across'", virtualSelectInput("country", "Countries (select multiple)", list_country, multiple = TRUE, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
+  sidebar = sidebar(id = "sidebar",
+                    conditionalPanel(condition = "input.nav == 'across'", virtualSelectInput("country", "Countries (select multiple)", list_country, multiple = TRUE, search = TRUE, selected = c("South Africa", "Kenya", "Uganda")), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries"), actionLink("reset","Reset countries")),
-                    conditionalPanel(condition = "input.nav == 'within'", virtualSelectInput("country_sin", "Country (select single)", list_country, search = TRUE, selected = "Namibia"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(virtualSelectInput("admin", "Select the subdivision to display:", c("National", "Subnational division 1", "Subnational division 2", "Alternative subnational division"), search = TRUE, selected = "Subnational division 1"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within'", virtualSelectInput("country_sin", "Country (select single)", list_country, search = TRUE, selected = "South Africa"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(virtualSelectInput("admin", "Select the subnational level to display:", c("Subnational division 1", "Subnational division 2", "Alternative subnational division"), search = TRUE, selected = "Subnational division 1"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", tooltip(virtualSelectInput("indicator", "Indicators", list_indicator, search = TRUE, selected = "Multidimensional poverty"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", tooltip(selectInput("group", "Population Groups", list_group,selected = "All adults (ages 15 and older)"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", tooltip(selectInput("disability", "Disability breakdown", choices = list_disability, selected = 1),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
@@ -79,8 +59,8 @@ ui <- page_navbar(
                                   nav_panel(value = 't2', "Map", h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
                                   nav_panel(value = 't3', "Table", h4(textOutput("title4")), textOutput("ind4"), DTOutput("stat_cou_tab"))
             )),
-  nav_item(a(href="http://www.disabilitydatainitiative.org/ds-e-methods", "Methods", target="_blank")),
-  nav_item(a(href="http://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
+  nav_item(a(href="https://www.disabilitydatainitiative.org/ds-e-methods", "Methods", target="_blank")),
+  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
   # nav_panel("Test",tableOutput('show_inputs'), textOutput('show_data'))
 )
 
@@ -93,7 +73,7 @@ server <- function(session, input, output) {
     if(input$selectall == 0) {
       return(NULL)
     } else if (input$selectall%%2 == 0) {
-      updateVirtualSelect("country", "Countries (select multiple)", choices = list_country, selected = "Namibia", session = session)
+      updateVirtualSelect("country", "Countries (select multiple)", choices = list_country, selected = c("South Africa", "Kenya", "Uganda"), session = session)
       updateActionLink(session,"selectall","Select all countries")
     } else {
       updateVirtualSelect("country", "Countries (select multiple)", choices = list_country, selected = as.character(unlist(list_country)), session = session)
@@ -106,20 +86,20 @@ server <- function(session, input, output) {
     if(input$reset == 0) {
       return(NULL)
     } else {
-      updateVirtualSelect("country", "Countries (select multiple)", choices=list_country, selected = "Namibia", session = session)
+      updateVirtualSelect("country", "Countries (select multiple)", choices=list_country, selected = c("South Africa", "Kenya", "Uganda"), session = session)
       updateActionLink(session,"selectall","Select all countries")
     }
   })
   
   #Change country based on country_sin
-  observe({
-    updateVirtualSelect("country", "Countries (select multiple)", choices=list_country, selected = input$country_sin, session = session)
-  })
+  # observe({
+  #   updateVirtualSelect("country", "Countries (select multiple)", choices=list_country, selected = input$country_sin, session = session)
+  # })
   
   #Change categories for admin selector
   observe({
     temp = if_else(input$admin %in% df_country$admin[df_country$Country %in% input$country_sin], input$admin, "Subnational division 1")
-    updateVirtualSelect("admin", "Select the subdivision to display:", choices = df_country$admin[df_country$Country %in% input$country_sin], selected = temp, session = session)
+    updateVirtualSelect("admin", "Select the subnational level to display:", choices = df_country$admin[df_country$Country %in% input$country_sin], selected = temp, session = session)
   })
   
   #Change categories for indicator selector
@@ -180,7 +160,7 @@ server <- function(session, input, output) {
                                                     "Self-care Disability", "Communication Disability")),
                      input$disability == 1 ~ list(c("No Disability","Disability")),
                      input$disability == 2 ~ list(c("No Disability","Moderate Disability","Severe Disability")),
-                     input$disability == 3 ~ list(c("No and moderate disability","Severe Disability")),
+                     input$disability == 3 ~ list(c("No and moderate Disability","Severe Disability")),
                      input$disability == 4 ~ list(c("Seeing Disability","Hearing Disability","Mobility Disability", "Cognition Disability",
                                                     "Self-care Disability", "Communication Disability","No Disability"))))
     })
@@ -200,8 +180,6 @@ server <- function(session, input, output) {
   data_sel1 = reactive({data_sel1_p2() %>% filter(IndicatorName == input$indicator)})
   # data_sel1 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, admin %in% adm_grp(), DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
   # data_sel2 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, admin == "Subnational division 1", DifficultyName == input$disability2)})
-  
-  # output$test <- renderPrint(c(data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T)) %>% as.vector()))
   
   output$title1 <- renderText({
     paste0("Graph showing ", input$indicator, " for ", ifelse(length(input$country)==1,input$country,paste0(length(input$country), " countries")), " by ", paste0(dis_grp(), collapse = ", "))
@@ -275,32 +253,6 @@ server <- function(session, input, output) {
   source_sin = reactive({
     df_static %>% filter(Country == input$country_sin, IndicatorName == input$indicator) %>% pull(source) %>% gsub("_"," ",.) %>% paste0("Data source: ", .)
   })
-  
-  observe({
-    temp = input$sidebar
-    sidebar_toggle("sidebar", open = ifelse(input$nav == "home", FALSE, temp))
-  })
-  
-  observeEvent(input$nav, ignoreInit = TRUE, once = TRUE,{
-    sidebar_toggle("sidebar", open = NULL)
-  })
-  
-  # AllInputs <- reactive({
-  #   myvalues <- NULL
-  #   for(i in 1:length(names(input))){
-  #     myvalues <- as.data.frame(rbind(myvalues,(cbind(names(input)[i],input[[names(input)[i]]]))))
-  #   }
-  #   names(myvalues) <- c("Variable","Selected Value")
-  #   myvalues
-  # })
-  # 
-  # output$show_inputs <- renderTable({
-  #   AllInputs()
-  # })
-  # 
-  # output$show_data <- renderPrint({
-  #   df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf") %>% pull(IndicatorName)
-  # })
 }
 
 # Run the application 
