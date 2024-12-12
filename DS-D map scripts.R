@@ -87,5 +87,7 @@ map_df2 = map_df2 %>% filter(admin %in% c("Kenya"))
 map_df = map_df %>% filter(!admin %in% c("Kenya","Kiribati","Malawi","Palestine","Philippines"))
 map_df = bind_rows(map_df,map_df2,map_df3,map_df4,map_df_e,map_df_g,map_df_m,map_df_p)
 
+map_df[map_df$iso_a2=="KI",] = map_df[map_df$iso_a2=="KI",] %>% st_shift_longitude()
+
 saveRDS(map_df, "DS-D files/New map.rds")
 rm(list = ls())
