@@ -137,7 +137,7 @@ with_progress({
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin3","admin_alt"))) %>% names()
   psu_a = c("hh_id","ind_weight","hh_weight","psu","ssu","sample_strata")
   dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
-  df_age_sex = dck %>% mutate(n = sum(ind_weight)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
+  df_age_sex = dck %>% mutate(n = sum(ind_weight, na.rm = TRUE)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
   
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
