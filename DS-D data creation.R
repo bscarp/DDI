@@ -46,8 +46,9 @@ list_disability = c("Disability versus no disability" = 1, "Severe versus modera
                   "Disability by type" = 4)
 list_disability2 = unique(data1$DifficultyName)
 
-map_df = read_sf(paste0(cen_dir,"Downloads/world shp/ne_10m_admin_1_states_provinces.shp"))
-iso = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","level","ISOCode"))
+map_df = readRDS("DS-D files/New map.rds")
+iso = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/R Shiny/REGION_ISO_CODESv2.xlsx")) %>% select(Country,Region,ISOCode) %>% setNames(c("country","level","ISOCode")) %>% filter(!is.na(country)) %>% mutate(level = str_to_title(level))
+data1 = data1 %>% mutate(level = sub("Ra-o Negro","Ra-O Negro",level))
 data1 = left_join(data1,iso %>% filter(!country == "Vietnam"), by = c("country","level"))
 
 data0 = data0 %>% rename("Country" = "country")
