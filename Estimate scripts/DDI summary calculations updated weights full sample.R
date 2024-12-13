@@ -176,7 +176,7 @@ with_progress({
     }
     
     #Prevalences for age-sex adjustment
-    if(admin_grp == "admin0") {
+    if(admin_grp == "bypass") {
       tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
         p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
@@ -375,7 +375,7 @@ with_progress({
     rm(tab_P4_nr1,tab_P4_nr2)
     
     #Prevalences for age-sex adjustment
-    if(admin_grp == "admin0") {
+    if(admin_grp == "bypass") {
       tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
         p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
