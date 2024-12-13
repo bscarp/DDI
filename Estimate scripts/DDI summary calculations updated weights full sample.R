@@ -110,7 +110,7 @@ with_progress({
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
-  dck2 = dck %>% filter(!is.na(ind_weight)&!is.na(age_sex))
+  dck2 = dck %>% select(all_of(cou_a),all_of(dis_a2),all_of(grp_a),any_of(dom_a),all_of(oth_a2),ind_weight,fpc) %>% filter(!is.na(ind_weight)&!is.na(age_sex))
   dck2 = survey::svydesign(ids = ~0, weights = NULL, strata = NULL, nest = TRUE, fpc = ~fpc, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% srvyr::as_survey()
   
   p(sprintf("%s processed", r_name))
@@ -237,7 +237,6 @@ with_progress({
                        disability_sev = factor(disability_some + 2*disability_atleast,labels = c("no","some","atleast")),
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
                        disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
-                       fpc = n(),
                        age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")),
                        age_group10 = cut(age, c(14,24,34,44,54,64,Inf),c("15 to 24","25 to 34","35 to 44","45 to 54","55 to 64","65+")),
                        male = factor(1 - female, labels = c("Female","Male")),
@@ -296,7 +295,7 @@ with_progress({
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
-  dck2 = dck %>% filter(!is.na(ind_weight)&!is.na(age_sex))
+  dck2 = dck %>% select(all_of(cou_a),all_of(dis_a2),all_of(grp_a),any_of(dom_a),all_of(oth_a2),ind_weight) %>% filter(!is.na(ind_weight)&!is.na(age_sex))
   dck2 = survey::svydesign(ids = ~0, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% srvyr::as_survey()
   
   p(sprintf("%s processed", r_name))
