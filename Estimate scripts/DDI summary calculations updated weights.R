@@ -317,26 +317,26 @@ with_progress({
     
     #Prevalences for age-sex adjustment
     if(admin_grp == "bypass") {
-      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
+      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
         p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
         tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
           arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
       }   
-      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
+      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
         p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
         tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
           arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
       }
     } else {
-      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
+      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
         p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
         tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2),list(mean = ~as.double(NA), mean_se = ~as.double(NA))),.groups = "drop") %>%
           arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
       }
-      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
+      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %dofuture% {
         p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
         tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any),list(mean = ~as.double(NA), mean_se = ~as.double(NA))),.groups = "drop") %>%
