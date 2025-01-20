@@ -42,22 +42,28 @@ ui <- page_navbar(
                     conditionalPanel(condition = "input.nav == 'across'", virtualSelectInput("country", "Countries (select multiple)", list_country, multiple = TRUE, search = TRUE, selected = c("South Africa", "Kenya", "Uganda")), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries"), actionLink("reset","Reset countries")),
                     conditionalPanel(condition = "input.nav == 'within'", virtualSelectInput("country_sin", "Country (select single)", list_country, search = TRUE, selected = "Guatemala"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(virtualSelectInput("admin", "Select the subnational level to display:", c("Subnational division 1", "Subnational division 2", "Alternative subnational division"), search = TRUE, selected = "Subnational division 1"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't4'", tooltip(virtualSelectInput("admin", "Select the subnational level to display:", c("Subnational division 1", "Subnational division 2", "Alternative subnational division"), search = TRUE, selected = "Subnational division 1"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", tooltip(virtualSelectInput("indicator", "Indicators", list_indicator, search = TRUE, selected = "Multidimensional poverty"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
                     conditionalPanel(condition = "input.nav != 'home'", tooltip(selectInput("group", "Population Groups", list_group,selected = "All adults (ages 15 and older)"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't3')", tooltip(selectInput("disability", "Disability breakdown", choices = list_disability, selected = 1),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", tooltip(selectInput("disability2", "Disability group", choices = list_disability2, selected = "Disability"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't2'", noUiSliderInput("scale", "Indicator scale", min = 0, max = 100, c(0,100)), ns = NS(NULL))
+                    conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't4')", tooltip(selectInput("disability", "Disability breakdown", choices = list_disability, selected = 1),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(selectInput("disability2", "Disability group", choices = list_disability2, selected = "Disability"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
+                    #conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(selectInput("disability3", "Other disability group", choices = list_disability2, selected = "No disability"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", noUiSliderInput("scale", "Indicator scale", min = 0, max = 100, c(0,100)), ns = NS(NULL)),
+                    conditionalPanel(condition = "input.nav == 'across' & input.h1 == 't1'", selectInput("colour1", "Pick a colour theme", choices =c("Light" = 1, "Dark" = 2, "Accent" = 3), selected = 2), ns = NS(NULL)),
+                    conditionalPanel(condition = paste("input.nav == 'within' & input.h2 == 't3' & [", paste(paste("'", key_m$IndicatorName[!is.na(key_m$Direction)],"'",sep=""),collapse=","),"].includes(input.indicator)",sep=""), 
+                                     selectInput("colour2", "Pick a colour theme", choices = c("Red to blue" = 1, "Brown to blue" = 2, "Purple to green" = 3), selected = 1), ns = NS(NULL)),
+                    conditionalPanel(condition = paste("input.nav == 'within' & input.h2 == 't3' & [", paste(paste("'", key_m$IndicatorName[ is.na(key_m$Direction)],"'",sep=""),collapse=","),"].includes(input.indicator)",sep=""), 
+                                     selectInput("colour3", "Pick a colour theme", choices = c("Blue" = 1, "Brown" = 2, "Green" = 3), selected = 1), ns = NS(NULL))
   ),
   nav_panel("Cross-country estimates", value = "across",
             navset_card_underline(id = "h1",
                                   nav_panel(value = 't1', "Graph", h4(textOutput("title1")), h6(textOutput("key1")), h6(textOutput("ind1")), girafeOutput("stat_top_gra")),
-                                  nav_panel(value = 't1', "Table", h4(textOutput("title2")), h6(textOutput("key2")), h6(textOutput("ind2")), DTOutput("stat_top_tab"))
+                                  nav_panel(value = 't2', "Table", h4(textOutput("title2")), h6(textOutput("key2")), h6(textOutput("ind2")), DTOutput("stat_top_tab"))
             )),
   nav_panel("Estimates within countries", value = "within",
             navset_card_underline(id = "h2",
-                                  nav_panel(value = 't2', "Map", h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
-                                  nav_panel(value = 't3', "Table", h4(textOutput("title4")), textOutput("ind4"), DTOutput("stat_cou_tab"))
+                                  nav_panel(value = 't3', "Map", h4(textOutput("title3")), textOutput("ind3"), girafeOutput("stat_cou_map")),
+                                  nav_panel(value = 't4', "Table", h4(textOutput("title4")), textOutput("ind4"), DTOutput("stat_cou_tab"))
             )),
   nav_item(a(href="https://www.disabilitydatainitiative.org/ds-e-methods", "Methods", target="_blank")),
   nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
@@ -151,6 +157,45 @@ server <- function(session, input, output) {
     updateSelectInput(session, "disability2", "Disability group", choices = temp2, selected = temp)
   })
   
+  #Change categories for other disability selector
+  observe({
+    temp = input$disability3
+    if(input$indicator == "Households with disabilities") {
+      temp = ifelse(temp %in% list_disability2[4:9], list_disability2[10], temp)
+      temp2 = list_disability2[c(1:3,10:11)]
+    } else {
+      temp2 = list_disability2
+    }
+    updateSelectInput(session, "disability3", "Other disability group", choices = temp2, selected = temp)
+  })
+  
+  #Change colour for figures ("Light", "Dark", "Accent")
+  coloura = reactive({
+    case_when(input$colour1 == 1 ~ "Pastel1",
+              input$colour1 == 2 ~ "Dark2",
+              input$colour1 == 3 ~ "Accent")
+  })
+  
+  #Change colour for maps ("Red to blue" = 1, "Brown to blue" = 2, "Purple to green" = 3) or ("Blue", "Brown", "Green")
+  colourb = reactive({
+    case_when(input$colour2 == 1 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "RdYlBu",
+              input$colour2 == 2 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "BrBG",
+              input$colour2 == 3 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "PRGn",
+              input$colour3 == 1 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "Blues",
+              input$colour3 == 2 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "YlOrBr",
+              input$colour3 == 3 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "Greens")
+  })
+  
+  #Change direction for map colour
+  directiona = reactive({
+    if_else(isTRUE(key_m$Direction[key_m$IndicatorName == input$indicator]),1,-1)
+  })
+  
+  #Change direction for map colour
+  directionb = reactive({
+    if_else(is.na(key_m$Direction[key_m$IndicatorName == input$indicator]),"seq","div")
+  })
+  
   # process inputs to filter data
   dis_grp = reactive({
     unlist(case_when(input$disability == 1 & grepl("disab", input$indicator, ignore.case = TRUE)  ~ list(c("Disability")),
@@ -210,6 +255,7 @@ server <- function(session, input, output) {
     data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     plot = ggplot(data = data_g) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = label, data_id = Country), position = "dodge") + 
       scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + labs(caption = source_all()) + 
+      scale_fill_brewer(type = "qual", palette = coloura()) +
       theme(axis.title = element_blank(), legend.title = element_blank(), legend.position = "bottom", legend.key.size = unit(2, "cm"), legend.key.spacing = unit(5, "mm"),
             text = element_text(size=60), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
             plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
@@ -227,11 +273,21 @@ server <- function(session, input, output) {
     data_m = data_sel1() %>% filter(admin == "Subnational division 1", DifficultyName == input$disability2) %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
     plot1 = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
+      scale_fill_distiller(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100), values = c(input$scale[1]/100, input$scale[2]/100), palette = colourb(), direction = directiona(), type = directionb()) + labs(caption = source_sin()) + 
+      theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60), 
+            plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
+    girafe(ggobj = plot1, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
+  })
+  
+  output$stat_cou_map2 <- renderGirafe({
+    data_m = data_sel1() %>% filter(admin == "Subnational division 1", DifficultyName == input$disability3) %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
+    map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
+    plot1 = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
       scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(input$scale[1], input$scale[2])) + labs(caption = source_sin()) + 
       theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60), 
             plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
     girafe(ggobj = plot1, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
-    })
+  })
   
   output$stat_cou_tab <- renderDT({
     data_t = data_sel1() %>% filter(admin %in% adm_grp(), DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))
