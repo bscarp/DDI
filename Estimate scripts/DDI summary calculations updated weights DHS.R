@@ -293,7 +293,6 @@ with_progress({
       tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
       tab_as_adj_2 = tab_P2_nr
       tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-      }
     }
     # p(sprintf("%s, Tab6, %s", r_name, admin_grp))
     # tab_as_adj1 = dck2a %>% group_by(age_sex) %>% summarise(weight = first(as_weight), across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>% select(-1) %>% summarise(across(contains("mean"), ~weighted.mean(.x,weight)))

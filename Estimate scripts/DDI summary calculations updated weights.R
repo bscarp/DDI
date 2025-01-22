@@ -322,7 +322,7 @@ with_progress({
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
         tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
           arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }   
+      }
       tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
         p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
@@ -334,7 +334,6 @@ with_progress({
       tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
       tab_as_adj_2 = tab_P2_nr
       tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-      }
     }
 
     return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))

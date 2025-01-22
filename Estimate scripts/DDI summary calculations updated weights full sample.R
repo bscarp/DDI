@@ -194,7 +194,6 @@ with_progress({
       tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
       tab_as_adj_2 = tab_P2_nr
       tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-      }
     }
 
     return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
@@ -385,7 +384,6 @@ with_progress({
       tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
       tab_as_adj_2 = tab_P2_nr
       tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-      }
     }
 
     return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
