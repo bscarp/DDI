@@ -47,12 +47,20 @@ ui <- page_navbar(
                      girafeOutput("map", width = "100%"))
     ),
     nav_panel(h5("Table of Disability Questions by Country"),
-      div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
-              h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
-              DTOutput("table1")
-          ),
-          #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
-      )
+              div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
+                      h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
+                      DTOutput("table1")
+              ),
+              #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
+              )
+    ),
+    nav_panel(h5("Cite us"),
+              div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
+                      h4("Suggested citation: DDI. Disability Statistics – Questionnaire Review Database (DS-QR Database). 
+                         Disability Data Initiative collective. Fordham University: New York, USA. 2024.")
+              ),
+              #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
+              )
     )
   )
   ),
@@ -62,6 +70,8 @@ ui <- page_navbar(
     # Data table 
     div(class = "data-area",
         style = "align-items: center; text-align: center; padding: 20px;",
+        p(style = "text-align: center;", "Suggested citation: DDI. Disability Statistics – Questionnaire Review Database (DS-QR Database). 
+                         Disability Data Initiative collective. Fordham University: New York, USA. 2024."),
         div(style = "width: 100%;",
             DTOutput("table2")
         ),
