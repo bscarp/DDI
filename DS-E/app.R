@@ -11,49 +11,57 @@
 library(shiny)
 library(bslib)
 library(shinyWidgets)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 library(ggiraph)
 library(DT)
 library(sf)
+library(arrow)
 
+data0 = read_parquet("data0.parquet", as_data_frame = FALSE)
+data1 = read_parquet("data1.parquet", as_data_frame = FALSE)
+map_df = read_sf("map_df.shp")
 load("Data.RData")
 
 # Define UI for application that draws a histogram
 ui <- page_navbar(
   id = "nav",
   title = "Disability Statistics Database (DS-E)",
-  theme = bs_theme(bootswatch = "flatly", primary = "#0072B5", secondary = "#E9ECEF"),
-  
-  tags$style(HTML("
-    .header {text-align: center; padding: 20px;}
-    .filter-area {display: flex; justify-content: center; gap: 20px; margin-top: 20px;}
-						
-						 
-    .data-area {padding: 20px; max-width: 1200px; margin: auto;}
-    .card {margin: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;}
-    .download-btn {background-color: #0072B5; color: white; border: none; margin-top: 10px; width: 200px;}
-  ")),
+  theme = bs_theme(bootswatch = "flatly", primary = "#0072B5", secondary = "#E9ECEF") |> 
+    bs_add_rules(
+      list(
+        ".header {text-align: center; padding: 20px;}",
+        ".filter-area {display: flex; justify-content: center; gap: 20px; margin-top: 20px;}",
+        ".data-area {padding: 20px; max-width: 1200px; margin: auto;}",
+        ".card {margin: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;}",
+        ".download-btn {background-color: #0072B5; color: white; border: none; margin-top: 10px; width: 200px;}"
+      )
+    ),
   
   # Landing page
   nav_item(a(href="https://ds-e.disabilitydatainitiative.org", "Home")),
   
   #Selectors
   sidebar = sidebar(id = "sidebar",
-                    conditionalPanel(condition = "input.nav == 'across'", virtualSelectInput("country", "Countries (select multiple)", list_country, multiple = TRUE, search = TRUE, selected = c("South Africa", "Kenya", "Uganda")), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across'", actionLink("selectall","Select all countries"), actionLink("reset","Reset countries")),
-                    conditionalPanel(condition = "input.nav == 'within'", virtualSelectInput("country_sin", "Country (select single)", list_country, search = TRUE, selected = "Guatemala"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't4'", tooltip(virtualSelectInput("admin", "Select the subnational level to display:", c("Subnational division 1", "Subnational division 2", "Alternative subnational division"), search = TRUE, selected = "Subnational division 1"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav != 'home'", tooltip(virtualSelectInput("indicator", "Indicators", list_indicator, search = TRUE, selected = "Multidimensional poverty"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav != 'home'", tooltip(selectInput("group", "Population Groups", list_group,selected = "All adults (ages 15 and older)"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't4')", tooltip(selectInput("disability", "Disability breakdown", choices = list_disability, selected = 1),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(selectInput("disability2", "Disability group", choices = list_disability2, selected = "Disability"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    #conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", tooltip(selectInput("disability3", "Other disability group", choices = list_disability2, selected = "No disability"),"The Methods tab above has definitions and details about breakdowns", placement = "right"), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", noUiSliderInput("scale", "Indicator scale", min = 0, max = 100, c(0,100)), ns = NS(NULL)),
-                    conditionalPanel(condition = "input.nav == 'across' & input.h1 == 't1'", selectInput("colour1", "Pick a colour theme", choices =c("Light" = 1, "Dark" = 2, "Accent" = 3), selected = 2), ns = NS(NULL)),
-                    conditionalPanel(condition = paste("input.nav == 'within' & input.h2 == 't3' & [", paste(paste("'", key_m$IndicatorName[!is.na(key_m$Direction)],"'",sep=""),collapse=","),"].includes(input.indicator)",sep=""), 
-                                     selectInput("colour2", "Pick a colour theme", choices = c("Red to blue" = 1, "Brown to blue" = 2, "Purple to green" = 3), selected = 1), ns = NS(NULL)),
-                    conditionalPanel(condition = paste("input.nav == 'within' & input.h2 == 't3' & [", paste(paste("'", key_m$IndicatorName[ is.na(key_m$Direction)],"'",sep=""),collapse=","),"].includes(input.indicator)",sep=""), 
-                                     selectInput("colour3", "Pick a colour theme", choices = c("Blue" = 1, "Brown" = 2, "Green" = 3), selected = 1), ns = NS(NULL))
+                    accordion(open = FALSE,
+                      conditionalPanel(condition = "input.nav == 'across'", accordion_panel(title = "Countries (select multiple)", virtualSelectInput("country", NULL, list_country, multiple = TRUE, search = TRUE, selected = c("South Africa", "Kenya", "Uganda"), keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px"), 
+                                                                                            actionLink("selectall","Select all countries"), actionLink("reset","Reset countries")), ns = NS(NULL)),
+                      conditionalPanel(condition = "input.nav == 'within'", accordion_panel(title = "Country (select single)", virtualSelectInput("country_sin", NULL, list_country, search = TRUE, selected = "Guatemala", keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      div(style = "text-align: right;", dropdownButton("The Methods tab above has definitions and details about breakdowns", status = 'info', icon = icon('info'))),
+                      conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't4'", accordion_panel(title = "Select the subnational level", virtualSelectInput("admin", NULL, c("Subnational division 1", "Subnational division 2", "Alternative subnational division"), search = TRUE, selected = "Subnational division 1", keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      conditionalPanel(condition = "input.nav != 'citation'", accordion_panel(title = "Indicators", virtualSelectInput("indicator", NULL, prepare_choices(key_m,IndicatorName,IndicatorName,Group, alias = Original), search = TRUE, selected = "Multidimensional poverty", position = "auto", keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      conditionalPanel(condition = "input.nav != 'citation'", accordion_panel(title = "Population Groups", virtualSelectInput("group", NULL, list_group, selected = "All adults (ages 15 and older)", keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      conditionalPanel(condition = "input.nav == 'across' | (input.nav == 'within' & input.h2 == 't4')", accordion_panel(title = "Disability breakdown", virtualSelectInput("disability", NULL, choices = list_disability, selected = 1, keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", accordion_panel(title = "Disability group", virtualSelectInput("disability2", NULL, choices = list_disability2, selected = "Disability", keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      #conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", accordion_panel(title = "Other disability group", virtualSelectInput("disability3", NULL, choices = list_disability2, selected = "No disability", keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      conditionalPanel(condition = "input.nav == 'within' & input.h2 == 't3'", accordion_panel(title = "Indicator scale", noUiSliderInput("scale", NULL, min = 0, max = 100, c(0,100))), ns = NS(NULL)),
+                      conditionalPanel(condition = "input.nav == 'across' & input.h1 == 't1'", accordion_panel(title = "Pick a colour theme", virtualSelectInput("colour1", NULL, choices =c("Viridis" = 1, "Turbo" = 2, "Plasma" = 3), selected = 2, keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      conditionalPanel(condition = paste("input.nav == 'within' & input.h2 == 't3' & [", paste(paste("'", key_m$IndicatorName[!is.na(key_m$Direction)],"'",sep=""),collapse=","),"].includes(input.indicator)",sep=""), 
+                                       accordion_panel(title = "Pick a colour theme", virtualSelectInput("colour2", NULL, choices = c("Viridis" = 1, "Mako" = 2, "Rocket" = 3), selected = 3, keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL)),
+                      conditionalPanel(condition = paste("input.nav == 'within' & input.h2 == 't3' & [", paste(paste("'", key_m$IndicatorName[ is.na(key_m$Direction)],"'",sep=""),collapse=","),"].includes(input.indicator)",sep=""), 
+                                       accordion_panel(title = "Pick a colour theme", virtualSelectInput("colour3", NULL, choices = c("Viridis" = 1, "Mako" = 2, "Rocket" = 3), selected = 2, keepAlwaysOpen = TRUE, popupDropboxBreakpoint = "500px")), ns = NS(NULL))
+                    )
   ),
   nav_panel("Cross-country estimates", value = "across",
             navset_card_underline(id = "h1",
@@ -66,8 +74,17 @@ ui <- page_navbar(
                                   nav_panel(value = 't4', "Table", h4(textOutput("title4")), textOutput("ind4"), DTOutput("stat_cou_tab"))
             )),
   nav_item(a(href="https://www.disabilitydatainitiative.org/ds-e-methods", "Methods", target="_blank")),
-  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
-  # nav_panel("Test",tableOutput('show_inputs'), textOutput('show_data'))
+  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank")),
+  nav_panel(value = 'citation', "Citation",
+            div(style = "display: flex; flex-direction: column; align-items: left; margin: auto; width: 100%; max-width: 1600px;",
+                h4("By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to 
+                   https://ds-e.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in 
+                   part on the Data, will cite the source as follows:"),
+                h4(em("DDI. Disability Statistics – Estimates Database (DS-E Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.")),
+                h4("For the full terms and conditions, click the link below:"),
+                a(href="https://www.disabilitydatainitiative.org/data-use-agreement-for-the-disability-data-initiatives-disability-statistics-estimates-database/", "Terms and conditions", target="_blank")
+            )
+  )
 )
 
 # Define server logic required to draw a histogram
@@ -79,11 +96,11 @@ server <- function(session, input, output) {
     if(input$selectall == 0) {
       return(NULL)
     } else if (input$selectall%%2 == 0) {
-      updateVirtualSelect("country", "Countries (select multiple)", choices = list_country, selected = c("South Africa", "Kenya", "Uganda"), session = session)
-      updateActionLink(session,"selectall","Select all countries")
+      updateVirtualSelect("country", choices = list_country, selected = c("South Africa", "Kenya", "Uganda"), session = session)
+      updateActionLink(session,"selectall")
     } else {
-      updateVirtualSelect("country", "Countries (select multiple)", choices = list_country, selected = as.character(unlist(list_country)), session = session)
-      updateActionLink(session,"selectall","Select no countries")
+      updateVirtualSelect("country", choices = list_country, selected = as.character(unlist(list_country)), session = session)
+      updateActionLink(session,"selectall")
     }
   })
   
@@ -92,26 +109,26 @@ server <- function(session, input, output) {
     if(input$reset == 0) {
       return(NULL)
     } else {
-      updateVirtualSelect("country", "Countries (select multiple)", choices=list_country, selected = c("South Africa", "Kenya", "Uganda"), session = session)
+      updateVirtualSelect("country", choices=list_country, selected = c("South Africa", "Kenya", "Uganda"), session = session)
       updateActionLink(session,"selectall","Select all countries")
     }
   })
   
   #Change country based on country_sin
   # observe({
-  #   updateVirtualSelect("country", "Countries (select multiple)", choices=list_country, selected = input$country_sin, session = session)
+  #   updateVirtualSelect("country", choices=list_country, selected = input$country_sin, session = session)
   # })
   
   #Change categories for admin selector
   observe({
     temp = if_else(input$admin %in% df_country$admin[df_country$Country %in% input$country_sin], input$admin, "Subnational division 1")
-    updateVirtualSelect("admin", "Select the subnational level to display:", choices = df_country$admin[df_country$Country %in% input$country_sin], selected = temp, session = session)
+    updateVirtualSelect("admin", choices = df_country$admin[df_country$Country %in% input$country_sin], selected = temp, session = session)
   })
   
   #Change categories for indicator selector
   observe({
     temp = input$indicator
-    updateVirtualSelect("indicator", "Indicators", disabledChoices = df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf") %>% pull(IndicatorName), selected = temp, session = session)
+    updateVirtualSelect("indicator", disabledChoices = df_static %>% filter(Country %in% input$country) %>% summarise(min = min(min), .by = IndicatorName) %>% filter(min == "Inf") %>% pull(IndicatorName), selected = temp, session = session)
   })
   
   #Change categories for grouping selector
@@ -130,7 +147,7 @@ server <- function(session, input, output) {
       temp = sub("Adults ages 25 to 29","Adults ages 15 to 29",temp)
       temp2 = list_group
     }
-    updateSelectInput(session, "group", "Population Groups", choices = temp2, selected = temp)
+    updateVirtualSelect("group", choices = temp2, selected = temp, session = session)
   })
   
   #Change categories for disability selector
@@ -142,7 +159,7 @@ server <- function(session, input, output) {
     } else {
       temp2 = list_disability
     }
-    updateSelectInput(session, "disability", "Disability breakdown", choices = temp2, selected = temp)
+    updateVirtualSelect("disability", choices = temp2, selected = temp, session = session)
   })
   
   #Change categories for disability selector
@@ -154,7 +171,7 @@ server <- function(session, input, output) {
     } else {
       temp2 = list_disability2
     }
-    updateSelectInput(session, "disability2", "Disability group", choices = temp2, selected = temp)
+    updateVirtualSelect("disability2", choices = temp2, selected = temp, session = session)
   })
   
   #Change categories for other disability selector
@@ -166,29 +183,29 @@ server <- function(session, input, output) {
     } else {
       temp2 = list_disability2
     }
-    updateSelectInput(session, "disability3", "Other disability group", choices = temp2, selected = temp)
+    updateVirtualSelect("disability3", choices = temp2, selected = temp, session = session)
   })
   
   #Change colour for figures ("Light", "Dark", "Accent")
   coloura = reactive({
-    case_when(input$colour1 == 1 ~ "Pastel1",
-              input$colour1 == 2 ~ "Dark2",
-              input$colour1 == 3 ~ "Accent")
+    case_when(input$colour1 == 1 ~ "viridis",
+              input$colour1 == 2 ~ "turbo",
+              input$colour1 == 3 ~ "plasma")
   })
   
   #Change colour for maps ("Red to blue" = 1, "Brown to blue" = 2, "Purple to green" = 3) or ("Blue", "Brown", "Green")
   colourb = reactive({
-    case_when(input$colour2 == 1 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "RdYlBu",
-              input$colour2 == 2 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "BrBG",
-              input$colour2 == 3 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "PRGn",
-              input$colour3 == 1 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "Blues",
-              input$colour3 == 2 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "YlOrBr",
-              input$colour3 == 3 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "Greens")
+    case_when(input$colour2 == 1 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "viridis",
+              input$colour2 == 2 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "mako",
+              input$colour2 == 3 & !is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "rocket",
+              input$colour3 == 1 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "viridis",
+              input$colour3 == 2 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "mako",
+              input$colour3 == 3 & is.na(key_m$Direction[key_m$IndicatorName == input$indicator]) ~ "rocket")
   })
   
   #Change direction for map colour
   directiona = reactive({
-    if_else(isTRUE(key_m$Direction[key_m$IndicatorName == input$indicator]),1,-1)
+    if_else(isFALSE(key_m$Direction[key_m$IndicatorName == input$indicator]), 1, -1)
   })
   
   #Change direction for map colour
@@ -218,11 +235,12 @@ server <- function(session, input, output) {
     ))
   })
   
-  data_sel0 = reactive({data0 %>% filter(Country %in% input$country, IndicatorName == input$indicator, PopulationName == input$group, DifficultyName %in% dis_grp()) %>%
-    mutate(DifficultyName = factor(DifficultyName,levels = dis_grp()))})
-  data_sel1_p1 = reactive({data1 %>% filter(Country == input$country_sin)})
+  data_sel0 = reactive({data0 %>% filter(Country %in% input$country, IndicatorName == input$indicator, PopulationName == input$group) %>% collect() %>% filter(DifficultyName %in% dis_grp()) %>%
+    mutate(DifficultyName = factor(DifficultyName,levels = dis_grp()))
+    })
+  data_sel1_p1 = reactive({data1 %>% filter(Country == input$country_sin, !is.na(level))})
   data_sel1_p2 = reactive({data_sel1_p1() %>% filter(PopulationName == input$group)})
-  data_sel1 = reactive({data_sel1_p2() %>% filter(IndicatorName == input$indicator)})
+  data_sel1 = reactive({data_sel1_p2() %>% filter(IndicatorName == input$indicator) %>% collect()})
   # data_sel1 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, admin %in% adm_grp(), DifficultyName %in% dis_grp()) %>% select(-c(Country,admin))})
   # data_sel2 = reactive({data1 %>% filter(Country == input$country_sin, IndicatorName == input$indicator, PopulationName == input$group, admin == "Subnational division 1", DifficultyName == input$disability2)})
   
@@ -255,7 +273,7 @@ server <- function(session, input, output) {
     data_g = data_sel0() %>% mutate(label = paste0(Country,"\n",DifficultyName,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     plot = ggplot(data = data_g) + geom_col_interactive(mapping = aes(y = Value, x = Country, fill = DifficultyName, tooltip = label, data_id = Country), position = "dodge") + 
       scale_y_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100)) + labs(caption = source_all()) + 
-      scale_fill_brewer(type = "qual", palette = coloura()) +
+      scale_fill_viridis_d(option = coloura(), end = 0.95) +
       theme(axis.title = element_blank(), legend.title = element_blank(), legend.position = "bottom", legend.key.size = unit(2, "cm"), legend.key.spacing = unit(5, "mm"),
             text = element_text(size=60), axis.text.x = element_text(angle = 45, vjust = 1, hjust=1), 
             plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
@@ -270,20 +288,10 @@ server <- function(session, input, output) {
   })
   
   output$stat_cou_map <- renderGirafe({
-    data_m = data_sel1() %>% filter(admin == "Subnational division 1", DifficultyName == input$disability2) %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
+    data_m = data_sel1() %>% filter(admin == "Subnational division 1", DifficultyName == input$disability2) %>% mutate(level = gsub("'", "&#39;", level), label = paste0(level, "\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
     map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
     plot1 = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
-      scale_fill_distiller(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100), values = c(input$scale[1]/100, input$scale[2]/100), palette = colourb(), direction = directiona(), type = directionb()) + labs(caption = source_sin()) + 
-      theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60), 
-            plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
-    girafe(ggobj = plot1, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
-  })
-  
-  output$stat_cou_map2 <- renderGirafe({
-    data_m = data_sel1() %>% filter(admin == "Subnational division 1", DifficultyName == input$disability3) %>% mutate(label = paste0(level,"\n",if_else(is.na(Value), "Insufficient Sample Size", paste0(round(Value,1),"%"))))
-    map <- inner_join(map_df, data_m, by = join_by(iso_3166_2 == ISOCode))
-    plot1 = ggplot(data=map) + geom_sf_interactive(aes(fill=Value, tooltip = label, data_id = level),colour="black") +
-      scale_fill_continuous(name = NULL, labels = scales::label_percent(scale = 1), limits = c(input$scale[1], input$scale[2])) + labs(caption = source_sin()) + 
+      scale_fill_viridis_c(name = NULL, labels = scales::label_percent(scale = 1), limits = c(0,100), values = c(input$scale[1]/100, input$scale[2]/100), option = colourb(), direction = directiona()) + labs(caption = source_sin()) + 
       theme(axis.text = element_blank(), axis.ticks = element_blank(), legend.key.size = unit(3, "cm"), text = element_text(size = 60), 
             plot.caption = element_text(size = 40, margin = margin(t = 20)), plot.caption.position = "plot")
     girafe(ggobj = plot1, width_svg = 20, height_svg = 20, options = list(opts_hover(css = ''), opts_sizing(rescale = TRUE), opts_hover_inv(css = "opacity:0.1;"), opts_zoom(max = 10)))
@@ -299,7 +307,7 @@ server <- function(session, input, output) {
   
   observe({
     temp = df_static %>% filter(Country == input$country_sin, IndicatorName == input$indicator)
-    updateNoUiSliderInput(session = session, "scale", "Indicator scale", value = c(temp$min, temp$max), range = c(0,100))
+    updateNoUiSliderInput(session = session, "scale", value = c(temp$min, temp$max), range = c(0,100))
   })
   
   source_all = reactive({
