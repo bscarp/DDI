@@ -5,6 +5,7 @@ library(readxl)
 library(countrycode)
 library(sf)
 library(terra)
+library(arrow)
 
 #DS-E
 cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
@@ -60,7 +61,10 @@ df_indicator = data0 %>% select(Country,IndicatorName,PopulationName) %>% distin
 df_static = read_xlsx("DS-D files/Static.xlsx")
 df_static = df_static %>% mutate(IndicatorName  = str_replace_all(IndicatorName, setNames(df_indicator_t$IndicatorName, unique(IndicatorName)[c(23,15,9,3:4,18,28,24,10,2,6,17,22,8,29,20,19,16,7,5,1,25,14,13,27,11,26,12,21)])))
 
-save(data0, data1, map_df, list_country, list_indicator, list_group, list_disability, list_disability2, key_m, df_country, df_static, file = "DS-E/Data.RData")
+save(list_country, list_indicator, list_group, list_disability, list_disability2, key_m, df_country, df_static, file = "DS-E/Data.RData")
+write_parquet(data0, sink = "DS-E/data0.parquet")
+write_parquet(data1, sink = "DS-E/data1.parquet")
+write_sf(map_df, dsn = "DS-E/map_df.shp")
 rm(list = ls())
 
 #DS-QR
