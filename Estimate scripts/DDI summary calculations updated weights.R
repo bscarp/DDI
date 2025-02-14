@@ -150,67 +150,51 @@ with_progress({
     }
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight )&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(hh_weight  )&!is.na(sample_strata))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = c(psu, ssu), weights = c(ind_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = c(psu, ssu), weights = c(hh_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
-    dck2c = survey::svydesign(ids = ~psu + ssu, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
-    dck2c$fpc$pps = FALSE
     rm(dck)
   } else if(grepl("psu", psu2$`Stata code FINAL`)) {
     psu_a = psu_a[!grepl("ssu|sample_strata",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ind_weight))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(hh_weight))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ind_weight)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = psu, weights = ind_weight, strata = NULL, nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = psu, weights = hh_weight, strata = NULL, nest = TRUE)
-    dck2c = survey::svydesign(ids = ~psu, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
-    dck2c$fpc$pps = FALSE
     rm(dck)
   } else if(grepl("admin", psu2$`Stata code FINAL`)) {
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     if (dataset == "South Africa_IPUMS_2011") {
       dck2a = dck2a %>% as_survey_design(ids = admin3, weights = ind_weight, strata = sample_strata, nest = TRUE)
       dck2b = dck2b %>% as_survey_design(ids = admin3, weights = hh_weight, strata = sample_strata, nest = TRUE)      
-      dck2c = survey::svydesign(ids = ~admin3, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     } else {
       dck2a = dck2a %>% as_survey_design(ids = admin2, weights = ind_weight, strata = sample_strata, nest = TRUE)
       dck2b = dck2b %>% as_survey_design(ids = admin2, weights = hh_weight, strata = sample_strata, nest = TRUE)
-      dck2c = survey::svydesign(ids = ~admin2, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     }
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
-    dck2c$fpc$pps = FALSE
     rm(dck)
   } else if(grepl("sample_strata", psu2$`Stata code FINAL`)) {
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = hh_id, weights = ind_weight, strata = sample_strata, nest = TRUE)
     dck2b = dck2b %>% as_survey_design(ids = hh_id, weights = hh_weight, strata = sample_strata, nest = TRUE)
-    dck2c = survey::svydesign(ids = ~hh_id, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
-    dck2c$fpc$pps = FALSE
     rm(dck)
   } else {
     psu_a = psu_a[!grepl("ssu|psu|sample_strata",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(ind_weight))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_weight))
-    dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(ind_weight)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey_design(ids = NULL, weights = ind_weight)
     dck2b = dck2b %>% as_survey_design(ids = NULL, weights = hh_weight)
-    dck2c = survey::svydesign(ids = ~0, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2c) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
-    dck2c$fpc$pps = FALSE
     rm(dck)
   }
   
@@ -314,29 +298,8 @@ with_progress({
     
     tab_P4_nr = full_join(tab_P4_nr1,tab_P4_nr2)
     rm(tab_P4_nr1,tab_P4_nr2)
-    
-    #Prevalences for age-sex adjustment
-    if(admin_grp == "bypass") {
-      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2c %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-    } else {
-      tab_as_adj_1 = tab_P1_nr
-      tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
-      tab_as_adj_2 = tab_P2_nr
-      tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-    }
 
-    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
+    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr))
   }
   
   tabs = pmap(tabs,bind_rows)

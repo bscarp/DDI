@@ -110,24 +110,20 @@ with_progress({
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind2_weight)&!is.na(sample_strata))
     dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a3),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(hh_weight)&!is.na(sample_strata))
     dck2d = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a4)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(dv_weight)&!is.na(sample_strata))
-    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(tsu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey(ids = c(psu, ssu, tsu), weights = c(ind_weight , NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey(ids = c(psu, ssu, tsu), weights = c(ind2_weight, NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
     dck2c = dck2c %>% as_survey(ids = c(psu, ssu, tsu), weights = c(hh_weight  , NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
     dck2d = dck2d %>% as_survey(ids = c(psu, ssu, tsu), weights = c(dv_weight  , NULL, NULL), strata = c(sample_strata, NULL, NULL), nest = TRUE)
-    dck2e = survey::svydesign(ids = ~psu + ssu + tsu, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2e) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     rm(dck)
   } else {
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind2_weight)&!is.na(sample_strata))
     dck2c = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a3),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(hh_weight)&!is.na(sample_strata))
     dck2d = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a4)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(dv_weight)&!is.na(sample_strata))
-    dck2e = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(oth_a2)) %>% filter(!is.na(psu)&!is.na(ssu)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
     dck2a = dck2a %>% as_survey(ids = c(psu, ssu), weights = c(ind_weight , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2b = dck2b %>% as_survey(ids = c(psu, ssu), weights = c(ind2_weight, NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2c = dck2c %>% as_survey(ids = c(psu, ssu), weights = c(hh_weight  , NULL), strata = c(sample_strata, NULL), nest = TRUE)
     dck2d = dck2d %>% as_survey(ids = c(psu, ssu), weights = c(dv_weight  , NULL), strata = c(sample_strata, NULL), nest = TRUE)
-    dck2e = survey::svydesign(ids = ~psu + ssu, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2e) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
     rm(dck)
   }
   
@@ -274,32 +270,7 @@ with_progress({
     tab_P4_nr = full_join(full_join(full_join(tab_P4_nr1,tab_P4_nr2),tab_P4_nr3),tab_P4_nr4)
     rm(tab_P4_nr1,tab_P4_nr2,tab_P4_nr3,tab_P4_nr4)
     
-    #Prevalences for age-sex adjustment
-    if(admin_grp == "bypass") {
-      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2e %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-    } else {
-      tab_as_adj_1 = tab_P1_nr
-      tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
-      tab_as_adj_2 = tab_P2_nr
-      tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-    }
-    # p(sprintf("%s, Tab6, %s", r_name, admin_grp))
-    # tab_as_adj1 = dck2a %>% group_by(age_sex) %>% summarise(weight = first(as_weight), across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>% select(-1) %>% summarise(across(contains("mean"), ~weighted.mean(.x,weight)))
-    # tab_as_adj2 = dck2e %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop")
-    # tab_as_adj3 = dck2a2 %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))))
-    
-    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
+    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr))
   }
 
   tabs = pmap(tabs,bind_rows)

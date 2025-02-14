@@ -110,9 +110,6 @@ with_progress({
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
-  dck2 = dck %>% select(all_of(cou_a),all_of(dis_a2),all_of(grp_a),any_of(dom_a),all_of(oth_a2),ind_weight,fpc) %>% filter(!is.na(ind_weight)&!is.na(age_sex))
-  dck2 = survey::svydesign(ids = ~0, weights = NULL, strata = NULL, nest = TRUE, fpc = ~fpc, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% srvyr::as_survey()
-  
   p(sprintf("%s processed", r_name))
   
   tabs = foreach(admin_grp = c("admin0",cou_a)) %dofuture% {
@@ -175,28 +172,7 @@ with_progress({
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
     }
     
-    #Prevalences for age-sex adjustment
-    if(admin_grp == "bypass") {
-      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2 %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>% mutate(across(contains("mean_se"),~as.double(NA))) %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2 %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-    } else {
-      tab_as_adj_1 = tab_P1_nr
-      tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
-      tab_as_adj_2 = tab_P2_nr
-      tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-    }
-
-    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
+    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr))
   }
 
   tabs = pmap(tabs,bind_rows)
@@ -287,9 +263,6 @@ with_progress({
   dck = dck %>% select(all_of(cou_a),all_of(ind_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),all_of(oth_a),all_of(oth_a2),any_of(psu_a))
   dck = dck %>% group_by(hh_id) %>% mutate(hh_id = cur_group_id()) %>% ungroup()
   
-  dck2 = dck %>% select(all_of(cou_a),all_of(dis_a2),all_of(grp_a),any_of(dom_a),all_of(oth_a2),ind_weight) %>% filter(!is.na(ind_weight)&!is.na(age_sex))
-  dck2 = survey::svydesign(ids = ~0, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% srvyr::as_survey()
-  
   p(sprintf("%s processed", r_name))
   
   tabs = foreach(admin_grp = c("admin0",cou_a)) %dofuture% {
@@ -365,28 +338,7 @@ with_progress({
     tab_P4_nr = full_join(tab_P4_nr1,tab_P4_nr2)
     rm(tab_P4_nr1,tab_P4_nr2)
     
-    #Prevalences for age-sex adjustment
-    if(admin_grp == "bypass") {
-      tab_as_adj_1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6a, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2 %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-      tab_as_adj_2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join", .options.future = list(packages = c("srvyr"))) %dofuture% {
-        p(sprintf("%s, Tab6b, %s, %s", r_name, admin_grp, agg_grp))
-        agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2 %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
-          arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
-      }
-    } else {
-      tab_as_adj_1 = tab_P1_nr
-      tab_as_adj_1 = tab_as_adj_1 %>% mutate(across(starts_with("disability"), ~as.double(NA)))
-      tab_as_adj_2 = tab_P2_nr
-      tab_as_adj_2 = tab_as_adj_2 %>% mutate(across(contains("_any"), ~as.double(NA)))
-    }
-
-    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr,tab_as_adj_1,tab_as_adj_2))
+    return(lst(tab_m_nr,tab_P1_nr,tab_P2_nr,tab_P3_nr,tab_P4_nr))
   }
   
   tabs = pmap(tabs,bind_rows)
