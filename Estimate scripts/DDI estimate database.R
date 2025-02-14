@@ -251,7 +251,7 @@ foreach(chk = chk_list2) %do% {
   write_xlsx(list("Means" = db_mean, "Standard Errors" = db_se),paste0(cen_dir,"Downloads/Census/Database/Individual/Wide_Table_Output_",sub("\\.RData","",chk),".xlsx"))
 }
 
-rm(db_loc,db_m,db_s,chk,chk_list,chk_list2,val_list,val_list2)
+rm(db_mean,db_se,db_loc,db_m,db_s,chk,chk_list,chk_list2,val_list,val_list2)
 gc()
 
 drive_auth("bradley.carpenter@mrc.ac.za")
