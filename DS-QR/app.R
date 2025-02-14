@@ -22,17 +22,16 @@ sf_use_s2(use_s2 = FALSE)
 # Define UI for application that draws a histogram
 ui <- page_navbar(
   title = "Disability Statistics Database (DS-QR)",
-  theme = bs_theme(bootswatch = "flatly", primary = "#0072B5", secondary = "#E9ECEF"),
-  
-  tags$style(HTML("
-    .header {text-align: center; padding: 20px;}
-    .filter-area {display: flex; justify-content: center; gap: 20px; margin-top: 20px;}
-						
-						 
-    .data-area {padding: 20px; margin: auto;}
-    .card {margin: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;}
-    .download-btn {background-color: #0072B5; color: white; border: none; margin-top: 10px; width: 200px;}
-  ")),
+  theme = bs_theme(bootswatch = "flatly", primary = "#0072B5", secondary = "#E9ECEF") |>
+    bs_add_rules(
+      list(
+        ".header {text-align: center; padding: 20px;}",
+        ".filter-area {display: flex; justify-content: center; gap: 20px; margin-top: 20px;}",
+        ".data-area {padding: 20px; margin: auto;}",
+        ".card {margin: 15px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-radius: 8px;}",
+        ".download-btn {background-color: #0072B5; color: white; border: none; margin-top: 10px; width: 200px;}"
+      )
+    ),
   
   # Landing page
   nav_item(a(href="https://ds-qr.disabilitydatainitiative.org", "Home")),
@@ -53,14 +52,6 @@ ui <- page_navbar(
               ),
               #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
               )
-    ),
-    nav_panel(h5("Cite us"),
-              div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
-                      h4("Suggested citation: DDI. Disability Statistics – Questionnaire Review Database (DS-QR Database). 
-                         Disability Data Initiative collective. Fordham University: New York, USA. 2024.")
-              ),
-              #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
-              )
     )
   )
   ),
@@ -70,8 +61,6 @@ ui <- page_navbar(
     # Data table 
     div(class = "data-area",
         style = "align-items: center; text-align: center; padding: 20px;",
-        p(style = "text-align: center;", "Suggested citation: DDI. Disability Statistics – Questionnaire Review Database (DS-QR Database). 
-                         Disability Data Initiative collective. Fordham University: New York, USA. 2024."),
         div(style = "width: 100%;",
             DTOutput("table2")
         ),
@@ -79,7 +68,18 @@ ui <- page_navbar(
         
     )
   ),
-  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank"))
+  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank")),
+  
+  nav_panel("Citation",
+            div(style = "display: flex; flex-direction: column; align-items: left; margin: auto; width: 100%; max-width: 1600px;",
+                h4("By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to 
+                    https://ds-qr.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in 
+                    part on the Data, will cite the source as follows:"),
+                h4(em("DDI. Disability Statistics – Questionnaire Review Database (DS-QR Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.")),
+                h4("For the full terms and conditions, click the link below:"),
+                a(href="https://www.disabilitydatainitiative.org/data-use-agreement-for-the-disability-data-initiatives-disability-statistics-questionnaire-review-database/", "Terms and conditions", target="_blank")
+            )
+  )
 )
 
 # Define server logic required to draw a histogram
