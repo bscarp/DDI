@@ -172,20 +172,8 @@ merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "
   db5c = db5 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db5[-c(1:3)])))
   db5d = db5b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db5b[-c(1:3)])))
   
-  db6 = left_join(tabs$tab_as_adj_1,tabs$tab_as_adj_2)
-  db6 = db6 %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% 
-    mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
-  db6b = db6 %>% select(-ends_with("_mean"))
-  db6 = db6 %>% select(-ends_with("_mean_se"))
-  names(db6) = sub("disability_atleast","severe_disability",sub("disability_some","moderate_disability",sub("disability_any","disability",names(db6))))
-  names(db6b) = sub("disability_atleast","severe_disability",sub("disability_some","moderate_disability",sub("disability_any","disability",names(db6b))))
-  names(db6) = sub("_mean","_adjusted",sub("_any_mean","_adjusted",names(db6)))
-  names(db6b) = sub("_mean_se","_adjusted",sub("_orany_mean_se","_adjusted",names(db6b)))
-  db6c = db6 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db6[-c(1:3)])))
-  db6d = db6b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db6b[-c(1:3)])))
-  
-  db_mean = full_join(full_join(full_join(full_join(full_join(db1c,db2c,by = c("admin","level")),db3c,by = c("admin","level")),db4c,by = c("admin","level")),db5c,by = c("admin","level")),db6c,by = c("admin","level"))
-  db_se = full_join(full_join(full_join(full_join(full_join(db1d,db2d,by = c("admin","level")),db3d,by = c("admin","level")),db4d,by = c("admin","level")),db5d,by = c("admin","level")),db6d,by = c("admin","level"))
+  db_mean = full_join(full_join(full_join(full_join(db1c,db2c,by = c("admin","level")),db3c,by = c("admin","level")),db4c,by = c("admin","level")),db5c,by = c("admin","level"))
+  db_se = full_join(full_join(full_join(full_join(db1d,db2d,by = c("admin","level")),db3d,by = c("admin","level")),db4d,by = c("admin","level")),db5d,by = c("admin","level"))
   rm(db1,db1b,db1c,db1d,db2,db2b,db2c,db2d,db3,db3b,db3c,db3d,db4,db4b,db4c,db4d,db5,db5b,db5c,db5d,tabs)
 
   db_mean = db_mean |> select(names(db_mean)[names(db_mean) %in% {{order}}]) |> mutate(survey = svy,.before = "admin")
