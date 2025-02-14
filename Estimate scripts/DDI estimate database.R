@@ -19,7 +19,7 @@ if(!file.exists(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means
 
 mean1 = read_xlsx(path = paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
 
-order = unique(c("survey","admin","level",names(read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Order.xlsx"),sheet = "Sheet1",range = "C1:BGP1"))))
+order = unique(c("survey","admin","level",names(read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Order.xlsx"),sheet = "Sheet1",range = "C1:BDM1"))))
 order = gsub("  "," ",order)
 
 #Check for unprocessed summaries
@@ -289,8 +289,8 @@ names(temp3b) = sub("ind_mdp","Multid_poverty",names(temp3b))
 # temp2 |> filter((!(Subnational_1_feasible=="X" | Subnational_1_feasible=="x") | !(Subnational_2_feasible=="X" | Subnational_2_feasible=="x") | is.na(Subnational_1_feasible) | is.na(Subnational_2_feasible)) & File_Name %in% temp3$`File name`)
 # Build check for ineligible 1's that have alternative data
 
-db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"), col_types = c(rep("text",3),rep("numeric",1548)))
-db_s = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"), col_types = c(rep("text",3),rep("numeric",1548)))
+db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"), col_types = c(rep("text",3),rep("numeric",1467)))
+db_s = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"), col_types = c(rep("text",3),rep("numeric",1467)))
 
 admin0_m = db_m %>% filter(admin == "admin0") %>% select(-admin)
 admin1_m = db_m %>% filter(admin == "admin1") %>% select(-admin)
@@ -317,7 +317,7 @@ admin2_seb = admin2_se %>% filter(survey %in% temp2$File_Name[temp2$Subnational_
 admina_seb = admina_se %>% filter(survey %in% temp2$File_Name) %>% filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
                            mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
 
-multicountry = bind_cols(temp3 %>% select(`File name`), rep(temp3 %>% select(dis_a),27), rep(temp3 %>% select(dom_a),54), rep(temp3 %>% select(dis_a),27), rep(temp3 %>% select(dom_a),54), rep(temp3 %>% select(Household_Prevalence),9), rep(temp3 %>% select(Ever_attended_school:Multid_poverty),each=51),.name_repair = "minimal")
+multicountry = bind_cols(temp3 %>% select(`File name`), rep(temp3 %>% select(dis_a),27), rep(temp3 %>% select(dom_a),54), rep(temp3 %>% select(Household_Prevalence),9), rep(temp3 %>% select(Ever_attended_school:Multid_poverty),each=51),.name_repair = "minimal")
 names(multicountry) = names(admin0_m)[-2]
 multicountry = multicountry %>% filter(survey %in% admin0_m$survey)
 
@@ -341,7 +341,7 @@ admin1_seb = admin1_seb %>% filter(!country %in% temp3$`File name`)
 
 static = multicountry
 names(static) = names(static) %>% sub("Household_Prevalence_","Household_Prevalence ",.)
-names(static)[2:163] = names(static)[2:163] %>% paste0("Prevalence ",.)
+names(static)[2:82] = names(static)[2:82] %>% paste0("Prevalence ",.)
 names(static)[!grepl(" .* ",names(static))][-1] = names(static)[!grepl(" .* ",names(static))][-1] %>% sub("(\\()(.*)(\\))","\\2 \\1all_adults\\3",.)
 static = static %>% pivot_longer(.,names(.)[-1],names_to = c("IndicatorName","DifficultyName","PopulationName"),names_pattern = "(.*) (.*) \\((.*)\\)",
                                  values_to = "Value")
@@ -350,10 +350,10 @@ static = static %>% mutate(source = survey) %>% rename(Country=survey)
 static = static %>% add_row(tibble(Country = rep(admin0_mb$country, each = n_distinct(static$IndicatorName)), IndicatorName = rep(unique(static$IndicatorName), times = n_distinct(admin0_mb$country)), source = rep(admin0_mb$country, each = n_distinct(static$IndicatorName))))
 static = static %>% mutate(Country = str_extract(Country,".+?(?=_)")) %>% complete(Country, IndicatorName)
 
-temp5 = bind_cols(admin0_mc[1:2],admin0_mc[3:1550] %>% as.matrix() * multicountry[2:1549] %>% as.matrix())
-temp6 = bind_cols(admin0_sec[1:2],admin0_sec[3:1550] %>% as.matrix() * multicountry[2:1549] %>% as.matrix())
-temp7 = bind_cols(admin1_mc[1:2],admin1_mc[3:1550] %>% as.matrix() * multicountry2[3:1550] %>% as.matrix())
-temp8 = bind_cols(admin1_sec[1:2],admin1_sec[3:1550] %>% as.matrix() * multicountry2[3:1550] %>% as.matrix())
+temp5 = bind_cols(admin0_mc[1:2],admin0_mc[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
+temp6 = bind_cols(admin0_sec[1:2],admin0_sec[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
+temp7 = bind_cols(admin1_mc[1:2],admin1_mc[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix())
+temp8 = bind_cols(admin1_sec[1:2],admin1_sec[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix())
 temp5 = temp5 %>% mutate(country = str_extract(country,".+?(?=_)"))
 temp6 = temp6 %>% mutate(country = str_extract(country,".+?(?=_)"))
 temp7 = temp7 %>% mutate(country = str_extract(country,".+?(?=_)"))
