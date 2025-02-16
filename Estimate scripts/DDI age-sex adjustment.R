@@ -10,7 +10,7 @@ library(googledrive)
 library(rms)
 library(tableone)
 library(srvyr)
-plan(list(sequential,sequential,tweak(multisession, workers = 4)))
+plan(list(sequential,tweak(multisession, workers = 4)))
 
 library(progressr)
 handlers(global = TRUE)
@@ -51,7 +51,7 @@ with_progress({
     dck = dck %>% mutate(disability_any = factor(disability_any,labels = c("no_a","any")),
                          disability_some = factor(disability_some,labels = c("no_s","some_n")),
                          disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
-                         age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")),
+                         age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80+")),
                          male = factor(1 - female, labels = c("Female","Male")),
                          age_sex = interaction(age_group5, male, lex.order = T, sep = " "), 
                          as_weight = case_when(age_sex=="15 to 19 Female" ~ 0.055177596606434,
