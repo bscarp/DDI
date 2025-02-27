@@ -10,6 +10,8 @@ options(java.parameters = "-Xmx8192m")
 library(readxl)
 library(writexl)
 
+cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
+
 drive_auth("bradley.carpenter@mrc.ac.za")
 file.remove(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"))
 drive_download(file = "https://docs.google.com/spreadsheets/d/1rCcLMLu4eaakTW76it5vojo6o2Z6Nxzy/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
@@ -95,5 +97,15 @@ dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
 dta_list_c = dta_list[grepl("house",dta_list,ignore.case = TRUE)]
 file.remove(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list_c))
 
-rm(dta_list,dta_list_c,zip_list,i,j,k,unzip_7z)
+dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
+dta_list2 = dta_list %>% sub("MAR_IPUMS_Cleaned_Individual_Data.dta", "Morocco_IPUMS_2014.dta",.) %>% sub("MMR_IPUMS_Cleaned_Individual_Data.dta", "Myanmar_IPUMS_2014.dta",.)  %>%
+  sub("MUS_IPUMS_Cleaned_Individual_Data.dta", "Mauritius_IPUMS_2011.dta",.) %>% sub("SEN_IPUMS_Cleaned_Individual_Data.dta", "Senegal_IPUMS_2013.dta",.) %>%
+  sub("SUR_IPUMS_Cleaned_Individual_Data.dta", "Suriname_IPUMS_2012.dta",.) %>% sub("TZA_IPUMS_Cleaned_Individual_Data.dta", "Tanzania_IPUMS_2012.dta",.) %>%
+  sub("UGA_IPUMS_Cleaned_Individual_Data.dta", "Uganda_IPUMS_2014.dta",.) %>% sub("URY_IPUMS_Cleaned_Individual_Data.dta", "Uruguay_IPUMS_2011.dta",.) %>%
+  sub("VNM_IPUMS_Cleaned_Individual_Data.dta", "Vietnam_IPUMS_2009.dta",.) %>% sub("ZAF_IPUMS_Cleaned_Individual_Data.dta", "South Africa_IPUMS_2011.dta",.) %>%
+  sub("ZAF1_IPUMS_Cleaned_Individual_Data.dta", "South Africa_IPUMS_2016.dta",.)
+
+file.rename(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list),paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list2))
+
+rm(dta_list,dta_list2,dta_list_c,zip_list,i,j,k,unzip_7z)
 gc()
