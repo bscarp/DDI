@@ -20,7 +20,9 @@ data_list = read_xlsx(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),"Shee
 data_list = data_list |> select(File_Name,new_url,Clean_data_file__date_of_last_version,Output__date_of_last_version,Output_needs_revision) %>% rename(url = new_url)
 data_list = data_list |> mutate(Clean_data_file__date_of_last_version = convert_to_date(Clean_data_file__date_of_last_version,character_fun = lubridate::dmy),
                       Output__date_of_last_version = convert_to_date(Output__date_of_last_version,character_fun = lubridate::dmy))
-temp = data_list |> filter(!File_Name %in% sub(".RData","",dir(paste0(cen_dir,"Downloads/Census/R Datasets/")))|Clean_data_file__date_of_last_version>Output__date_of_last_version)
+temp = data_list |> filter(!File_Name %in% sub(".RData","",dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))) |
+                             Clean_data_file__date_of_last_version>Output__date_of_last_version |
+                             Output_needs_revision=="X" | Output_needs_revision=="x")
 
 # temp2 = c(paste0(temp$File_Name,"_Cleaned_Individual_Data_Trimmed.RData"),paste0(temp$File_Name,"_Clean.RData"),paste0(temp$File_Name,".RData"))
 
