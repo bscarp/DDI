@@ -77,7 +77,7 @@ foreach(i = download$url,j = download$File_Name) %do% {
   k = str_extract(drive_get(i)$name,"\\..{1,4}$")
   drive_download(file = i, path = paste0(cen_dir,"Downloads/Census/Stata Datasets/",j,k))
   }
-rm(data_list,temp,temp2,dta_list,download)
+rm(data_list,temp2,dta_list,download)
 
 unzip_7z <- function(zipfile,exdir){
   str1 <- sprintf('C:/"Program Files"/7-Zip/7z.exe e %s -o%s',zipfile,exdir)
@@ -109,5 +109,9 @@ dta_list2 = dta_list %>% sub("MAR_IPUMS_Cleaned_Individual_Data.dta", "Morocco_I
 
 file.rename(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list),paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list2))
 
-rm(dta_list,dta_list2,dta_list_c,zip_list,i,j,k,unzip_7z)
+dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
+dta_list_c = dta_list[!sub(".dta","",dta_list) %in% temp$File_Name]
+file.remove(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list_c))
+
+rm(temp,dta_list,dta_list2,dta_list_c,zip_list,i,j,k,unzip_7z)
 gc()
