@@ -9,7 +9,7 @@ Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
 Author: Kaviyarasan Patchaiappan
 Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
 *******************************************************************************/
-use "D:\DDI\Kiribati.dta", clear
+use "D:\Kiribati_2015_PHC_raw.dta", clear
 
 drop if age<15
 
@@ -21,39 +21,49 @@ gen country_dataset_year="Kiribati Census 2015"
 
 ***Adminlevel 1***
 
-gen admin1="Banaba" if inrange(island_village, 101, 103)
-replace admin1="Makin" if inrange(island_village, 201, 203)
-replace admin1="Butaritari" if inrange(island_village, 301, 311)
-replace admin1="Marakei" if inrange(island_village, 401, 408)
-replace admin1="Abaiang" if inrange(island_village, 501, 518)
-replace admin1="NTarawa" if inrange(island_village, 601, 614)
-replace admin1="STarawa" if inrange(island_village, 701, 716)
-replace admin1="Maiana" if inrange(island_village, 801, 812)
-replace admin1="Abemama" if inrange(island_village, 901, 913)
-replace admin1="Kuria" if inrange(island_village, 1001, 1006)
-replace admin1="Aranuka" if inrange(island_village, 1101, 1103)
-replace admin1="Nonouti" if inrange(island_village, 1201, 1209)
-replace admin1="NTabiteuea" if inrange(island_village, 1301, 1312)
-replace admin1="STabiteuea" if inrange(island_village, 1401, 1406)
-replace admin1="Beru" if inrange(island_village, 1501, 1509)
-replace admin1="Nikunau" if inrange(island_village, 1601, 1606)
-replace admin1="Onotoa" if inrange(island_village, 1701, 1707)
-replace admin1="Tamana" if inrange(island_village, 1801, 1803)
-replace admin1="Arorae" if inrange(island_village, 1901, 1902)
-replace admin1="Teraina" if inrange(island_village, 2001, 2009)
-replace admin1="Taubuaeran" if inrange(island_village, 2101, 2108)
-replace admin1="Kiritimati" if inrange(island_village, 2201, 2204)
-replace admin1="Kanton" if island_village==2301
+gen admin="Banaba" if inrange(island_village, 101, 103)
+replace admin="Makin" if inrange(island_village, 201, 203)
+replace admin="Butaritari" if inrange(island_village, 301, 311)
+replace admin="Marakei" if inrange(island_village, 401, 408)
+replace admin="Abaiang" if inrange(island_village, 501, 518)
+replace admin="North Tarawa" if inrange(island_village, 601, 614)
+replace admin="South Tarawa" if inrange(island_village, 701, 716)
+replace admin="Maiana" if inrange(island_village, 801, 812)
+replace admin="Abemama" if inrange(island_village, 901, 913)
+replace admin="Kuria" if inrange(island_village, 1001, 1006)
+replace admin="Aranuka" if inrange(island_village, 1101, 1103)
+replace admin="Nonouti" if inrange(island_village, 1201, 1209)
+replace admin="Tabiteuea" if inrange(island_village, 1301, 1312) //North
+replace admin="Tabiteuea" if inrange(island_village, 1401, 1406) //South
+replace admin="Beru" if inrange(island_village, 1501, 1509)
+replace admin="Nikunau" if inrange(island_village, 1601, 1606)
+replace admin="Onotoa" if inrange(island_village, 1701, 1707)
+replace admin="Tamana" if inrange(island_village, 1801, 1803)
+replace admin="Arorae" if inrange(island_village, 1901, 1902)
+replace admin="Teraina" if inrange(island_village, 2001, 2009)
+replace admin="Tabuaeran" if inrange(island_village, 2101, 2108)
+replace admin="Kiritimati" if inrange(island_village, 2201, 2204)
+replace admin="Kanton" if island_village==2301
+
 ***the above code is with reference to census document of Kiribati 2015***
 
-***Admin level 2***
+gen admin1 = "Gilbert Islands" if admin == "Abaiang"  | admin == "Abemama"  | admin == "Aranuka" | ///
+                         admin == "Arorae"   | admin == "Banaba"   | admin == "Beru"    | ///
+                         admin == "Butaritari" | admin == "Kuria"   | admin == "Maiana"  | ///
+                         admin == "Makin"    | admin == "Marakei"  | admin == "Nikunau" | ///
+                         admin == "Nonouti"  | admin == "Tabiteuea" | admin == "North Tarawa" | ///
+                         admin == "Onotoa"   |  admin == "South Tarawa" | ///
+                         admin == "Tamana"
 
-decode island_village , gen(admin2)
+replace admin1="Phoenix Islands" if inlist(admin, "Kanton")
+replace admin1="Line Islands" if inlist(admin, "Kiritimati", "Tabuaeran", "Teraina")
+
+***Admin level 2***
+gen admin2=admin
+*decode island_village , gen(admin2)
 
 gen ind_id=string(island_village)+"_"+string(ea)+"_"+string(hhno)+"_"+string(p_num)+"_"+string(sex)+"_"+string(age)+"_"+string(relationship)+"_"+string(home_island)
 
-gen ind_weight=1
-gen hh_weight=1
 
 ***Gender***
 
@@ -73,7 +83,7 @@ clonevar hearing_diff_new=difficulty_hearing
 clonevar mobility_diff_new=difficulty_walking 
 clonevar cognitive_diff_new=difficulty_remembering 
 clonevar selfcare_diff_new=difficulty_dressing 
-clonevar comm_diff_new=difficulty_communicating.
+clonevar comm_diff_new=difficulty_communicating
 
 egen func_difficulty = rowmax(seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new)
 
@@ -425,9 +435,9 @@ lab var mdp_score "Multidimensional poverty Score"
 lab var ind_mdp "M1_Multidemensional Poverty status"
 
  
-keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2  ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh 
+keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin_alt ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh 
 
-order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2  ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh 
+order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin_alt ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh 
 
 compress
 
