@@ -7,16 +7,19 @@ For more information on indicators, see the appendices on the website above as w
 
 Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, GVS, Pinilla-Roncancio, M.,  Rivas Velarde, M., Teodoro, D.,  and Mitra, S. (2024). The Disability Statistics – Estimates Database: an innovative database of internationally comparable statistics on disability inequalities. International Journal of Population Data Science.
 
-Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
+Questions or comments can be sent to: disability_data_initiative@gmail.com
 
 Author: Jaclyn Yap, Ph.D.
 
-Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
+Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
 */
 
-*global PATH "C:\Users\Jaclyn Yap\Desktop\WB_2024\NGA_2018_GHSP-W4_v03_M_Stata12"
-global PATH "C:\Users\Jaclyn Yap\Desktop\WB_2024\NGA_2018_LSS_v01_M_Stata\Household"
-global CLEAN "C:\Users\Jaclyn Yap\Desktop\WB_2024\Clean"
+*source path*
+global PATH " " 
+
+*current directory*
+global CLEAN " "
+
 cd "$PATH"
 use "${PATH}/sect10_assets.dta", clear 
 
@@ -152,16 +155,18 @@ gen hh_id = string(hhid)
 gen ind_id= hh_id + string(indiv, "%02.0f")
 
 gen country_dataset_year = 2018
-clonevar admin_alt = zone
-clonevar admin1 = state
+
+clonevar admin1 = zone
+
+clonevar admin_alt = state
+
 clonevar admin2 = lga
 
 gen hh_weight = wt_final
 gen ind_weight = wt_final
-*gen sample_strata = strata
 
-gen strata2 = state
-egen psu2 =group(ea)
+gen sample_strata= state
+egen psu =group(ea)
 
 
 save "$PATH/Nigeria_LSMS_2018_NotClean_raw.dta", replace
@@ -201,19 +206,6 @@ replace age_group = 4 if age>=65
 
 
 fre female
-/*
-after dropping 
-What is the |
-     sex of |
-    [NAME]? |      Freq.     Percent        Cum.
-------------+-----------------------------------
-    1. MALE |      7,355       38.69       38.69
-  2. FEMALE |      7,875       41.43       80.12
-          . |      3,780       19.88      100.00
-------------+-----------------------------------
-      Total |     19,010      100.00
-*/
-
 
 
 *functional difficulty
@@ -351,7 +343,6 @@ tab s02q04 lit_new,m
 gen school_new=1 if s02q09==1 
 replace school_new=0 if s02q09==2
 replace school_new=0 if everattended_new==0  //those who never attended school coded as NOT IN SCHOOL
-*(3,216 real changes made)
 tab school_new, m
 
 
@@ -391,7 +382,6 @@ replace youth_idle=. if age>24
 
 
 *work_manufacturing=1 if manufacturing =0 otherwise 
-*Classification from basic info document
 gen work_manufacturing=0 if ind_emp==1
 replace work_manufacturing=1 if s04aq29==3 & ind_emp==1
 replace work_manufacturing=. if ind_emp==0
@@ -406,19 +396,6 @@ fre s04aq28b
 gen work_managerial = 0 if female==1 // denominator - all women
 replace work_managerial = (s04aq28b>= 1110 & s04aq28b<= 1318)  if ind_emp==1 & female==1
 replace work_managerial = . if female==0 
-
-*Female at Managerial Work
-
-gen work_managerial2=0 if ind_emp==1 & female==1
-replace work_managerial2= 1 if ind_emp==1 & work_managerial==1 & female==1
-replace work_managerial2= . if (ind_emp==. & work_managerial==.)
-
-*Informal Work
-
-gen work_informal2=.
-replace work_informal2=0 if ind_emp==1
-replace work_informal2=1 if ind_emp==1 & work_informal==1
-replace work_informal2=. if ind_emp==. & work_informal==.
 
 *informal
 *The numerator includes adults who are informal workers. 
@@ -449,7 +426,6 @@ tab s14q32 cleanwater_dry,m
 
 *only those with clean water in rainy and dry season (among those who said they have a different source during dry season) are ==1
 replace ind_water=(ind_water==1 & cleanwater_dry==1) if s14q31==1
-*(4,785 real changes made)
 
 
 *ind_toilet (see description below)	=1 with toilet (pit latrine, etc) =0 no toilet
@@ -597,5 +573,7 @@ gen work_informal2=.
 replace work_informal2=0 if ind_emp==1
 replace work_informal2=1 if ind_emp==1 & work_informal==1
 replace work_informal2=. if ind_emp==. & work_informal==.
+
+label define zone_id 1 "North Central" 2 "North East" 3 "North West" 4 "South East" 5 "South South" 6 "South West", modify
 
 save "${CLEAN}\Nigeria_LSMS_2018_Clean.dta" , replace
