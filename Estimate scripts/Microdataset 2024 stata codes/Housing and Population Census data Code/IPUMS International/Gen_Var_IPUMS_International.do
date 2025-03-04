@@ -38,7 +38,7 @@ Vietnam-2009	704200901
 Tanzania-2012	834201201
 */
          
-use "D:\DDI\ipumsi_00055.dta\ipumsi_00055.dta",clear
+use "D:\DDI\ipumsi_00055\ipumsi_00055.dta",clear
 
 ********************************************************************************
 *keep only households
@@ -612,6 +612,7 @@ global country_label IPUMS_Cleaned
 
 global country_list KHM MAR MMR MUS SEN SUR TZA UGA URY VNM VNM1 ZAF ZAF1
 
+*
 foreach x of global country_list {
 	use "${combined_data}\\${using_data}.dta", clear
 
@@ -619,6 +620,16 @@ keep if country_abrev=="`x'"
 if country==116{
 clonevar admin1= geo1_kh2019
 clonevar admin2= geo2_kh2019
+
+replace admin1=2 if admin1==24
+replace admin1=3 if admin1==25
+replace admin1=7 if admin1==23
+replace admin1=11 if admin1==16
+replace admin1=18 if admin1==9
+replace admin1=13 if admin1==19
+
+label define GEO1_KH2019 1 "banteay mean chey" 2 "battambang & pailin" 3 "kampong cham" 4 "kampong chhnang" 5 "kampong speu" 6 "kampong thom" 7 "kampot & kep" 8 "kandal" 9 "koh kong" 10 "kratie" 11 "mondol kiri & rattanak kiri" 12 "phnom penh" 13 "preah vihear & steung treng" 14 "prey veng" 15 "pursat" 16 "ratanak kiri" 17 "siem reap" 18 "preah sihanouk & kaoh kong" 19 "stung treng" 20 "svay rieng" 21 "takeo" 22 "otdar mean chey" 23 "kep" 24 "pailin" 25 "tbong khmum", replace
+
 }
 if country==480{
 clonevar admin1=geo1_mu2011
@@ -739,7 +750,19 @@ clonevar admin2=geo2_sn2013
 clonevar admin3=geo3_sn2013
 }
 if sample==710201101{
-clonevar admin1=geo1_za2011
+clonevar admin=geo1_za2011
+label define GEO1_SN2013 4 "saint-louis", modify
+/*gen admin1=1 if inlist(admin, 3, 9, 12, 6)
+replace admin1=2 if inlist(admin, 8, 11, 4)
+replace admin1=3 if inlist(admin, 1, 7)
+replace admin1=4 if inlist(admin, 13, 10, 14, 5, 2)
+label define snadmin1 ///
+1 "centre" ///
+2 "nord" ///
+3 "ouest" ///
+4 "sud",replace
+label values admin1 snadmin1*/
+
 clonevar admin2=geo2_za2011
 clonevar admin3=geo3_za2011
 }
@@ -756,9 +779,61 @@ clonevar admin1=geo1_ug2014
 clonevar admin2=geo2_ug2014
 clonevar admin3=geo3_ug2014
 clonevar admin_alt=regnug
+
+replace admin1 = 11 if inlist(admin1, 322, 316, 304, 305, 326, 328, 331, 312) // Acholi
+replace admin1 = 12 if inlist(admin1, 420, 402, 417, 418, 419, 410, 423, 411, 425, 426) // Ankole
+replace admin1 = 13 if inlist(admin1, 218, 220, 225, 206, 228, 223, 209, 215) // Bugisu
+replace admin1 = 14 if inlist(admin1, 217, 202, 221, 227, 210, 212) // Bukedi
+replace admin1 = 15 if inlist(admin1, 416, 403, 427, 428, 407, 421, 409) // Bunyoro
+replace admin1 = 16 if inlist(admin1, 201, 226, 203, 204, 222, 205, 229, 214, 230, 224) // Busoga
+replace admin1 = 17 if inlist(admin1, 102) // Kampala
+replace admin1 = 18 if inlist(admin1, 314, 324, 318, 306, 308, 311, 327) // Karamoja
+replace admin1 = 19 if inlist(admin1, 404, 414, 408, 429, 412) // Kigezi
+replace admin1 = 20 if inlist(admin1, 323, 315, 302, 317, 325, 307, 329, 321) // Lango
+replace admin1 = 21 if inlist(admin1, 117, 120, 112, 103, 123, 104, 115, 107, 108, 116, 109) // North Central
+replace admin1 = 22 if inlist(admin1, 118, 119, 121, 101, 122, 124, 114, 105, 106, 110, 111, 113) // South Central
+replace admin1 = 23 if inlist(admin1, 216, 219, 213, 207, 208, 231, 232, 211) // Teso
+replace admin1 = 24 if inlist(admin1, 401, 405, 413, 406, 422, 415, 424) // Tooro
+replace admin1 = 25 if inlist(admin1, 301, 303, 319, 320, 309, 310, 313, 330) // West Nile
+
+label define region_lbl ///
+11 "acholi" ///
+12 "ankole" ///
+13 "bugisu" ///
+14 "bukedi" ///
+15 "bunyoro" ///
+16 "busoga" ///
+17 "kampala" ///
+18 "karamoja" ///
+19 "kigezi" ///
+20 "lango" ///
+21 "north buganda" ///
+22 "south buganda" ///
+23 "teso" ///
+24 "tooro" ///
+25 "west nile",replace
+
+label values admin1 region_lbl
+
+replace admin1=1 if inlist(admin1, 21, 22, 17)
+replace admin1=2 if inlist(admin1, 12, 19, 24, 15)
+replace admin1=3 if inlist(admin1, 23, 16, 14, 13)
+replace admin1=4 if inlist(admin1, 11, 18, 20, 25)
+
+label define region_lbl ///
+1 "Central" ///
+2 "Western" ///
+3 "Estern" ///
+4 "Northern" ,replace
+
+label values admin1 region_lbl
+
+
+tab admin1
 }
 if country==834{
 clonevar admin1=geo1_tz2012
+label define GEO1_TZ2012 1 "dodoma" 2 "arusha" 3 "kilimanjaro" 4 "tanga" 5 "morogoro" 6 "pwani" 7 "dar es salaam" 8 "lindi" 9 "mtwara" 10 "ruvuma" 11 "iringa" 12 "mbeya" 13 "singida" 14 "tabora" 15 "rukwa" 16 "kigoma" 17 "shinyanga" 18 "kagera" 19 "mwanza" 20 "mara" 21 "manyara" 22 "njombe" 23 "katavi" 24 "simiyu" 25 "geita" 51 "kaskazini unguja" 52 "kusini unguja" 53 "mjini magharibi" 54 "kaskazini pemba" 55 "kusini pemba", replace
 clonevar admin2=geo2_tz2012
 }
 if country==858{
@@ -768,6 +843,7 @@ clonevar admin2=geo2_uy2011
 if sample==704200901{
 clonevar admin1=geo1_vn2009
 clonevar admin2=geo2_vn2009
+
 }
 if sample==704201901{
 clonevar admin1=geo1_vn2019
@@ -776,7 +852,7 @@ clonevar admin2=geo2_vn2019
 ta country_abrev
 
 *Run this to check if variable exists. if not, it will automatically generate variable with missing values
-local variable_tocheck "country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary   computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh"
+local variable_tocheck "country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary   computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh disability_none_hh overcrowd not_owned_hh death_hh alone"
 
 foreach var in `variable_tocheck'  {
 capture confirm variable `var', exact
@@ -889,9 +965,9 @@ lab var mdp_score "Multidimensional poverty Score"
 lab var ind_mdp "M1_Multidemensional Poverty status"
 
  
-keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh 
+keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh disability_none_hh overcrowd not_owned_hh death_hh alone
 
-order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh 
+order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh disability_none_hh overcrowd not_owned_hh death_hh alone
 
 compress
 

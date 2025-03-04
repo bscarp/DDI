@@ -17,11 +17,11 @@ clear matrix
 clear mata 
 set maxvar 30000
 
-global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+global survey_data D:\DDI\DHS
 *\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+global clean_data D:\DDI\DHS\_Clean Data
 *\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+global combined_data D:\DDI\DHS\_Combined Data
 *\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
 
 ********************************************************************************
@@ -45,7 +45,8 @@ global KH2_SR 2021_2022
 global TZ_SR 2022
 global NP_SR 2022
 
-local country_list PK ML HT KH SN ZA RW NG MR TL UG MV KE KH2 TZ NP
+
+local country_list PK ML HT KH SN ZA RW NG MR TL UG MV KE KH2 TZ NP 
 
 foreach country of local country_list  {
 		
@@ -72,6 +73,7 @@ replace country_name="Maldives" if hv000=="MV5"
 replace country_name="Mauritania" if hv000=="MR7"
 replace country_name="Tanzania" if hv000=="TZ8"
 replace country_name="Nepal" if hv000=="NP8"
+*replace country_name="Jordan" if hv000=="JO8"
 
 lab var country_name "Country name"
 gen country_dataset_year = country_name + "_${`country'_SR}"
@@ -90,18 +92,17 @@ drop person_num
 decode hv024, gen(admin1)
 lab var admin1 "Admin 1 level"
 
-if hv000!="KH8" {
+if !inlist(hv000, "KH8") {
 decode hv023, gen(sample_strata)
 }
 else {
 tostring hv023, gen(sample_strata)
 }
 
-if hv000 == "SN7" {
-	decode shzone, gen(region_SN)
-	replace admin1=region_SN
+if hv000 == "NG7" {
+	decode shstate, gen(state_NG)
+	replace admin1=state_NG
 }
-
 rename hv104 sex_new
 lab var sex_new "sex 1 for male sex 2 for female"
 
