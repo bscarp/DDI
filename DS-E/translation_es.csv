@@ -1,0 +1,282 @@
+﻿en,es
+Disability Statistics Database (DS-E),Base de Datos de Estadísticas de Discapacidad (DS-E)
+Language,Idioma
+Change language,Cambiar idioma
+English,Inglés
+French,Francés
+Spanish,Español
+Russian,Ruso
+Chinese,Chino
+Arabic,Árabe
+Home,Hogar
+Countries (select multiple),Países 
+Select all countries,Seleccionar todos los países
+Reset countries,Restablecer países
+Country (select single),País (seleccionar uno)
+The Methods tab above has definitions and details about breakdowns,La pestaña métodos de arriba tiene definiciones y detalles sobre las desagregaciones
+Select the subnational level,Seleccione el nivel subnacional
+Indicators,Indicadores
+Population Groups,Grupos de población
+Disability breakdown,Desagregación por discapacidad
+Disability group,Grupo de discapacidad
+Other disability group,Otro grupo de discapacidad
+Indicator scale,Escala de los indicadores
+Pick a colour theme,Elige un tema de color
+Cross-country estimates,Estimaciones entre países
+Graph,Gráfico
+Table,Tabla
+Estimates within countries,Estimaciones dentro de los países
+Map,Mapa
+Methods,Métodos
+Accessibility,Accesibilidad
+Citation,Cita
+"By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to https://ds-e.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in part on the Data, will cite the source as follows:","Al utilizar los datos, usted acepta dar autoria a DDI. Las publicaciones electrónicas incluirán un hipervínculo a https://ds-e.disabilitydatainitiative.org/. Las publicaciones, ya sean impresas, electrónicas o de radiodifusión, basadas total o parcialmente en los datos de esta pagina citarán la fuente de la siguiente manera:"
+"DDI. Disability Statistics – Estimates Database (DS-E Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.","DDI. Estadísticas de Discapacidad – Base de Datos de Estimaciones (Base de Datos DS-E). Disability Data Initiative. Universidad de Fordham: Nueva York, Estados Unidos. 2024."
+"For the full terms and conditions, click the link below:","Para ver los términos y condiciones, haga clic en el siguiente enlace:"
+Terms and conditions,Términos y condiciones
+Graph showing,El gráfico muestra
+Table showing,La tabla muestra
+for,para
+by,por
+Map showing,El mapa muestra
+at,en
+Key message:,Mensaje clave:
+Indicator definition:,Definición del indicador:
+Insufficient Sample Size,Tamaño de muestra insuficiente
+A blank cell indicates that the estimate is not available.,Una celda en blanco indica que la estimación no está disponible.
+Data source(s):,Fuente(s) de datos:
+Proportion with disabilities (Prevalence),Proporción de personas con discapacidad (Prevalencia)
+Education,Educación
+Health,Salud
+Personal activities,Actividades personales
+Standard of living,Nivel de vida
+Insecurity,Inseguridad
+Adults with disabilities,Adultos con discapacidades
+Households with disabilities,Hogares con miembros con discapacidad
+Ever attended school,Alguna vez asistió a la escuela
+Primary school or higher,Nivel de educación primaria o superior
+Secondary school or higher,Nivel de educación secundaria o superior
+Literacy,Alfabetismo
+Water,Agua
+Sanitation,Saneamiento
+Family planning,Planificación familiar
+Violence,Violencia
+Computer,Computador
+Internet,Internet
+Own mobile,Telefono celular
+Employment,Empleo
+Youth idle,Joven trabajando o estudiando
+Manufacturing work,Trabajos de manufactura
+Managerial work,Trabajo gerencial
+Informal work,Trabajo informal
+Electricity,Electricidad
+Clean cooking fuel,Combustible de cocina limpio
+Adequate housing,Vivienda adecuada
+Assets owned,Activos propios
+Household mobile,Telefono celular en el hogar
+Health insurance,Seguro de salud
+Social protection,Protección social
+Food insecure,Inseguridad alimentaria
+Experienced shock,Choque experimentado
+Health expenditures,Gastos en salud
+Multidimensional poverty,Pobreza multidimensional
+"The proportion of adults with disabilities varies across countries, with the lowest at 5%, the highest at 33%, and the median at 14.2%. ","La proporción de adultos con discapacidad varía de un país a otro, siendo la más baja del 5%, la más alta del 33% y la mediana del 14,2%."
+"The proportion of households who have at least one adult with disabilities varies across countries with the lowest at 10.4%, the highest at 61.7%, and the median at 28.5%.","La proporción de hogares que tienen al menos un adulto con discapacidad varía de un país a otro, siendo el más bajo (10,4%), el más alto (61,7%) y la mediana (28,5%)."
+"The proportion of adults who have ever been to school is lower among adults with disabilities, than among adults without disabilities.",La proporción de adultos que alguna vez han ido a la escuela es menor entre los adultos con discapacidades que entre los adultos sin discapacidades.
+"The proportion of adults who at least completed primary school is lower among adults with disabilities, than among adults without disabilities.",La proporción de adultos que al menos terminaron la escuela primaria es menor entre los adultos con discapacidad que entre los adultos sin discapacidad.
+"The proportion of adults who at least completed upper secondary school is lower among adults with disabilities, than among adults without disabilities.",La proporción de adultos que al menos terminaron la escuela secundaria superior es menor entre los adultos con discapacidad que entre los adultos sin discapacidad.
+"The proportion of adults who can read and write in any language is lower among adults with disabilities, than among adults without disabilities.",La proporción de adultos que pueden leer y escribir en cualquier idioma es menor entre los adultos con discapacidades que entre los adultos sin discapacidades.
+"Across countries, the proportion of adults who live in households who have safely managed drinking water is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","En todos los países, la proporción de adultos que viven en hogares con acceso a agua potable de forma segura es similar, menor o mayor en el caso de los adultos con discapacidad, en comparación con los adultos sin discapacidad. No existe un patrón consistente en los países estudiados."
+"Across countries, the proportion of adults who live in households who have safely managed sanitation services is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","En todos los países, la proporción de adultos que viven en hogares que cuentan con servicios de saneamiento gestionados de forma segura es similar, menor o mayor en el caso de los adultos con discapacidad, en comparación con los adultos sin discapacidad. No existe un patrón consistente en los países estudiados."
+"Across countries, the proportion of women who report that they have their family planning needs met. In other words, women who want and have access to modern contraceptive methods, is similar, lower or higher for women with disabilities, compared to women without disabilities. There is no consistent pattern in the countries under study.","En todos los países, la proporción de mujeres que declaran tener satisfechas sus necesidades de planificación familiar. En otras palabras, las mujeres que quieren y tienen acceso a métodos anticonceptivos modernos, es similar, menor o mayor para las mujeres con discapacidad, en comparación con las mujeres sin discapacidad. No existe un patrón consistente en los países estudiados."
+"In most of the countries under study, the proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months is higher among women with disabilities, than among women without disabilities.","En la mayoría de los países estudiados, la proporción de mujeres que declaran haber sido objeto de violencia doméstica por parte de su pareja en los últimos 12 meses es mayor entre las mujeres con discapacidad que entre las mujeres sin discapacidad."
+"The proportion of adults who have or use a computer is lower among adults with disabilities, than among adults without disabilities.",La proporción de adultos que tienen o usan una computadora es menor entre los adultos con discapacidades que entre los adultos sin discapacidades.
+"In most countries, the proportion of adults who have or use the internet is lower among adults with disabilities, than among adults without disabilities.  ","En la mayoría de los países, la proporción de adultos que tienen o usan Internet es menor entre los adultos con discapacidad que entre los adultos sin discapacidad."
+"In most countries, the proportion of adults who have their own mobile phone is lower among adults with disabilities, than among adults without disabilities.","En la mayoría de los países, la proporción de adultos que tienen su propio teléfono móvil es menor entre los adultos con discapacidad que entre los adultos sin discapacidad."
+"In most countries, the proportion of the adult population who work for pay, profit (self-employed) or for a family business/farm (whether paid or unpaid) is lower among persons with disabilities, than among persons without disabilities.","En la mayoría de los países, la proporción de la población adulta que trabaja por cuenta ajena (trabajadores por cuenta propia) o para una empresa o granja familiar (remunerada o no remunerada) es menor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of youth who are not enrolled in school and not employed is higher among youths with disabilities, than among youths without disabilities.","En la mayoría de los países, la proporción de jóvenes que no están matriculados en la escuela y no trabajan es mayor entre los jóvenes con discapacidad que entre los jóvenes sin discapacidad."
+"Across countries, the proportion of workers who work in the manufacturing sector is similar. Lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","En todos los países, la proporción de trabajadores con y sin discapacida que trabajan en el sector manufacturero es similar. Menor o más alto para los adultos con discapacidades, en comparación con los adultos sin discapacidades. No existe un patrón consistente en los países estudiados."
+"In most countries, the proportion of women workers who have managerial positions is lower among women with disabilities, compared to women without disabilities.","En la mayoría de los países, la proporción de trabajadoras que ocupan puestos directivos es menor entre las mujeres con discapacidad que entre las mujeres sin discapacidad."
+"Workers who do informal work, are ones who are self-employed, work for small firm or a firm that is unregistered, or have no written contract with their employers or work without pay. In most countries, the proportion of these workers is higher among workers with disabilities, than among workers without disabilities.","Los trabajadores que realizan trabajos informales son aquellos que trabajan por cuenta propia, trabajan para una pequeña empresa o una empresa que no está registrada, o no tienen un contrato escrito con sus empleadores o trabajan sin remuneración. En la mayoría de los países, la proporción de estos trabajadores es mayor entre los trabajadores con discapacidad que entre los trabajadores sin discapacidad."
+"In most countries, the proportion of adults who live in households with access to electricity is lower among persons with disabilities compared to persons without disabilities.","En la mayoría de los países, la proporción de adultos que viven en hogares con acceso a la electricidad es menor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of adults who live in households who use clean cooking fuel is lower among persons with disabilities compared to persons without disabilities.","En la mayoría de los países, la proporción de adultos que viven en hogares que utilizan combustible limpio para cocinar es menor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of adults who live in households with quality floor, roof and wall materials is lower among persons with disabilities compared to persons without disabilities.","En la mayoría de los países, la proporción de adultos que viven en hogares con materiales de calidad para suelos, techos y paredes es menor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of assets owned by an adult's household is lower among persons with disabilities compared to persons without disabilities.","En la mayoría de los países, la proporción de bienes que posee el hogar de un adulto es menor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of adults who live in households with a mobile phone is lower among persons with disabilities compared to persons without disabilities.","En la mayoría de los países, la proporción de adultos que viven en hogares con un teléfono móvil es menor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of adults who live in households with health insurance is higher among persons with disabilities compared to persons without disabilities.","En la mayoría de los países, la proporción de adultos que viven en hogares con seguro de salud es mayor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of adults who live in households who receive social protection benefits is higher among persons with disabilities compared to persons without disabilities.","En la mayoría de los países, la proporción de adultos que viven en hogares que reciben prestaciones de protección social es mayor entre las personas con discapacidad que entre las personas sin discapacidad."
+The proportion of adults who live in food insecure households is higher among persons with disabilities than among persons without disabilities.,La proporción de adultos que viven en hogares con inseguridad alimentaria es mayor entre las personas con discapacidad que entre las personas sin discapacidad.
+The proportion of adults who live in households that were recently exposed to at least one negative shock such as a flood or the loss of a job is higher among persons with disabilities than among persons without disabilities.,"La proporción de adultos que viven en hogares que estuvieron expuestos recientemente al menos a un choque negativo, como una inundación o la pérdida de un empleo, es mayor entre las personas con discapacidad que entre las personas sin discapacidad."
+"In most countries, the proportion of a household’s total consumption expenditures that are dedicated to health is higher among persons with disabilities than among persons without disabilities.","En la mayoría de los países, la proporción del gasto total de consumo de un hogar que se dedica a la salud es mayor entre las personas con discapacidad que entre las personas sin discapacidad."
+The proportion of adults who experience multidimensional poverty is higher among persons with disabilities than among persons without disabilities.,La proporción de adultos que experimentan pobreza multidimensional es mayor entre las personas con discapacidad que entre las personas sin discapacidad.
+"Proportion of adults ages 15 and older with disabilities. The proportion is available for adults with any disability (adults with disability), by disability type, and by degree (moderate and severe disability). ","Proporción de adultos mayores de 15 años con discapacidades. La proporción está disponible para adultos con alguna discapacidad (adultos con discapacidad), por tipo de discapacidad y por grado (discapacidad moderada y grave)."
+"Proportion of households who have at least one adult aged 15 and older with disabilities. The proportion is available for households with adults with any disability (adults with disability), and by degree (moderate and severe disability). ",Proporción de hogares que tienen al menos un adulto de 15 años o más con discapacidades. La proporción está disponible para hogares con adultos con alguna discapacidad (adultos con discapacidad) y por grado (discapacidad moderada y severa).
+Proportion of adults ages 15 and older who have ever been to school.,Proporción de adultos de 15 años o más que han asistido alguna vez a la escuela.
+Proportion of adults ages 25 and older who at least completed primary school. ,Proporción de adultos de 25 años o más que al menos completaron la escuela primaria.
+"Proportion of adults ages 25 and older who completed upper secondary school, whether or not they also attended tertiary school","Proporción de adultos de 25 años o más que terminaron la escuela secundaria superior, hayan asistido o no a la escuela terciaria"
+Proportion of adults 15 and older who can read and write in at least one language.,Proporción de adultos mayores de 15 años que pueden leer y escribir
+Proportion of adults ages 15 and older who live in households that have safely managed drinking water.,Proporción de adultos de 15 años o más que viven en hogares que han gestionado el agua potable de manera segura.
+Proportion of adults ages 15 and older who live in households that have safely managed sanitation services.,Proporción de adultos de 15 años o más que viven en hogares que cuentan con servicios de saneamiento administrados de manera segura.
+Proportion of women who report that they have their family planning needs met; they want and have access to modern contraceptive methods.,Proporción de mujeres que declaran tener satisfechas sus necesidades de planificación familiar; Quieren y tienen acceso a métodos anticonceptivos modernos.
+"Proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months. Domestic violence may be physical, psychological or sexual.","Proporción de mujeres que declaran haber sido objeto de violencia doméstica por parte de su pareja en los últimos 12 meses. La violencia doméstica puede ser física, psicológica o sexual."
+Proportion of adults ages 15 and older who have or use a computer.  ,Proporción de adultos mayores de 15 años que tienen o usan una computadora.
+Proportion of adults ages 15 and older who have or use the internet.  ,Proporción de adultos mayores de 15 años que tienen o usan Internet.
+Proportion of adults ages 15 and older who have their own mobile phone.,Proporción de adultos mayores de 15 años que tienen su propio teléfono móvil.
+"Proportion of the adult population ages 15 and older who work for pay, profit (self-employed) or for a family business or  farm (whether paid or unpaid). ","Proporción de la población adulta de 15 años o más que trabaja por remuneración, lucro (autónomos) o para una empresa familiar o granja (remunerada o no remunerada)."
+Proportion of youth ages 15 to 24 who are not enrolled in school and not employed.,Proporción de jóvenes de 15 a 24 años que no están matriculados en la escuela y no tienen empleo.
+Proportion of workers ages 15 and older who work in the manufacturing sector.,Proporción de trabajadores de 15 años o más que trabajan en el sector manufacturero.
+Proportion of women workers who have managerial positions.,Proporción de mujeres trabajadoras que ocupan puestos directivos.
+"Proportion of workers ages 15 and older who do informal work. They could be self-employed, work for a microenterprise of five or fewer employees or in a firm that is unregistered, or have no written contract with their employers. Family workers without pay are included as informal workers.","Proporción de trabajadores de 15 años o más que realizan trabajos informales. Pueden ser autónomos, trabajar para una microempresa de cinco o menos empleados o en una empresa que no esté registrada, o no tener un contrato escrito con sus empleadores. Los trabajadores familiares sin remuneración se incluyen como trabajadores informales."
+Proportion of adults ages 15 and older who live in households with access to electricity.,Proporción de adultos mayores de 15 años que viven en hogares con acceso a la electricidad.
+Proportion of adults ages 15 and older who live in households who use clean cooking fuel.,Proporción de adultos de 15 años o más que viven en hogares que usan combustible limpio para cocinar.
+"Proportion of adults ages 15 and older who live in households with quality floor, roof and wall materials.","Proporción de adultos de 15 años o más que viven en hogares con materiales de calidad para pisos, techos y paredes."
+"Proportion of assets owned by an adult's household among the following assets:  a radio, TV, telephone, mobile phone, bike, motorbike, refrigerator, car (or truck) and computer.","Proporción de bienes que posee el hogar de un adulto entre los siguientes activos: radio, televisión, teléfono, teléfono móvil, bicicleta, motocicleta, refrigerador, automóvil (o camión) y computadora."
+Proportion of adults ages 15 and older who live in households with a mobile phone.,Proporción de adultos de 15 años o más que viven en hogares con un teléfono móvil.
+Proportion of adults ages 15 and older who live in households with health insurance.,Proporción de adultos de 15 años o más que viven en hogares con seguro médico.
+"Proportion of adults ages 15 and older who live in households who received social protection benefits in the past year or who currently receive them (e.g. cash benefits, in kind transfers). Benefits may be from Government or Non-Government institutions.","Proporción de adultos de 15 años o más que viven en hogares que recibieron beneficios de protección social en el último año o que los reciben actualmente (por ejemplo, beneficios en efectivo, transferencias en especie). Los beneficios pueden provenir de instituciones gubernamentales o no gubernamentales."
+"Proportion of adults ages 15 and older who live in households  that recently (in the past week, month or 12 months) did not have access to adequate food. ","Proporción de adultos de 15 años o más que viven en hogares que recientemente (en la última semana, mes o 12 meses) no tuvieron acceso a alimentos adecuados."
+"Proportion of adults ages 15 and older who live in households that were recently exposed to at least one negative shock. The time frame is usually the past 12 months and shocks include:
+- shocks related to the weather (drought, flood, heavy rains), 
+- negative events affecting household members (death of a household member, illness of a household member),
+- economic hardships (loss of a job, crop damage) and
+- disasters (e.g. fire, landslide).","Proporción de adultos de 15 años o más que viven en hogares que estuvieron expuestos recientemente a al menos un choque negativo. El marco de tiempo suele ser los últimos 12 meses y los choques incluyen:
+- choques relacionados con el clima (sequía, inundaciones, lluvias intensas), 
+- eventos negativos que afectan a los miembros del hogar (muerte de un miembro del hogar, enfermedad de un miembro del hogar),
+- dificultades económicas (pérdida de empleo, daños en los cultivos) y
+- Desastres (por ejemplo, incendios, deslizamientos de tierra)."
+"Proportion of a household’s total consumption expenditures that are dedicated to health (inpatient care and outpatient care out of pocket expenditures, medicines).","Proporción de los gastos totales de consumo de un hogar que se dedican a la salud (hospitalización y atención ambulatoria, gastos de bolsillo, medicamentos)."
+Proportion of adults ages 15 and older who experience more than one deprivation such as not working.,"Proporción de adultos de 15 años o más que experimentan más de una privación, por ejemplo no trabajar."
+All adults (ages 15 and older),Todos los adultos (mayores de 15 años)
+Women,Mujeres
+Men,Hombres
+Rural residents,Residentes rurales
+Urban residents,Residentes urbanos
+Adults ages 15 to 29,Adultos de 15 a 29 años
+Adults ages 30 to 44,Adultos de 30 a 44 años
+Adults ages 45 to 64,Adultos de 45 a 64 años
+Adults ages 65 and older,Adultos mayores de 65 años
+Adults ages 25 to 29,Adultos de 25 a 29 años
+No disability,Sin discapacidad
+Moderate disability,Discapacidad moderada
+No and moderate disability,Discapacidad moderada y sin discapacidad
+Severe disability,Discapacidad severa
+Disability,Discapacidad
+Seeing disability,Discapacidad visual
+Hearing disability,Discapacidad auditiva
+Mobility disability,Discapacidad motriz
+Self-care disability,Discapacidad para el autocuidado
+Cognition disability,Discapacidad cognitiva
+Communication disability,Discapacidad de comunicación
+National,Nacional
+Subnational division 1,División subnacional 1
+Subnational division 2,División subnacional 2
+Alternative subnational division,División subnacional alternativa
+Disability versus no disability,Discapacidad versus no discapacidad
+Severe versus moderate versus no disability,Discapacidad grave versus moderada versus ninguna discapacidad
+Severe versus moderate or no disability,Discapacidad grave versus moderada o sin discapacidad
+Disability by type,Discapacidad por tipo
+Level,Nivel
+ISO Code,Código ISO
+Afghanistan,Afganistán
+Bangladesh,Bangladesh
+Cambodia,Camboya
+Djibouti,Yibuti
+Ethiopia,Etiopía
+Gambia,Gambia
+Ghana,Ghana
+Guatemala,Guatemala
+Haiti,Haití
+Kenya,Kenia
+Kiribati,Kiribati
+Liberia,Liberia
+Malawi,Malawi
+Maldives,Maldivas
+Mali,Malí
+Mauritania,Mauritania
+Mauritius,Mauricio
+Mexico,México
+Mongolia,Mongolia
+Morocco,Marruecos
+Myanmar,Myanmar
+Namibia,Namibia
+Nepal,Nepal
+Nigeria,Nigeria
+Pakistan,Pakistán
+Palestine,Palestina
+Philippines,Filipinas
+Rwanda,Ruanda
+Senegal,Senegal
+South Africa,Sudáfrica
+Suriname,Suriname
+Tajikistan,Tayikistán
+Tanzania,Tanzania
+Timor-Leste,Timor-Leste
+Tonga,Tonga
+Uganda,Uganda
+Uruguay,Uruguay
+Vanuatu,Vanuatu
+Vietnam,Vietnam
+Zimbabwe,Zimbabue
+South Asia,Asia meridional
+East Asia & Pacific,Asia Oriental y el Pacífico
+Middle East & North Africa,Oriente Medio y Norte de África
+Sub-Saharan Africa,África subsahariana
+Latin America & Caribbean,América Latina y el Caribe
+North America,América del Norte
+Europe & Central Asia,Europa y Asia Central
+countries,Países
+Data source(s): See table for source list,Fuente(s) de datos: Consulte la tabla para ver la lista de fuentes
+Data source:,Datos source:
+Afghanistan LCS 2016,Afganistán LCS 2016
+Bangladesh HIES 2016,Bangladesh HIES 2016
+Cambodia DHS 2014,Camboya DHS 2014
+Cambodia DHS 2021-2022,Camboya DHS 2021-2022
+Cambodia IPUMS 2019,Camboya IPUMS 2019
+Djibouti EDAM 2017,Yibuti EDAM 2017
+Ethiopia LSMS 2018,Etiopía LSMS 2018
+Gambia LFS 2018,Gambia LFS 2018
+Ghana Census 2021,Ghana Census 2021
+Guatemala Census 2018,Guatemala Census 2018
+Haiti DHS 2016-2017,Haití DHS 2016-2017
+Kenya Census 2019,Kenia Census 2019
+Kenya DHS 2022,Kenia DHS 2022
+Kiribati Census 2015,Kiribati Census 2015
+Kiribati Census 2020,Kiribati Census 2020
+Liberia HIES 2016,Liberia HIES 2016
+Malawi LSMS 2019,Malawi LSMS 2019
+Maldives DHS 2009,Maldivas DHS 2009
+Mali DHS 2018,Malí DHS 2018
+Mauritania DHS 2019-2021,Mauritania DHS 2019-2021
+Mauritius IPUMS 2011,Mauricio IPUMS 2011
+Mexico Census 2020,México Census 2020
+Mongolia Census 2020,Mongolia Census 2020
+Mongolia LFS 2022,Mongolia LFS 2022
+Morocco IPUMS 2014,Marruecos IPUMS 2014
+Myanmar IPUMS 2014,Myanmar IPUMS 2014
+Namibia HIES 2015,Namibia HIES 2015
+Nepal DHS 2022,Nepal DHS 2022
+Nigeria DHS 2018,Nigeria DHS 2018
+Nigeria LSMS 2018,Nigeria LSMS 2018
+Pakistan DHS 2017-2018,Pakistán DHS 2017-2018
+Palestine HIES 2009,Palestina HIES 2009
+Philippines Census 2020,Filipinas Census 2020
+Rwanda DHS 2019-2020,Ruanda DHS 2019-2020
+Rwanda LFS 2018,Ruanda LFS 2018
+Senegal DHS 2018,Senegal DHS 2018
+Senegal IPUMS 2013,Senegal IPUMS 2013
+South Africa DHS 2016,Sudáfrica DHS 2016
+South Africa IPUMS 2011,Sudáfrica IPUMS 2011
+South Africa IPUMS 2016,Sudáfrica IPUMS 2016
+Suriname IPUMS 2012,Suriname IPUMS 2012
+Tajikistan WASH 2016,Tayikistán WASH 2016
+Tanzania DHS 2022,Tanzania DHS 2022
+Tanzania IPUMS 2012,Tanzania IPUMS 2012
+Timor-Leste DHS 2016,Timor-Leste DHS 2016
+Tonga Census 2016,Tonga Census 2016
+Uganda DHS 2016,Uganda DHS 2016
+Uganda IPUMS 2014,Uganda IPUMS 2014
+Uruguay IPUMS 2011,Uruguay IPUMS 2011
+Vanuatu Census 2009,Vanuatu Census 2009
+Vietnam IPUMS 2009,Vietnam IPUMS 2009
+Vietnam IPUMS 2019,Vietnam IPUMS 2019
+Zimbabwe PICS 2017,Zimbabue PICS 2017
