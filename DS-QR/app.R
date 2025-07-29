@@ -10,12 +10,16 @@
 
 library(shiny)
 library(bslib)
+library(shiny.i18n)
 library(tidyverse)
 library(ggiraph)
 library(DT)
 library(sf)
 
 load("Data.RData")
+
+i18n <- Translator$new(translation_csvs_path = ".")
+i18n$set_translation_language("fr") # here you select the default translation to display
 
 sf_use_s2(use_s2 = FALSE)
 
@@ -34,20 +38,20 @@ ui <- page_navbar(
     ),
   
   # Landing page
-  nav_item(a(href="https://ds-qr.disabilitydatainitiative.org", "Home")),
+  nav_item(a(href="https://ds-qr.disabilitydatainitiative.org", i18n$t("Home"))),
   
-  nav_panel(title = "Overview of Results",
+  nav_panel(title = i18n$t("Overview of Results"),
   
   # Map and Table side by side
   navset_card_pill(
-    nav_panel(title = h5("Map of Disability Questions by Country"),
+    nav_panel(title = h5(i18n$t("Map of Disability Questions by Country")),
       layout_sidebar(sidebar = sidebar(selectInput("region", "Region", choices = c("World", as.character(unique(ddi_2024_s$Region))), selected = "World")),
-                     h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
+                     h4(style = "text-align: center;", i18n$t("Do the datasets reviewed in each country include functional difficulty questions?")),
                      girafeOutput("map", width = "100%"))
     ),
-    nav_panel(h5("Table of Disability Questions by Country"),
+    nav_panel(h5(i18n$t("Table of Disability Questions by Country")),
               div(div(style = "align-items: center; margin: auto; width: 100%; max-width: 1600px;",
-                      h4(style = "text-align: center;", "Do the datasets reviewed in each country include functional difficulty questions?"),
+                      h4(style = "text-align: center;", i18n$t("Do the datasets reviewed in each country include functional difficulty questions?")),
                       DTOutput("table1")
               ),
               #downloadButton(" ", "Download Table", class = "download-btn", style = "margin-top: 20px;")
@@ -57,7 +61,7 @@ ui <- page_navbar(
   ),
   
   nav_panel(
-    title = "Detailed results",
+    title = i18n$t("Detailed results"),
     # Data table 
     div(class = "data-area",
         style = "align-items: center; text-align: center; padding: 20px;",
@@ -68,16 +72,14 @@ ui <- page_navbar(
         
     )
   ),
-  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", "Accessibility", target="_blank")),
+  nav_item(a(href="https://www.disabilitydatainitiative.org/accessibility", i18n$t("Accessibility"), target="_blank")),
   
-  nav_panel("Citation",
+  nav_panel(value = 'citation', i18n$t("Citation"),
             div(style = "display: flex; flex-direction: column; align-items: left; margin: auto; width: 100%; max-width: 1600px;",
-                h4("By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to 
-                    https://ds-qr.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in 
-                    part on the Data, will cite the source as follows:"),
-                h4(em("DDI. Disability Statistics – Questionnaire Review Database (DS-QR Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.")),
-                h4("For the full terms and conditions, click the link below:"),
-                a(href="https://www.disabilitydatainitiative.org/data-use-agreement-for-the-disability-data-initiatives-disability-statistics-questionnaire-review-database/", "Terms and conditions", target="_blank")
+                h4(i18n$t("By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to https://ds-e.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in part on the Data, will cite the source as follows:")),
+                h4(em(i18n$t("DDI. Disability Statistics – Estimates Database (DS-E Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024."))),
+                h4(i18n$t("For the full terms and conditions, click the link below:")),
+                a(href="https://www.disabilitydatainitiative.org/data-use-agreement-for-the-disability-data-initiatives-disability-statistics-estimates-database/", i18n$t("Terms and conditions"), target="_blank")
             )
   )
 )
