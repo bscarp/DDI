@@ -244,13 +244,13 @@ gc()
 
 drive_auth("bradley.carpenter@mrc.ac.za")
 file.remove(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"))
-drive_download(file = "https://docs.google.com/spreadsheets/d/1rCcLMLu4eaakTW76it5vojo6o2Z6Nxzy/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
+drive_download(file = "https://docs.google.com/spreadsheets/d/1vIsXVg8xlvJKXxonIggj04oQKsWV56aR/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
                path = paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),overwrite = TRUE)
 temp2 = read_xlsx(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),"Sheet1",.name_repair = function(x) {gsub(" ","_",gsub("-","",x))})
 temp2 = temp2 |> select(File_Name,Subnational_1_feasible,Subnational_2_feasible) %>% arrange(File_Name)
 
 file.remove(paste0(cen_dir,"Downloads/Census/Countries with more than one dataset.xlsx"))
-drive_download(file = "https://docs.google.com/spreadsheets/d/1JXb5Y5mRSn7UI9I7uoHTfaGDpYKh1Fcd/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
+drive_download(file = "https://docs.google.com/spreadsheets/d/1WogcttawVdBur9wyTqUnZzkHvDMui0OP/edit?usp=drive_link&ouid=104552820408951429298&rtpof=true&sd=true",
                path = paste0(cen_dir,"Downloads/Census/Countries with more than one dataset.xlsx"),overwrite = TRUE)
 temp3 = read_xlsx(paste0(cen_dir,"Downloads/Census/Countries with more than one dataset.xlsx"),"Extraction") %>% arrange(`File name`)
 temp3 = temp3 %>% mutate(across(dis_a:Multid_poverty,~as.numeric(ifelse(.x=="x"|.x=="X",NA,.x))))
