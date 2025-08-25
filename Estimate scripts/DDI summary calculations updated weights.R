@@ -76,7 +76,8 @@ with_progress({
   load(file = file_name)
   
   dck = dck %>% mutate(disability_any = factor(disability_any,labels = c("no_a","any")),
-                       disability_sev = factor(disability_some + 2*disability_atleast,labels = c("no","some","atleast")),
+                       disability_sev1 = factor(disability_some + 2*disability_atleast,labels = c("no","some","atleast")),
+                       disability_sev2 = factor(disability_some + 2*disability_alot + 3*disability_unable,labels = c("no","some","alot","unable")),
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
                        disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
                        age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")),
@@ -127,11 +128,11 @@ with_progress({
   }
   
   grp_a = c("female","urban_new","age_group")
-  ind_a = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","health_exp_hh","ind_mdp")
-  ind_a1 = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","ind_mdp")
+  ind_a = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","bmi","overweight_obese","healthcare_prob","alone","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","health_exp_hh","ind_mdp")
+  ind_a1 = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","bmi","overweight_obese","healthcare_prob","alone","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","ind_mdp")
   ind_a2 = c("health_exp_hh")
-  dis_a = c("disability_any","disability_some","disability_atleast","disability_sev")
-  dis_a2 = c("disability_any","disability_some","disability_atleast")
+  dis_a = c("disability_any","disability_some","disability_alot","disability_unable","disability_atleast","disability_sev1","disability_sev2")
+  dis_a2 = c("disability_any","disability_some","disability_alot","disability_unable","disability_atleast")
   oth_a = c("disability_any_hh","disability_some_hh","disability_atleast_hh")
   oth_a2 = c("age_sex", "as_weight")
   cou_a = dck %>% select(any_of(c("admin1","admin2","admin3","admin_alt"))) %>% names()
@@ -209,7 +210,7 @@ with_progress({
     admin = ifelse(admin_grp=="admin0","National",as.symbol(admin_grp))
   
     #Means national and regional
-    tab_m_nr1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
+    tab_m_nr1 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev1","disability_sev2","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
       options(future.globals.maxSize = 1e10)
       options(survey.adjust.domain.lonely = TRUE)
       options(survey.lonely.psu = "adjust")
@@ -220,7 +221,7 @@ with_progress({
         arrange({{agg}}, {{dis}}, {{admin}}) %>% pivot_wider(names_from = {{dis}},values_from = -c(1:3)) %>% mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     if(sum(!is.na(dck2b$variables$health_exp_hh))>0) {
-      tab_m_nr2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
+      tab_m_nr2 = foreach(agg_grp=c("All","female","urban_new","age_group"), .combine = "full_join") %:% foreach(dis_grp=c("disability_any","disability_sev1","disability_sev2","disability_atleast"), .combine = "full_join", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
         options(future.globals.maxSize = 1e10)
         options(survey.adjust.domain.lonely = TRUE)
         options(survey.lonely.psu = "adjust")
