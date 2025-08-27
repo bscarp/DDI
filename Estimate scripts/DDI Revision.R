@@ -17,7 +17,7 @@ file.remove(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"))
 drive_download(file = "https://docs.google.com/spreadsheets/d/1vIsXVg8xlvJKXxonIggj04oQKsWV56aR/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
                path = paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),overwrite = TRUE)
 data_list = read_xlsx(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),"Sheet1",.name_repair = function(x) {gsub(" ","_",gsub("-","",x))}) |> filter(!is.na(Country))
-data_list = data_list |> select(File_Name,new_url,Clean_data_file__date_of_last_version,Output__date_of_last_version,Output_needs_revision) %>% rename(url = new_url)
+data_list = data_list |> select(File_Name,new_url,Clean_data_file__date_of_last_version,Output__date_of_last_version,Output_needs_revision,Round) %>% rename(url = new_url)
 data_list = data_list |> mutate(Clean_data_file__date_of_last_version = convert_to_date(Clean_data_file__date_of_last_version,character_fun = lubridate::dmy),
                       Output__date_of_last_version = convert_to_date(Output__date_of_last_version,character_fun = lubridate::dmy))
 temp = data_list |> filter(!File_Name %in% sub(".RData","",dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))) |
@@ -27,28 +27,28 @@ temp = data_list |> filter(!File_Name %in% sub(".RData","",dir(paste0(cen_dir,"D
 # temp2 = c(paste0(temp$File_Name,"_Cleaned_Individual_Data_Trimmed.RData"),paste0(temp$File_Name,"_Clean.RData"),paste0(temp$File_Name,".RData"))
 
 r_list = dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))
-r_list2 = r_list[grepl(paste(c("ABCDE",temp$File_Name),collapse = "|"),r_list)]
+r_list2 = r_list[grepl(paste(c("Empty",temp$File_Name),collapse = "|"),r_list)]
 if(length(r_list2)>0) {
   file.remove(paste0(cen_dir,"Downloads/Census/R Datasets/",r_list2))
   }
 rm(r_list,r_list2)
 
 sum_list = dir(paste0(cen_dir,"Downloads/Census/Summaries/"))
-sum_list2 = sum_list[grepl(paste(c("ABCDE",temp$File_Name),collapse = "|"),sum_list)]
+sum_list2 = sum_list[grepl(paste(c("Empty",temp$File_Name),collapse = "|"),sum_list)]
 if(length(sum_list2)>0) {
   file.remove(paste0(cen_dir,"Downloads/Census/Summaries/",sum_list2))
 }
 rm(sum_list,sum_list2)
 
 wid_list = dir(paste0(cen_dir,"Downloads/Census/Database/Individual/"))
-wid_list2 = wid_list[grepl(paste(c("ABCDE",temp$File_Name),collapse = "|"),wid_list)]
+wid_list2 = wid_list[grepl(paste(c("Empty",temp$File_Name),collapse = "|"),wid_list)]
 if(length(wid_list2)>0) {
   file.remove(paste0(cen_dir,"Downloads/Census/Database/Individual/",wid_list2))
 }
 rm(wid_list,wid_list2)
 
 bac_list = dir(paste0(cen_dir,"Downloads/Census/Database/Backup/"))
-bac_list2 = bac_list[grepl(paste(c("ABCDE",temp$File_Name),collapse = "|"),bac_list)]
+bac_list2 = bac_list[grepl(paste(c("Empty",temp$File_Name),collapse = "|"),bac_list)]
 if(length(bac_list2)>0) {
   file.remove(paste0(cen_dir,"Downloads/Census/Database/Backup/",bac_list2))
 }
@@ -99,18 +99,19 @@ dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
 dta_list_c = dta_list[grepl("house",dta_list,ignore.case = TRUE)]
 file.remove(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list_c))
 
+#sub("KHM_IPUMS_Cleaned_Individual_Data.dta", "Cambodia_IPUMS_2019.dta",.) %>% sub("VNM1_IPUMS_Cleaned_Individual_Data.dta", "Vietnam_IPUMS_2019.dta",.) %>%
 dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
 dta_list2 = dta_list %>% sub("MAR_IPUMS_Cleaned_Individual_Data.dta", "Morocco_IPUMS_2014.dta",.) %>% sub("MMR_IPUMS_Cleaned_Individual_Data.dta", "Myanmar_IPUMS_2014.dta",.)  %>%
   sub("MUS_IPUMS_Cleaned_Individual_Data.dta", "Mauritius_IPUMS_2011.dta",.) %>% sub("SEN_IPUMS_Cleaned_Individual_Data.dta", "Senegal_IPUMS_2013.dta",.) %>%
   sub("SUR_IPUMS_Cleaned_Individual_Data.dta", "Suriname_IPUMS_2012.dta",.) %>% sub("TZA_IPUMS_Cleaned_Individual_Data.dta", "Tanzania_IPUMS_2012.dta",.) %>%
   sub("UGA_IPUMS_Cleaned_Individual_Data.dta", "Uganda_IPUMS_2014.dta",.) %>% sub("URY_IPUMS_Cleaned_Individual_Data.dta", "Uruguay_IPUMS_2011.dta",.) %>%
-  sub("VNM_IPUMS_Cleaned_Individual_Data.dta", "Vietnam_IPUMS_2009.dta",.) %>% sub("ZAF_IPUMS_Cleaned_Individual_Data.dta", "South Africa_IPUMS_2011.dta",.) %>%
-  sub("ZAF1_IPUMS_Cleaned_Individual_Data.dta", "South Africa_IPUMS_2016.dta",.)
+  sub("VNM_IPUMS_Cleaned_Individual_Data.dta", "Vietnam_IPUMS_2009.dta",.) %>%
+  sub("ZAF_IPUMS_Cleaned_Individual_Data.dta", "South Africa_IPUMS_2011.dta",.) %>% sub("ZAF1_IPUMS_Cleaned_Individual_Data.dta", "South Africa_IPUMS_2016.dta",.)
 
 file.rename(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list),paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list2))
 
 dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
-dta_list_c = dta_list[!sub(".dta","",dta_list) %in% temp$File_Name]
+dta_list_c = dta_list[!sub(".dta","",dta_list) %in% temp$File_Name&!dta_list == "Final_Individual_DHS_only.dta"]
 file.remove(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list_c))
 
 rm(temp,dta_list,dta_list2,dta_list_c,zip_list,i,j,k,unzip_7z)

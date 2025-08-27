@@ -46,13 +46,13 @@ file.remove(paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"))
 drive_download(file = "https://docs.google.com/spreadsheets/d/16jafMGLTW7XxLK69nNDewkCEfGIZx6K-/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
                path = paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"),overwrite = TRUE)
 psu = read_xlsx(paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"),sheet = "Sampling Design")
-psu = psu %>% filter(!is.na(`Stata code FINAL`))
+psu = psu %>% filter(!is.na(`Stata code FINAL November 2024`))
 
 #Check for unprocessed datasets
 r_list = dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))
 sum_list = dir(paste0(cen_dir,"Downloads/Census/Summaries/"))
 sum_list = sub("\\_Summary.RData","\\.RData",sum_list)
-r_list2 = r_list[!r_list %in% sum_list&!grepl("DHS",r_list)&!sub(".RData","",r_list) %in% psu$Country_Survey_Date[!grepl("svyset",psu$`Stata code FINAL`)]]
+r_list2 = r_list[!r_list %in% sum_list&!grepl("DHS",r_list)&!sub(".RData","",r_list) %in% psu$Country_Survey_Date[!grepl("svyset",psu$`Stata code FINAL November 2024`)]]
 
 library(srvyr)
 options(survey.adjust.domain.lonely = TRUE)
@@ -76,8 +76,8 @@ with_progress({
   load(file = file_name)
   
   dck = dck %>% mutate(disability_any = factor(disability_any,labels = c("no_a","any")),
-                       disability_sev1 = factor(disability_some + 2*disability_atleast,labels = c("no","some","atleast")),
-                       disability_sev2 = factor(disability_some + 2*disability_alot + 3*disability_unable,labels = c("no","some","alot","unable")),
+                       disability_sev1 = factor(disability_some + 2*disability_atleast,levels = c(0,1,2),labels = c("no","some","atleast")),
+                       disability_sev2 = factor(disability_some + 2*disability_alot + 3*disability_unable,levels = c(0,1,2,3),labels = c("no","some","alot","unable")),
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
                        disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
                        age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")),
@@ -148,7 +148,7 @@ with_progress({
 
   psu2 = psu %>% filter(Country_Survey_Date==dataset)
   
-  if(grepl("ssu", psu2$`Stata code FINAL`)) {
+  if(grepl("ssu", psu2$`Stata code FINAL November 2024`)) {
     if(!"ssu" %in% names(dck)) {
       dck = dck %>% mutate(ssu = hh_id)
     }
@@ -159,7 +159,7 @@ with_progress({
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
     rm(dck)
-  } else if(grepl("psu", psu2$`Stata code FINAL`)) {
+  } else if(grepl("psu", psu2$`Stata code FINAL November 2024`)) {
     psu_a = psu_a[!grepl("ssu|sample_strata",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(psu)&!is.na(ind_weight))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(psu)&!is.na(hh_weight))
@@ -168,7 +168,7 @@ with_progress({
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
     rm(dck)
-  } else if(grepl("admin", psu2$`Stata code FINAL`)) {
+  } else if(grepl("admin", psu2$`Stata code FINAL November 2024`)) {
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
@@ -182,7 +182,7 @@ with_progress({
     dck2a$fpc$pps = FALSE
     dck2b$fpc$pps = FALSE
     rm(dck)
-  } else if(grepl("sample_strata", psu2$`Stata code FINAL`)) {
+  } else if(grepl("sample_strata", psu2$`Stata code FINAL November 2024`)) {
     psu_a = psu_a[!grepl("ssu|psu",psu_a)]
     dck2a = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a1)) %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata))
     dck2b = dck %>% select(all_of(cou_a),all_of(dis_a),all_of(grp_a),any_of(dom_a),any_of(psu_a),all_of(ind_a2),all_of(oth_a)) %>% filter(!is.na(hh_id)&!is.na(hh_weight)&!is.na(sample_strata))
@@ -220,7 +220,7 @@ with_progress({
       p(sprintf("%s, Tab1, %s, %s, %s", r_name, admin_grp, agg_grp, dis_grp))
       dis = as.symbol(dis_grp)
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-      tab = dck2a %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
+      tab = dck2a %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
         arrange({{agg}}, {{dis}}, {{admin}}) %>% pivot_wider(names_from = {{dis}},values_from = -c(1:3)) %>% mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     if(sum(!is.na(dck2b$variables$health_exp_hh))>0) {
@@ -231,7 +231,7 @@ with_progress({
         p(sprintf("%s, Tab1b, %s, %s, %s", r_name, admin_grp, agg_grp, dis_grp))
         dis = as.symbol(dis_grp)
         agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-        tab = dck2b %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
+        tab = dck2b %>% group_by({{agg}}, {{dis}}, {{admin}}) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>% complete({{agg}}, {{dis}}, {{admin}}) %>%
           arrange({{agg}}, {{dis}}, {{admin}}) %>% pivot_wider(names_from = {{dis}},values_from = -c(1:3)) %>% mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
       }
     } else {
@@ -250,7 +250,7 @@ with_progress({
       options(survey.lonely.psu = "adjust")
       p(sprintf("%s, Tab2, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-      tab = dck2a %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+      tab = dck2a %>% group_by({{agg}},{{admin}}) %>% summarise(across(all_of(dis_a2), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
@@ -261,7 +261,7 @@ with_progress({
       options(survey.lonely.psu = "adjust")
       p(sprintf("%s, Tab3, %s, %s", r_name, admin_grp, agg_grp))
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-      tab = dck2a %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+      tab = dck2a %>% group_by({{agg}},{{admin}}) %>% summarise(across(c(seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>%
         arrange({{agg}}, {{admin}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2))
     }
     
@@ -269,9 +269,9 @@ with_progress({
     
     #Summary for P3
     p(sprintf("%s, Tab4, %s", r_name, admin_grp))
-    tab_P3_nr = bind_rows(dck3b %>% group_by({{admin}}) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+    tab_P3_nr = bind_rows(dck3b %>% group_by({{admin}}) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>%
                             mutate(Agg = "All = All", admin = {{admin_grp}}, level = as.character({{admin}}), .after= 1) %>% select(-1),
-                          dck3b %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+                          dck3b %>% group_by({{admin}},urban_new) %>% summarise(across(c(disability_any_hh,disability_some_hh,disability_atleast_hh),list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>%
                             arrange(urban_new, {{admin}}) %>% mutate(Agg = paste0("urban_new = ",urban_new), admin = {{admin_grp}}, level = as.character({{admin}}), .after = 2) %>% select(c(-1,-2)))
     
     #Indicators by domain
@@ -281,7 +281,7 @@ with_progress({
       options(survey.lonely.psu = "adjust")
       p(sprintf("%s, Tab5, %s, %s", r_name, admin_grp, dom_grp))
       dom = as.symbol(dom_grp)
-      tab = dck2a %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{admin}}) %>%
+      tab = dck2a %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>% complete({{admin}}) %>%
         arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
     }  
     if(sum(!is.na(dck2b$variables$health_exp_hh))>0) {
@@ -291,7 +291,7 @@ with_progress({
         options(survey.lonely.psu = "adjust")
         p(sprintf("%s, Tab5b, %s, %s", r_name, admin_grp, dom_grp))
         dom = as.symbol(dom_grp)
-        tab = dck2b %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100))),.groups = "drop") %>% complete({{admin}}) %>%
+        tab = dck2b %>% mutate(disability_any = as.numeric(disability_any)-1) %>% group_by({{admin}}) %>% filter({{dom}}==1, .preserve = TRUE) %>% summarise(across(any_of(ind_a), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(.x,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>% complete({{admin}}) %>%
           arrange({{admin}}) %>% mutate(domain = dom_grp, admin = {{admin_grp}}, level = as.character({{admin}}), .after = 1) %>% select(-1)
       }
     } else {
