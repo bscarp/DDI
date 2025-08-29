@@ -24,7 +24,7 @@ file.remove(paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"))
 drive_download(file = "https://docs.google.com/spreadsheets/d/16jafMGLTW7XxLK69nNDewkCEfGIZx6K-/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
                path = paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"),overwrite = TRUE)
 psu = read_xlsx(paste0(cen_dir,"Downloads/Census/Sampling design table.xlsx"),sheet = "Sampling Design")
-psu = psu %>% filter(!is.na(`Stata code FINAL`))
+psu = psu %>% filter(!is.na(`Stata code FINAL November 2024`))
 
 #Check for unprocessed datasets
 sum_list = dir(paste0(cen_dir,"Downloads/Census/Summaries/"))
@@ -52,12 +52,6 @@ with_progress({
                          disability_some = factor(disability_some,labels = c("no_s","some_n")),
                          disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
                          fpc = n(),
-                         seeing_any = factor(disability_any,labels = c("no","any")),
-                         hearing_any = factor(disability_any,labels = c("no","any")),
-                         mobile_any = factor(disability_any,labels = c("no","any")),
-                         cognition_any = factor(disability_any,labels = c("no","any")),
-                         selfcare_any = factor(disability_any,labels = c("no","any")),
-                         communicating_any = factor(disability_any,labels = c("no","any")),
                          age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80+")),
                          male = factor(1 - female, labels = c("Female","Male")),
                          age_sex = interaction(age_group5, male, lex.order = T, sep = " "), 
@@ -100,10 +94,17 @@ with_progress({
     }
     
     grp_a = c("female","age_group")
-    dis_a2 = c("disability_any","disability_some","disability_atleast")
+    dis_a2 = c("disability_any","disability_some","disability_alot","disability_unable","disability_atleast")
+    dis_a3 = c("seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any",
+               "seeing_some","hearing_some","mobile_some","cognition_some","selfcare_some","communicating_some",
+               "seeing_alot","hearing_alot","mobile_alot","cognition_alot","selfcare_alot","communicating_alot",
+               "seeing_unable","hearing_unable","mobile_unable","cognition_unable","selfcare_unable","communicating_unable")
     oth_a2 = c("age_sex", "as_weight")
     psu_a = c("hh_id","ind_weight","hh_weight","psu","ssu","tsu","sample_strata","fpc")
-    dom_a = dck %>% select(any_of(c("disability_any","seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any"))) %>% names()
+    dom_a = dck %>% select(any_of(c("seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any",
+                                    "seeing_some","hearing_some","mobile_some","cognition_some","selfcare_some","communicating_some",
+                                    "seeing_alot","hearing_alot","mobile_alot","cognition_alot","selfcare_alot","communicating_alot",
+                                    "seeing_unable","hearing_unable","mobile_unable","cognition_unable","selfcare_unable","communicating_unable"))) %>% names()
     df_age_sex = dck %>% mutate(n = sum(ind_weight, na.rm = TRUE)) %>% summarise(n = first(as_weight)*first(n), .by = age_sex) %>% arrange(age_sex) %>% as.data.frame()
     
     if(dataset == "Vietnam_IPUMS_2019") {
@@ -124,7 +125,7 @@ with_progress({
     }
     
     #Create srvyr/survey dataset
-    if(grepl("tsu", psu2$`Stata code FINAL`)) {
+    if(grepl("tsu", psu2$`Stata code FINAL November 2024`)) {
       if(!"ssu" %in% names(dck)) {
         dck = dck %>% mutate(ssu = hh_id)
       }
@@ -132,7 +133,7 @@ with_progress({
       dck2 = survey::svydesign(ids = ~psu + ssu + tsu, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
       dck2$fpc$pps = FALSE
       rm(dck)
-    } else if(grepl("ssu", psu2$`Stata code FINAL`)) {
+    } else if(grepl("ssu", psu2$`Stata code FINAL November 2024`)) {
       if(!"ssu" %in% names(dck)) {
         dck = dck %>% mutate(ssu = hh_id)
       }
@@ -140,12 +141,12 @@ with_progress({
       dck2 = survey::svydesign(ids = ~psu + ssu, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
       dck2$fpc$pps = FALSE
       rm(dck)
-    } else if(grepl("psu", psu2$`Stata code FINAL`)) {
+    } else if(grepl("psu", psu2$`Stata code FINAL November 2024`)) {
       dck2 = dck %>% filter(!is.na(psu)&!is.na(ind_weight)&!is.na(age_sex))
       dck2 = survey::svydesign(ids = ~psu, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
       dck2$fpc$pps = FALSE
       rm(dck)
-    } else if(grepl("admin", psu2$`Stata code FINAL`)) {
+    } else if(grepl("admin", psu2$`Stata code FINAL November 2024`)) {
       dck2 = dck %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
       if (dataset == "South Africa_IPUMS_2011") {
         dck2 = survey::svydesign(ids = ~admin3, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
@@ -154,12 +155,12 @@ with_progress({
       }
       dck2$fpc$pps = FALSE
       rm(dck)
-    } else if(grepl("sample_strata", psu2$`Stata code FINAL`)) {
+    } else if(grepl("sample_strata", psu2$`Stata code FINAL November 2024`)) {
       dck2 = dck %>% filter(!is.na(hh_id)&!is.na(ind_weight)&!is.na(sample_strata)&!is.na(age_sex))
       dck2 = survey::svydesign(ids = ~hh_id, weights = ~ind_weight, strata = ~sample_strata, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
       dck2$fpc$pps = FALSE
       rm(dck)
-    } else if(grepl("weight", psu2$`Stata code FINAL`)) {
+    } else if(grepl("weight", psu2$`Stata code FINAL November 2024`)) {
       dck2 = dck %>% filter(!is.na(ind_weight)&!is.na(age_sex))
       dck2 = survey::svydesign(ids = ~0, weights = ~ind_weight, strata = NULL, nest = TRUE, data = dck2) %>% survey::postStratify(~age_sex, df_age_sex) %>% as_survey()
       dck2$fpc$pps = FALSE
@@ -179,7 +180,7 @@ with_progress({
       p(sprintf("%s, Tab6a, %s", r_name, agg_grp))
       options(survey.lonely.psu = "adjust")
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-      tab = dck2 %>% group_by({{agg}}) %>% summarise(across(c(all_of(dis_a2),seeing_any,hearing_any,mobile_any,cognition_any,selfcare_any,communicating_any), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100))),.groups = "drop") %>%
+      tab = dck2 %>% group_by({{agg}}) %>% summarise(across(c(all_of(dis_a2),all_of(dis_a3)), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>%
         arrange({{agg}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = "admin0", level = "National", .after = 1) %>% select(c(-1))
     }
     
