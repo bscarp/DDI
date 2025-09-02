@@ -70,8 +70,9 @@ temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietn
 temp2 = temp2 |> distinct(File_Name,.keep_all = TRUE)
 
 dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
+r_list = dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))
 
-download = temp2 %>% filter(!File_Name %in% sub(".dta|.zip|.7z","",dta_list),!is.na(url)) %>% select(File_Name,url)
+download = temp2 %>% filter(!File_Name %in% sub(".dta|.zip|.7z","",dta_list)&!File_Name %in% sub(".RData","",r_list),!is.na(url)) %>% select(File_Name,url)
 
 foreach(i = download$url,j = download$File_Name) %do% {
   k = str_extract(drive_get(i)$name,"\\..{1,4}$")
@@ -114,5 +115,5 @@ dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
 dta_list_c = dta_list[!sub(".dta","",dta_list) %in% temp$File_Name&!dta_list == "Final_Individual_DHS_only.dta"]
 file.remove(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list_c))
 
-rm(temp,dta_list,dta_list2,dta_list_c,zip_list,i,j,k,unzip_7z)
+rm(temp,dta_list,r_list,dta_list2,dta_list_c,zip_list,i,j,k,unzip_7z)
 gc()
