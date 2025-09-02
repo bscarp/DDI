@@ -48,8 +48,12 @@ with_progress({
     
     load(file = file_name)
     
-    dck = dck %>% mutate(disability_any = factor(disability_any,labels = c("no_a","any")),
+    dck = dck %>% mutate(disability_sev1 = factor(disability_some + 2*disability_atleast,levels = c(0,1,2),labels = c("no","some","atleast")),
+                         disability_sev2 = factor(disability_some + 2*disability_alot + 3*disability_unable,levels = c(0,1,2,3),labels = c("no","some","alot","unable")),
+                         disability_any = factor(disability_any,labels = c("no_a","any")),
                          disability_some = factor(disability_some,labels = c("no_s","some_n")),
+                         disability_alot = factor(disability_some,labels = c("no_t","alot_n")),
+                         disability_unable = factor(disability_some,labels = c("no_u","unable_n")),
                          disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
                          fpc = n(),
                          age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80+")),
@@ -95,10 +99,6 @@ with_progress({
     
     grp_a = c("female","age_group")
     dis_a2 = c("disability_any","disability_some","disability_alot","disability_unable","disability_atleast")
-    dis_a3 = c("seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any",
-               "seeing_some","hearing_some","mobile_some","cognition_some","selfcare_some","communicating_some",
-               "seeing_alot","hearing_alot","mobile_alot","cognition_alot","selfcare_alot","communicating_alot",
-               "seeing_unable","hearing_unable","mobile_unable","cognition_unable","selfcare_unable","communicating_unable")
     oth_a2 = c("age_sex", "as_weight")
     psu_a = c("hh_id","ind_weight","hh_weight","psu","ssu","tsu","sample_strata","fpc")
     dom_a = dck %>% select(any_of(c("seeing_any","hearing_any","mobile_any","cognition_any","selfcare_any","communicating_any",
@@ -180,7 +180,7 @@ with_progress({
       p(sprintf("%s, Tab6a, %s", r_name, agg_grp))
       options(survey.lonely.psu = "adjust")
       agg = ifelse(agg_grp=="All",agg_grp,as.symbol(agg_grp))
-      tab = dck2 %>% group_by({{agg}}) %>% summarise(across(c(all_of(dis_a2),all_of(dis_a3)), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>%
+      tab = dck2 %>% group_by({{agg}}) %>% summarise(across(c(all_of(dis_a2),all_of(dom_a)), list(mean = ~if_else(sum(!is.na(.x))<50,NA,survey_mean(as.numeric(.x)-1,na.rm = T, df = Inf)*100),n = ~n())),.groups = "drop") %>%
         arrange({{agg}}) %>%  mutate(Agg = paste0(agg_grp," = ",{{agg}}), admin = "admin0", level = "National", .after = 1) %>% select(c(-1))
     }
     
