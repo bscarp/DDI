@@ -65,9 +65,9 @@ write_xlsx(db_m, paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Mean
 write_xlsx(db_se,paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
 rm(db_m,db_se)
 
-temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietnam.*2019|Cambodia",File_Name),"IPUMS_Cleaned_Individual_Data_Trimmed",File_Name),
-                      File_Name = ifelse(grepl("DHS",File_Name),"Final_Individual_DHS_only",File_Name))
-temp2 = temp2 |> distinct(File_Name,.keep_all = TRUE)
+# temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietnam.*2019|Cambodia",File_Name),"IPUMS_Cleaned_Individual_Data_Trimmed",File_Name),
+#                       File_Name = ifelse(grepl("DHS",File_Name),"Final_Individual_DHS_only",File_Name))
+temp2 = temp |> distinct(url,.keep_all = TRUE)
 
 dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
 r_list = dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))
@@ -75,8 +75,10 @@ r_list = dir(paste0(cen_dir,"Downloads/Census/R Datasets/"))
 download = temp2 %>% filter(!File_Name %in% sub(".dta|.zip|.7z","",dta_list)&!File_Name %in% sub(".RData","",r_list),!is.na(url)) %>% select(File_Name,url)
 
 foreach(i = download$url,j = download$File_Name) %do% {
-  k = str_extract(drive_get(i)$name,"\\..{1,4}$")
-  drive_download(file = i, path = paste0(cen_dir,"Downloads/Census/Stata Datasets/",j,k))
+  k = drive_download(file = i)
+  l = ifelse(grepl(".dta",k$name)&!k$name=="Final_Individual_DHS_only.dta",j,k$name)
+  file.rename(from = paste0(getwd(),"/",k$name),
+              to = paste0(cen_dir,"Downloads/Census/Stata Datasets/",l))
   }
 rm(data_list,temp2,dta_list,download)
 
@@ -112,7 +114,7 @@ dta_list2 = dta_list %>% sub("MAR_IPUMS_Cleaned_Individual_Data.dta", "Morocco_I
 file.rename(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list),paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list2))
 
 dta_list = dir(paste0(cen_dir,"Downloads/Census/Stata Datasets/"))
-dta_list_c = dta_list[!sub(".dta","",dta_list) %in% temp$File_Name&!dta_list == "Final_Individual_DHS_only.dta"]
+dta_list_c = dta_list[!sub(".dta","",dta_list) %in% temp$File_Name&!dta_list == "Final_Individual_DHS_only.dta"&!dta_list == "Final_DHS_only.dta"]
 file.remove(paste0(cen_dir,"Downloads/Census/Stata Datasets/",dta_list_c))
 
 rm(temp,dta_list,r_list,dta_list2,dta_list_c,zip_list,i,j,k,unzip_7z)

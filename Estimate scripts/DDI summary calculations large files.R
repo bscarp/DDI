@@ -51,9 +51,9 @@ if("IPUMS_Cleaned_Individual_Data_Trimmed.dta" %in% dta_list) {
   rm(dta,file_name,dck2,datasets)
 }
 
-if("Final_Individual_DHS_only.dta" %in% dta_list) {
+if("Final_Individual_DHS_only.dta" %in% dta_list|"Final_DHS_only.dta" %in% dta_list) {
   plan(multisession, workers = 4)
-  dta = "Final_Individual_DHS_only.dta"
+  dta = dta_list[dta_list %in% c("Final_Individual_DHS_only.dta","Final_DHS_only.dta")][1]
   file_name = paste0(data_loc3,dta)
   dck2 = read_dta(file_name)
   dck2 = dck2 %>% mutate(across(c(country_name,country_abrev,country_dataset_year,admin1,admin2),~as.character(as_factor(.x))))
