@@ -9,23 +9,44 @@ library(writexl)
 plan(multisession, workers = 4)
 
 ## Check what happens when disagg is NA !!!!
-cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
-db_loc = c(paste0(cen_dir,"Downloads/Census/Database/Backup/"))
+cen_dir = str_extract(getwd(), "[cC]:\\/Users\\/.+?\\/")
+db_loc = c(paste0(cen_dir, "Downloads/Census/Database/Backup/"))
 
-if(!file.exists(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))) {
-  file.copy(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
-  file.copy(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"),paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
+if (
+  !file.exists(paste0(
+    cen_dir,
+    "Downloads/Census/Database/DS_E2_All_Estimates.xlsx"
+  ))
+) {
+  file.copy(
+    paste0(
+      cen_dir,
+      "Downloads/Census/Database/DS_E2_All_Estimates - Copy.xlsx"
+    ),
+    paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates.xlsx")
+  )
 }
 
-mean1 = read_xlsx(path = paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
+mean1 = read_xlsx(
+  path = paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates.xlsx")
+)
 
-order = unique(c("survey","admin","level",names(read_xlsx(paste0(cen_dir,"Downloads/Census/Database/Order.xlsx"),sheet = "Sheet1",range = "C1:BDM1"))))
-order = gsub("  "," ",order)
+order = unique(c(
+  "survey",
+  "admin",
+  "level",
+  names(read_xlsx(
+    paste0(cen_dir, "Downloads/Census/Database/Order.xlsx"),
+    sheet = "Sheet1",
+    range = "C1:BDM1"
+  ))
+))
+order = gsub("  ", " ", order)
 
 #Check for unprocessed summaries
-sum_list = dir(paste0(cen_dir,"Downloads/Census/Summaries/"))
-sum_list2 = str_extract(sum_list,".*_.*_[0-9]{4}")
-com_list = unique(mean1$survey)
+sum_list = dir(paste0(cen_dir, "Downloads/Census/Summaries/"))
+sum_list2 = str_extract(sum_list, ".*_.*_[0-9]{4}")
+com_list = mean1 %>% select(Survey) %>% unique()
 run_list = sum_list[!sum_list2 %in% com_list]
 svy_list = sum_list2[!sum_list2 %in% com_list]
 
@@ -36,366 +57,659 @@ svy_list = sum_list2[!sum_list2 %in% com_list]
 # }
 
 #Run analysis for unprocessed datasets
-merged = foreach(file = run_list, svy = svy_list, .verbose = FALSE, .combine = "bind_rows", .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
-    
-  ##Load data file created by DDI summary calculations.R
-  load(paste0(cen_dir,"Downloads/Census/Summaries/",file))
-  print(svy)
-  
-  ind_a = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing",
-            "work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","ind_electric","ind_cleanfuel","ind_livingcond",
-            "ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","health_exp_hh","ind_mdp")
-  
-  db1 = tabs$tab_P1_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
-  db1b = db1 %>% select(-ends_with("_mean")) %>% rename("disability"=disability_any_mean_se,"moderate_disability"=disability_some_mean_se, "severe_disability"=disability_atleast_mean_se)
-  db1 = db1 %>% select(-ends_with("_mean_se")) %>% rename("disability"=disability_any_mean,"moderate_disability"=disability_some_mean, "severe_disability"=disability_atleast_mean)
-  db1c = db1 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1[-c(1:3)])))
-  db1d = db1b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db1b[-c(1:3)])))
-  
-  db2 = tabs$tab_m_nr %>% rename(disagg=Agg) %>% select(disagg,admin,level,ends_with("_no"),ends_with("_some"),ends_with("_atleast"),ends_with("any"),ends_with("no_l")) %>% 
-    filter(!is.na(disagg),!disagg=="urban_new = 2") %>% mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
+merged = foreach(
+  file = run_list,
+  svy = svy_list,
+  .verbose = FALSE,
+  .combine = "bind_rows",
+  .options.future = list(packages = c("tidyverse", "haven"))
+) %dofuture%
+  {
+    ##Load data file created by DDI summary calculations.R
+    load(paste0(cen_dir, "Downloads/Census/Summaries/", file))
+    print(svy)
 
-  names(db2) = sub("everattended_new","Ever_attended_school",names(db2))
-  names(db2) = sub("ind_atleastprimary","At_least_primary",names(db2))
-  names(db2) = sub("ind_atleastsecondary","At_least_secondary",names(db2))
-  names(db2) = sub("lit_new","Literacy_rate",names(db2))
-  names(db2) = sub("computer","Computer_use",names(db2))
-  names(db2) = sub("internet","Internet_use",names(db2))
-  names(db2) = sub("mobile_own","Own_Mobile",names(db2))
-  names(db2) = sub("ind_emp","Employment",names(db2))
-  names(db2) = sub("youth_idle","Youth_idle_rate",names(db2))
-  names(db2) = sub("work_manufacturing","Manufacturing_work",names(db2))
-  names(db2) = sub("work_managerial","Managerial_work",names(db2))
-  names(db2) = sub("work_informal","Informal_work",names(db2))
-  names(db2) = sub("ind_water","Water",names(db2))
-  names(db2) = sub("ind_toilet","Sanitation",names(db2))
-  names(db2) = sub("fp_demsat_mod","Family_Planning_Met",names(db2))
-  names(db2) = sub("anyviolence_byh_12m","Any_Violence",names(db2))
-  names(db2) = sub("ind_electric","Electricity",names(db2))
-  names(db2) = sub("ind_cleanfuel","Clean_fuel",names(db2))
-  names(db2) = sub("ind_livingcond","Adequate_Housing",names(db2))
-  names(db2) = sub("ind_asset_ownership","Share_assets_owned",names(db2))
-  names(db2) = sub("cell_new","Household_Mobile_phone",names(db2))
-  names(db2) = sub("health_insurance","Health_insurance",names(db2))
-  names(db2) = sub("social_prot","Social_protection",names(db2))
-  names(db2) = sub("food_insecure","Food_insecure",names(db2))
-  names(db2) = sub("shock_any","Shock",names(db2))
-  names(db2) = sub("health_exp_hh","Health_expenditures",names(db2))
-  names(db2) = sub("ind_mdp","Multid_poverty",names(db2))
-  db2b = db2 %>% select(disagg,admin,level,contains("_mean_se_"))
-  db2 = db2 %>% select(-contains("_mean_se_"))
-  names(db2) = sub("_mean_no_l"," noandmoderate_disability",names(db2))
-  names(db2) = sub("_mean_any"," disability",names(db2))
-  names(db2) = sub("_mean_no"," no_disability",names(db2))
-  names(db2) = sub("_mean_some"," moderate_disability",names(db2))
-  names(db2) = sub("_mean_atleast"," severe_disability",names(db2))
-  names(db2b) = sub("_mean_se_no_l"," noandmoderate_disability",names(db2b))
-  names(db2b) = sub("_mean_se_any"," disability",names(db2b))
-  names(db2b) = sub("_mean_se_no"," no_disability",names(db2b))
-  names(db2b) = sub("_mean_se_some"," moderate_disability",names(db2b))
-  names(db2b) = sub("_mean_se_atleast"," severe_disability",names(db2b))
-  
-  db2c = db2 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2[-c(1:3)])))
-  db2d = db2b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db2b[-c(1:3)])))
-  db2c = db2c %>% rename("At_least_primary no_disability (ages25to29)"="At_least_primary no_disability (ages15to29)",
-                         "At_least_primary moderate_disability (ages25to29)"="At_least_primary moderate_disability (ages15to29)",
-                         "At_least_primary severe_disability (ages25to29)"="At_least_primary severe_disability (ages15to29)",
-                         "At_least_primary disability (ages25to29)"="At_least_primary disability (ages15to29)",
-                         "At_least_primary noandmoderate_disability (ages25to29)"="At_least_primary noandmoderate_disability (ages15to29)",
-                         "At_least_secondary no_disability (ages25to29)"="At_least_secondary no_disability (ages15to29)",
-                         "At_least_secondary moderate_disability (ages25to29)"="At_least_secondary moderate_disability (ages15to29)",
-                         "At_least_secondary severe_disability (ages25to29)"="At_least_secondary severe_disability (ages15to29)",
-                         "At_least_secondary disability (ages25to29)"="At_least_secondary disability (ages15to29)",
-                         "At_least_secondary noandmoderate_disability (ages25to29)"="At_least_secondary noandmoderate_disability (ages15to29)")
-  db2d = db2d %>% rename("At_least_primary no_disability (ages25to29)"="At_least_primary no_disability (ages15to29)",
-                         "At_least_primary moderate_disability (ages25to29)"="At_least_primary moderate_disability (ages15to29)",
-                         "At_least_primary severe_disability (ages25to29)"="At_least_primary severe_disability (ages15to29)",
-                         "At_least_primary disability (ages25to29)"="At_least_primary disability (ages15to29)",
-                         "At_least_primary noandmoderate_disability (ages25to29)"="At_least_primary noandmoderate_disability (ages15to29)",
-                         "At_least_secondary no_disability (ages25to29)"="At_least_secondary no_disability (ages15to29)",
-                         "At_least_secondary moderate_disability (ages25to29)"="At_least_secondary moderate_disability (ages15to29)",
-                         "At_least_secondary severe_disability (ages25to29)"="At_least_secondary severe_disability (ages15to29)",
-                         "At_least_secondary disability (ages25to29)"="At_least_secondary disability (ages15to29)",
-                         "At_least_secondary noandmoderate_disability (ages25to29)"="At_least_secondary noandmoderate_disability (ages15to29)")
-  
-  db3 = tabs$tab_P2_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% 
-    mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
-  db3b = db3 %>% select(-ends_with("_mean"))
-  db3 = db3 %>% select(-ends_with("_mean_se"))
-  names(db3) = sub("_any_mean","",names(db3))
-  names(db3b) = sub("_any_mean_se","",names(db3b))
-  db3c = db3 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3[-c(1:3)])))
-  db3d = db3b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db3b[-c(1:3)])))
+    ind_a = c(
+      "everattended_new",
+      "ind_atleastprimary",
+      "ind_atleastsecondary",
+      "lit_new",
+      "computer",
+      "internet",
+      "mobile_own",
+      "ind_emp",
+      "youth_idle",
+      "work_manufacturing",
+      "work_managerial",
+      "work_informal",
+      "ind_water",
+      "ind_toilet",
+      "fp_demsat_mod",
+      "anyviolence_byh_12m",
+      "bmi",
+      "overweight_obese",
+      "child_died",
+      "healthcare_prob",
+      "death_hh",
+      "alone",
+      "ind_electric",
+      "ind_cleanfuel",
+      "ind_livingcond",
+      "ind_asset_ownership",
+      "cell_new",
+      "health_insurance",
+      "social_prot",
+      "food_insecure",
+      "shock_any",
+      "health_exp_hh",
+      "ind_mdp"
+    )
 
-  db4 = tabs$tab_P3_nr %>% rename(disagg=Agg) %>% filter(!is.na(disagg),!disagg=="urban_new = 2") %>% 
-    mutate(disagg = recode_factor(disagg,"All = All"="all_adults","female = 0"="males","female = 1"="females","urban_new = 0"="rural","urban_new = 1"="urban","age_group = 1"="ages15to29","age_group = 2"="ages30to44","age_group = 3"="ages45to64","age_group = 4"="ages65plus"))
-  db4b = db4 %>% select(-ends_with("_mean"))
-  db4 = db4 %>% select(-ends_with("_mean_se"))  
-  names(db4) = c("disagg","admin","level","Household_Prevalence_disability","Household_Prevalence_moderate_disability","Household_Prevalence_severe_disability")
-  names(db4b) = c("disagg","admin","level","Household_Prevalence_disability","Household_Prevalence_moderate_disability","Household_Prevalence_severe_disability")
-  db4c = db4 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4[-c(1:3)])))
-  db4d = db4b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db4b[-c(1:3)])))
-  
-  db5 = tabs$tab_P4_nr %>% rename(disagg=domain) %>% filter(!disagg=="disability_any") %>% mutate(disagg = gsub("_any","",disagg))
-  names(db5) = sub("everattended_new","Ever_attended_school",names(db5))
-  names(db5) = sub("ind_atleastprimary","At_least_primary",names(db5))
-  names(db5) = sub("ind_atleastsecondary","At_least_secondary",names(db5))
-  names(db5) = sub("lit_new","Literacy_rate",names(db5))
-  names(db5) = sub("computer","Computer_use",names(db5))
-  names(db5) = sub("internet","Internet_use",names(db5))
-  names(db5) = sub("mobile_own","Own_Mobile",names(db5))
-  names(db5) = sub("ind_emp","Employment",names(db5))
-  names(db5) = sub("youth_idle","Youth_idle_rate",names(db5))
-  names(db5) = sub("work_manufacturing","Manufacturing_work",names(db5))
-  names(db5) = sub("work_managerial","Managerial_work",names(db5))
-  names(db5) = sub("work_informal","Informal_work",names(db5))
-  names(db5) = sub("ind_water","Water",names(db5))
-  names(db5) = sub("ind_toilet","Sanitation",names(db5))
-  names(db5) = sub("fp_demsat_mod","Family_Planning_Met",names(db5))
-  names(db5) = sub("anyviolence_byh_12m","Any_Violence",names(db5))
-  names(db5) = sub("ind_electric","Electricity",names(db5))
-  names(db5) = sub("ind_cleanfuel","Clean_fuel",names(db5))
-  names(db5) = sub("ind_livingcond","Adequate_Housing",names(db5))
-  names(db5) = sub("ind_asset_ownership","Share_assets_owned",names(db5))
-  names(db5) = sub("cell_new","Household_Mobile_phone",names(db5))
-  names(db5) = sub("health_insurance","Health_insurance",names(db5))
-  names(db5) = sub("social_prot","Social_protection",names(db5))
-  names(db5) = sub("food_insecure","Food_insecure",names(db5))
-  names(db5) = sub("shock_any","Shock",names(db5))
-  names(db5) = sub("health_exp_hh","Health_expenditures",names(db5))
-  names(db5) = sub("ind_mdp","Multid_poverty",names(db5))
-  
-  db5b = db5 %>% select(-ends_with("_mean"))
-  db5 = db5 %>% select(-ends_with("_mean_se"))
-  names(db5) = sub("_mean$","",names(db5))
-  names(db5b) = sub("_mean_se$","",names(db5b))
-  db5c = db5 %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db5[-c(1:3)])))
-  db5d = db5b %>% pivot_wider(names_from = disagg, names_glue = "{.value} ({disagg})",values_from = c(names(db5b[-c(1:3)])))
-  
-  db_mean = full_join(full_join(full_join(full_join(db1c,db2c,by = c("admin","level")),db3c,by = c("admin","level")),db4c,by = c("admin","level")),db5c,by = c("admin","level"))
-  db_se = full_join(full_join(full_join(full_join(db1d,db2d,by = c("admin","level")),db3d,by = c("admin","level")),db4d,by = c("admin","level")),db5d,by = c("admin","level"))
-  rm(db1,db1b,db1c,db1d,db2,db2b,db2c,db2d,db3,db3b,db3c,db3d,db4,db4b,db4c,db4d,db5,db5b,db5c,db5d,tabs)
+    db1 = tabs$tab_P1_nr %>%
+      rename(disagg = Agg) %>%
+      filter(!is.na(disagg), !disagg == "urban_new = 2") %>%
+      mutate(
+        disagg = recode_factor(
+          disagg,
+          "All = All" = "all_adults",
+          "female = 0" = "males",
+          "female = 1" = "females",
+          "urban_new = 0" = "rural",
+          "urban_new = 1" = "urban",
+          "age_group = 1" = "ages15to29",
+          "age_group = 2" = "ages30to44",
+          "age_group = 3" = "ages45to64",
+          "age_group = 4" = "ages65plus"
+        )
+      )
+    db2 = tabs$tab_m_nr %>%
+      rename(disagg = Agg) %>%
+      select(
+        disagg,
+        admin,
+        level,
+        ends_with("_no"),
+        ends_with("_some"),
+        ends_with("_atleast"),
+        ends_with("_alot"),
+        ends_with("_unable"),
+        ends_with("any"),
+        ends_with("no_l")
+      ) %>%
+      filter(!is.na(disagg), !disagg == "urban_new = 2") %>%
+      mutate(
+        disagg = recode_factor(
+          disagg,
+          "All = All" = "all_adults",
+          "female = 0" = "males",
+          "female = 1" = "females",
+          "urban_new = 0" = "rural",
+          "urban_new = 1" = "urban",
+          "age_group = 1" = "ages15to29",
+          "age_group = 2" = "ages30to44",
+          "age_group = 3" = "ages45to64",
+          "age_group = 4" = "ages65plus"
+        )
+      )
+    db3 = tabs$tab_P2_nr %>%
+      rename(disagg = Agg) %>%
+      filter(!is.na(disagg), !disagg == "urban_new = 2") %>%
+      mutate(
+        disagg = recode_factor(
+          disagg,
+          "All = All" = "all_adults",
+          "female = 0" = "males",
+          "female = 1" = "females",
+          "urban_new = 0" = "rural",
+          "urban_new = 1" = "urban",
+          "age_group = 1" = "ages15to29",
+          "age_group = 2" = "ages30to44",
+          "age_group = 3" = "ages45to64",
+          "age_group = 4" = "ages65plus"
+        )
+      )
+    db4 = tabs$tab_P3_nr %>%
+      rename(disagg = Agg) %>%
+      filter(!is.na(disagg), !disagg == "urban_new = 2") %>%
+      mutate(
+        disagg = recode_factor(
+          disagg,
+          "All = All" = "all_adults",
+          "female = 0" = "males",
+          "female = 1" = "females",
+          "urban_new = 0" = "rural",
+          "urban_new = 1" = "urban",
+          "age_group = 1" = "ages15to29",
+          "age_group = 2" = "ages30to44",
+          "age_group = 3" = "ages45to64",
+          "age_group = 4" = "ages65plus"
+        )
+      )
+    db5 = tabs$tab_P4_nr %>%
+      rename(disagg = domain) %>%
+      filter(!disagg == "disability_any") %>%
+      mutate(disagg = gsub("_any", "", disagg))
 
-  db_mean = db_mean |> select(names(db_mean)[names(db_mean) %in% {{order}}]) |> mutate(survey = svy,.before = "admin")
-  db_se = db_se |> select(names(db_se)[names(db_se) %in% {{order}}]) |> mutate(survey = svy,.before = "admin")
+    names(db1) = sub("disability", "Prevalence disability", names(db1))
+    names(db1) = sub("_mean", " mean", names(db1))
+    names(db1) = sub("_n", " n", names(db1))
+    names(db1) = sub("mean_se", "se", names(db1))
 
-  db_mean[setdiff(order,names(db_mean))] = NA
-  db_se[setdiff(order,names(db_se))] = NA
-  
-  db_mean = db_mean %>% select({{order}})
-  db_se = db_se %>% select({{order}})
+    names(db2) = sub("everattended_new_", "Ever_attended_school ", names(db2))
+    names(db2) = sub("ind_atleastprimary_", "At_least_primary ", names(db2))
+    names(db2) = sub("ind_atleastsecondary_", "At_least_secondary ", names(db2))
+    names(db2) = sub("lit_new_", "Literacy_rate ", names(db2))
+    names(db2) = sub("computer_", "Computer_use ", names(db2))
+    names(db2) = sub("internet_", "Internet_use ", names(db2))
+    names(db2) = sub("mobile_own_", "Own_Mobile ", names(db2))
+    names(db2) = sub("ind_emp_", "Employment ", names(db2))
+    names(db2) = sub("youth_idle_", "Youth_idle_rate ", names(db2))
+    names(db2) = sub("work_manufacturing_", "Manufacturing_work ", names(db2))
+    names(db2) = sub("work_managerial_", "Managerial_work ", names(db2))
+    names(db2) = sub("work_informal_", "Informal_work ", names(db2))
+    names(db2) = sub("ind_water_", "Water ", names(db2))
+    names(db2) = sub("ind_toilet_", "Sanitation ", names(db2))
+    names(db2) = sub("fp_demsat_mod_", "Family_Planning_Met ", names(db2))
+    names(db2) = sub("anyviolence_byh_12m_", "Any_Violence ", names(db2))
+    names(db2) = sub("bmi_", "BMI ", names(db2))
+    names(db2) = sub("overweight_obese_", "Obese ", names(db2))
+    names(db2) = sub("healthcare_prob_", "Healthcare_access ", names(db2))
+    names(db2) = sub("alone_", "Living_alone ", names(db2))
+    names(db2) = sub("ind_electric_", "Electricity ", names(db2))
+    names(db2) = sub("ind_cleanfuel_", "Clean_fuel ", names(db2))
+    names(db2) = sub("ind_livingcond_", "Adequate_Housing ", names(db2))
+    names(db2) = sub("ind_asset_ownership_", "Share_assets_owned ", names(db2))
+    names(db2) = sub("cell_new_", "Household_Mobile_phone ", names(db2))
+    names(db2) = sub("health_insurance_", "Health_insurance ", names(db2))
+    names(db2) = sub("social_prot_", "Social_protection ", names(db2))
+    names(db2) = sub("food_insecure_", "Food_insecure ", names(db2))
+    names(db2) = sub("shock_any_", "Shock ", names(db2))
+    names(db2) = sub("health_exp_hh_", "Health_expenditures ", names(db2))
+    names(db2) = sub("ind_mdp_", "Multid_poverty ", names(db2))
+    names(db2) = sub("mean_se_", "se ", names(db2))
+    names(db2) = sub("mean_", "mean ", names(db2))
+    names(db2) = sub(" n_", " n ", names(db2))
+    names(db2) = sub(
+      "(.* )(.*)( )(.*)",
+      "\\1\\4\\3\\2",
+      names(db2),
+      fixed = FALSE
+    )
+    names(db2) = sub(" no_l ", " noandmoderate_disability ", names(db2))
+    names(db2) = sub(" any ", " disability ", names(db2))
+    names(db2) = sub(" no ", " no_disability ", names(db2))
+    names(db2) = sub(" some ", " moderate_disability ", names(db2))
+    names(db2) = sub(" atleast ", " severe_disability ", names(db2))
+    names(db2) = sub(" alot ", " alot_disability ", names(db2))
+    names(db2) = sub(" unable ", " unable_disability ", names(db2))
 
-  db_mean = db_mean %>% mutate(level = stringi::stri_trans_general(sub('.\xba\xa1|.\xba\xa3|.\xba\xaf|.\xba\xb1|.\xba\xad','a',level,useBytes = TRUE) %>%
-                                                                      sub('.\xba\xbf|.\xbb\x87|.\xbb\x81','e',.,useBytes = TRUE) %>%
-                                                                      sub('.\xbb\x93|.\xbb\x91|.\xbb\x9b','o',.,useBytes = TRUE) %>%
-                                                                      sub('.\xbb\x8b','i',.,useBytes = TRUE) %>%
-                                                                      sub('.\xbb\xab','u',.,useBytes = TRUE),"latin-ASCII"))
-  db_se = db_se %>% mutate(level = stringi::stri_trans_general(sub('.\xba\xa1|.\xba\xa3|.\xba\xaf|.\xba\xb1|.\xba\xad','a',level,useBytes = TRUE) %>%
-                                                                  sub('.\xba\xbf|.\xbb\x87|.\xbb\x81','e',.,useBytes = TRUE) %>%
-                                                                  sub('.\xbb\x93|.\xbb\x91|.\xbb\x9b','o',.,useBytes = TRUE) %>%
-                                                                  sub('.\xbb\x8b','i',.,useBytes = TRUE) %>%
-                                                                  sub('.\xbb\xab','u',.,useBytes = TRUE),"latin-ASCII"))
-  
-  db_mean = db_mean %>% mutate(across((contains("managerial")&contains("adults"))|contains("Managerial_work ("),~as.double(NA)))
-  db_se = db_se %>% mutate(across((contains("managerial")&contains("adults"))|contains("Managerial_work ("),~as.double(NA)))
+    names(db3) = sub("(.*)(_.*)", "Prevalence \\1\\2", names(db3))
+    names(db3) = sub("_mean", " mean", names(db3))
+    names(db3) = sub("_n", " n", names(db3))
+    names(db3) = sub("mean_se", "se", names(db3))
 
-  save(db_mean,db_se,file = paste0(db_loc,svy,".RData"),compress = "xz")
-  
-  db = bind_rows(list(mean = db_mean, se = db_se),.id = "output")
-  
-  rm(ind_a,db_mean,db_se)
-  gc()
-  db
-}
+    names(db4) = sub("(.*)(_.*)", "Household_Prevalence \\1\\2", names(db4))
+    names(db4) = sub("_mean", " mean", names(db4))
+    names(db4) = sub("_n", " n", names(db4))
+    names(db4) = sub("mean_se", "se", names(db4))
+
+    db5 = db5 %>%
+      mutate(
+        disagg = sub(
+          "seeing$",
+          "seeing_any",
+          sub(
+            "hearing$",
+            "hearing_any",
+            sub(
+              "mobile$",
+              "mobile_any",
+              sub(
+                "cognition$",
+                "cognition_any",
+                sub(
+                  "selfcare$",
+                  "selfcare_any",
+                  sub("communicating$", "communicating_any", disagg)
+                )
+              )
+            )
+          )
+        )
+      )
+    db5 = db5 %>%
+      pivot_wider(
+        .,
+        id_cols = names(.)[c(2:3)],
+        names_from = disagg,
+        names_glue = ,
+        values_from = names(.)[-c(1:3)]
+      ) %>%
+      mutate(disagg = factor("all_adults"), .before = admin)
+    names(db5) = sub("everattended_new_", "Ever_attended_school ", names(db5))
+    names(db5) = sub("ind_atleastprimary_", "At_least_primary ", names(db5))
+    names(db5) = sub("ind_atleastsecondary_", "At_least_secondary ", names(db5))
+    names(db5) = sub("lit_new_", "Literacy_rate ", names(db5))
+    names(db5) = sub("computer_", "Computer_use ", names(db5))
+    names(db5) = sub("internet_", "Internet_use ", names(db5))
+    names(db5) = sub("mobile_own_", "Own_Mobile ", names(db5))
+    names(db5) = sub("ind_emp_", "Employment ", names(db5))
+    names(db5) = sub("youth_idle_", "Youth_idle_rate ", names(db5))
+    names(db5) = sub("work_manufacturing_", "Manufacturing_work ", names(db5))
+    names(db5) = sub("work_managerial_", "Managerial_work ", names(db5))
+    names(db5) = sub("work_informal_", "Informal_work ", names(db5))
+    names(db5) = sub("ind_water_", "Water ", names(db5))
+    names(db5) = sub("ind_toilet_", "Sanitation ", names(db5))
+    names(db5) = sub("fp_demsat_mod_", "Family_Planning_Met ", names(db5))
+    names(db5) = sub("anyviolence_byh_12m_", "Any_Violence ", names(db5))
+    names(db5) = sub("bmi_", "BMI ", names(db5))
+    names(db5) = sub("overweight_obese_", "Obese ", names(db5))
+    names(db5) = sub("healthcare_prob_", "Healthcare_access ", names(db5))
+    names(db5) = sub("alone_", "Living_alone ", names(db5))
+    names(db5) = sub("ind_electric_", "Electricity ", names(db5))
+    names(db5) = sub("ind_cleanfuel_", "Clean_fuel ", names(db5))
+    names(db5) = sub("ind_livingcond_", "Adequate_Housing ", names(db5))
+    names(db5) = sub("ind_asset_ownership_", "Share_assets_owned ", names(db5))
+    names(db5) = sub("cell_new_", "Household_Mobile_phone ", names(db5))
+    names(db5) = sub("health_insurance_", "Health_insurance ", names(db5))
+    names(db5) = sub("social_prot_", "Social_protection ", names(db5))
+    names(db5) = sub("food_insecure_", "Food_insecure ", names(db5))
+    names(db5) = sub("shock_any_", "Shock ", names(db5))
+    names(db5) = sub("health_exp_hh_", "Health_expenditures ", names(db5))
+    names(db5) = sub("ind_mdp_", "Multid_poverty ", names(db5))
+    names(db5) = sub("mean_se_", "se ", names(db5))
+    names(db5) = sub("mean_", "mean ", names(db5))
+    names(db5) = sub(" n_", " n ", names(db5))
+    names(db5) = sub(
+      "(.* )(.*)( )(.*)",
+      "\\1\\4\\3\\2",
+      names(db5),
+      fixed = FALSE
+    )
+
+    db = full_join(full_join(full_join(full_join(db1, db2), db3), db4), db5)
+
+    db = db %>%
+      mutate(
+        level = stringi::stri_trans_general(
+          sub(
+            '.\xba\xa1|.\xba\xa3|.\xba\xaf|.\xba\xb1|.\xba\xad',
+            'a',
+            level,
+            useBytes = TRUE
+          ) %>%
+            sub('.\xba\xbf|.\xbb\x87|.\xbb\x81', 'e', ., useBytes = TRUE) %>%
+            sub('.\xbb\x93|.\xbb\x91|.\xbb\x9b', 'o', ., useBytes = TRUE) %>%
+            sub('.\xbb\x8b', 'i', ., useBytes = TRUE) %>%
+            sub('.\xbb\xab', 'u', ., useBytes = TRUE),
+          "latin-ASCII"
+        )
+      )
+    db = db %>% mutate(Survey = svy, .before = disagg)
+
+    db2 = db %>%
+      pivot_longer(
+        cols = names(.)[-c(1:4)],
+        names_to = c("IndicatorName", "DifficultyName", ".value"),
+        names_pattern = "(.*) (.*) (.*)"
+      )
+
+    db2 = db2 %>%
+      mutate(
+        mean = ifelse(
+          disagg == "all_adults" & IndicatorName == "Managerial_work",
+          NA,
+          mean
+        ),
+        se = ifelse(
+          disagg == "all_adults" & IndicatorName == "Managerial_work",
+          NA,
+          se
+        )
+      )
+
+    write_rds(db2, file = paste0(db_loc, svy, ".rds"), compress = "xz")
+
+    rm(ind_a, db)
+    gc()
+    return(db2)
+  }
+
+#Existing file merge
+files = list.files(db_loc, "*.rds", full.names = TRUE)
+merged = bind_rows(lapply(files, read_rds))
 
 #Split database into two (Mean vs SE)
-db_mean = merged %>% filter(output == "mean") %>% select(-1)
-db_se = merged %>% filter(output == "se") %>% select(-1)
+db = full_join(
+  read_xlsx(paste0(
+    cen_dir,
+    "Downloads/Census/Database/DS_E2_All_Estimates.xlsx"
+  )),
+  merged,
+  by = names(merged)
+) %>%
+  arrange(Survey) %>%
+  filter(!Survey == "Test")
 
-db_mean = full_join(read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx")),db_mean, by = names(db_mean)) %>% arrange(survey) %>% filter(!survey=="Test")
-db_se = full_join(read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx")),db_se, by = names(db_se)) %>% arrange(survey) %>% filter(!survey=="Test")
+file.remove(paste0(
+  cen_dir,
+  "Downloads/Census/Database/DS_E2_All_Estimates.xlsx"
+))
 
-db_se = db_se %>% mutate(across(!survey&!admin&!level,~if_else(.x=="Inf",NA,.x))) %>% mutate(across(!survey&!admin&!level&where(is.character),~as.numeric(.x)))
+write_xlsx(
+  db,
+  paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates.xlsx")
+)
 
-file.remove(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
-file.remove(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
+rm(merged, db, mean1, com_list, order, sum_list, sum_list2, svy_list)
 
-write_xlsx(db_mean,paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
-write_xlsx(db_se,paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
+# db_m = read_xlsx(paste0(
+#   cen_dir,
+#   "Downloads/Census/Database/DS_E2_All_Estimates.xlsx"
+# ))
 
-rm(merged,db_mean,db_se,mean1,com_list,order,sum_list,sum_list2,svy_list)
+# chk_list = dir(db_loc)
+# chk_list = chk_list[grep("\\.RData", chk_list)]
+# val_list = dir(paste0(cen_dir, "Downloads/Census/Database/Individual/"))
+# val_list2 = sub("\\.xlsx", "\\.RData", sub("Wide_Table_Output_", "", val_list))
+# chk_list2 = chk_list[!chk_list %in% val_list2]
 
-db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"))
-db_s = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"))
+# foreach(chk = chk_list2) %do%
+#   {
+#     load(paste0(db_loc, chk))
+#     write_xlsx(
+#       db_mean,
+#       paste0(
+#         cen_dir,
+#         "Downloads/Census/Database/Individual/Wide_Table_Output_",
+#         sub("\\.RData", "", chk),
+#         ".xlsx"
+#       )
+#     )
+#   }
 
-chk_list = dir(db_loc)
-chk_list = chk_list[grep("\\.RData",chk_list)]
-val_list = dir(paste0(cen_dir,"Downloads/Census/Database/Individual/"))
-val_list2 = sub("\\.xlsx","\\.RData",sub("Wide_Table_Output_","",val_list))
-chk_list2 = chk_list[!chk_list %in% val_list2]
+# rm(db_mean, db_loc, db_m, db_s, chk, chk_list, chk_list2, val_list, val_list2)
+# gc()
 
-foreach(chk = chk_list2) %do% {
-  load(paste0(db_loc,chk))
-  write_xlsx(list("Means" = db_mean, "Standard Errors" = db_se),paste0(cen_dir,"Downloads/Census/Database/Individual/Wide_Table_Output_",sub("\\.RData","",chk),".xlsx"))
-}
+# drive_auth("bradley.carpenter@mrc.ac.za")
+# file.remove(paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"))
+# drive_download(
+#   file = "https://docs.google.com/spreadsheets/d/1vIsXVg8xlvJKXxonIggj04oQKsWV56aR/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
+#   path = paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"),
+#   overwrite = TRUE
+# )
+# temp2 = read_xlsx(
+#   paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"),
+#   "Sheet1",
+#   .name_repair = function(x) {
+#     gsub(" ", "_", gsub("-", "", x))
+#   }
+# )
+# temp2 = temp2 |>
+#   select(File_Name, Subnational_1_feasible, Subnational_2_feasible) %>%
+#   arrange(File_Name)
 
-rm(db_mean,db_se,db_loc,db_m,db_s,chk,chk_list,chk_list2,val_list,val_list2)
-gc()
+# file.remove(paste0(
+#   cen_dir,
+#   "Downloads/Census/Countries with more than one dataset.xlsx"
+# ))
+# drive_download(
+#   file = "https://docs.google.com/spreadsheets/d/1WogcttawVdBur9wyTqUnZzkHvDMui0OP/edit?usp=drive_link&ouid=104552820408951429298&rtpof=true&sd=true",
+#   path = paste0(
+#     cen_dir,
+#     "Downloads/Census/Countries with more than one dataset.xlsx"
+#   ),
+#   overwrite = TRUE
+# )
+# temp3 = read_xlsx(
+#   paste0(cen_dir, "Downloads/Census/Countries with more than one dataset.xlsx"),
+#   "Extraction"
+# ) %>%
+#   arrange(`File name`)
+# temp3 = temp3 %>%
+#   mutate(across(
+#     dis_a:Multid_poverty,
+#     ~ as.numeric(ifelse(.x == "x" | .x == "X", NA, .x))
+#   ))
 
-drive_auth("bradley.carpenter@mrc.ac.za")
-file.remove(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"))
-drive_download(file = "https://docs.google.com/spreadsheets/d/1vIsXVg8xlvJKXxonIggj04oQKsWV56aR/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
-               path = paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),overwrite = TRUE)
-temp2 = read_xlsx(paste0(cen_dir,"Downloads/Census/Dataset list.xlsx"),"Sheet1",.name_repair = function(x) {gsub(" ","_",gsub("-","",x))})
-temp2 = temp2 |> select(File_Name,Subnational_1_feasible,Subnational_2_feasible) %>% arrange(File_Name)
+# temp4 = temp3 %>% filter(dis_a == 1) %>% select(Country, Survey, `File name`)
 
-file.remove(paste0(cen_dir,"Downloads/Census/Countries with more than one dataset.xlsx"))
-drive_download(file = "https://docs.google.com/spreadsheets/d/1WogcttawVdBur9wyTqUnZzkHvDMui0OP/edit?usp=drive_link&ouid=104552820408951429298&rtpof=true&sd=true",
-               path = paste0(cen_dir,"Downloads/Census/Countries with more than one dataset.xlsx"),overwrite = TRUE)
-temp3 = read_xlsx(paste0(cen_dir,"Downloads/Census/Countries with more than one dataset.xlsx"),"Extraction") %>% arrange(`File name`)
-temp3 = temp3 %>% mutate(across(dis_a:Multid_poverty,~as.numeric(ifelse(.x=="x"|.x=="X",NA,.x))))
+# temp3b = temp3
+# names(temp3b) = sub("everattended_new", "Ever_attended_school", names(temp3b))
+# names(temp3b) = sub("ind_atleastprimary", "At_least_primary", names(temp3b))
+# names(temp3b) = sub("ind_atleastsecondary", "At_least_secondary", names(temp3b))
+# names(temp3b) = sub("lit_new", "Literacy_rate", names(temp3b))
+# names(temp3b) = sub("computer", "Computer_use", names(temp3b))
+# names(temp3b) = sub("internet", "Internet_use", names(temp3b))
+# names(temp3b) = sub("mobile_own", "Own_Mobile", names(temp3b))
+# names(temp3b) = sub("ind_emp", "Employment", names(temp3b))
+# names(temp3b) = sub("youth_idle", "Youth_idle_rate", names(temp3b))
+# names(temp3b) = sub("work_manufacturing", "Manufacturing_work", names(temp3b))
+# names(temp3b) = sub("work_managerial", "Managerial_work", names(temp3b))
+# names(temp3b) = sub("work_informal", "Informal_work", names(temp3b))
+# names(temp3b) = sub("ind_water", "Water", names(temp3b))
+# names(temp3b) = sub("ind_toilet", "Sanitation", names(temp3b))
+# names(temp3b) = sub("fp_demsat_mod", "Family_Planning_Met", names(temp3b))
+# names(temp3b) = sub("anyviolence_byh_12m", "Any_Violence", names(temp3b))
+# names(temp3b) = sub("ind_electric", "Electricity", names(temp3b))
+# names(temp3b) = sub("ind_cleanfuel", "Clean_fuel", names(temp3b))
+# names(temp3b) = sub("ind_livingcond", "Adequate_Housing", names(temp3b))
+# names(temp3b) = sub("ind_asset_ownership", "Share_assets_owned", names(temp3b))
+# names(temp3b) = sub("cell_new", "Household_Mobile_phone", names(temp3b))
+# names(temp3b) = sub("health_insurance", "Health_insurance", names(temp3b))
+# names(temp3b) = sub("social_prot", "Social_protection", names(temp3b))
+# names(temp3b) = sub("food_insecure", "Food_insecure", names(temp3b))
+# names(temp3b) = sub("shock_any", "Shock", names(temp3b))
+# names(temp3b) = sub("health_exp_hh", "Health_expenditures", names(temp3b))
+# names(temp3b) = sub("ind_mdp", "Multid_poverty", names(temp3b))
 
-temp4 = temp3 %>% filter(dis_a==1) %>% select(Country,Survey,`File name`)
+# # temp2 |> filter((!(Subnational_1_feasible=="X" | Subnational_1_feasible=="x") | !(Subnational_2_feasible=="X" | Subnational_2_feasible=="x") | is.na(Subnational_1_feasible) | is.na(Subnational_2_feasible)) & File_Name %in% temp3$`File name`)
+# # Build check for ineligible 1's that have alternative data
 
-temp3b = temp3
-names(temp3b) = sub("everattended_new","Ever_attended_school",names(temp3b))
-names(temp3b) = sub("ind_atleastprimary","At_least_primary",names(temp3b))
-names(temp3b) = sub("ind_atleastsecondary","At_least_secondary",names(temp3b))
-names(temp3b) = sub("lit_new","Literacy_rate",names(temp3b))
-names(temp3b) = sub("computer","Computer_use",names(temp3b))
-names(temp3b) = sub("internet","Internet_use",names(temp3b))
-names(temp3b) = sub("mobile_own","Own_Mobile",names(temp3b))
-names(temp3b) = sub("ind_emp","Employment",names(temp3b))
-names(temp3b) = sub("youth_idle","Youth_idle_rate",names(temp3b))
-names(temp3b) = sub("work_manufacturing","Manufacturing_work",names(temp3b))
-names(temp3b) = sub("work_managerial","Managerial_work",names(temp3b))
-names(temp3b) = sub("work_informal","Informal_work",names(temp3b))
-names(temp3b) = sub("ind_water","Water",names(temp3b))
-names(temp3b) = sub("ind_toilet","Sanitation",names(temp3b))
-names(temp3b) = sub("fp_demsat_mod","Family_Planning_Met",names(temp3b))
-names(temp3b) = sub("anyviolence_byh_12m","Any_Violence",names(temp3b))
-names(temp3b) = sub("ind_electric","Electricity",names(temp3b))
-names(temp3b) = sub("ind_cleanfuel","Clean_fuel",names(temp3b))
-names(temp3b) = sub("ind_livingcond","Adequate_Housing",names(temp3b))
-names(temp3b) = sub("ind_asset_ownership","Share_assets_owned",names(temp3b))
-names(temp3b) = sub("cell_new","Household_Mobile_phone",names(temp3b))
-names(temp3b) = sub("health_insurance","Health_insurance",names(temp3b))
-names(temp3b) = sub("social_prot","Social_protection",names(temp3b))
-names(temp3b) = sub("food_insecure","Food_insecure",names(temp3b))
-names(temp3b) = sub("shock_any","Shock",names(temp3b))
-names(temp3b) = sub("health_exp_hh","Health_expenditures",names(temp3b))
-names(temp3b) = sub("ind_mdp","Multid_poverty",names(temp3b))
+# db_m = read_xlsx(
+#   paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates.xlsx"),
+#   col_types = c(rep("text", 3), rep("numeric", 1467))
+# )
 
-# temp2 |> filter((!(Subnational_1_feasible=="X" | Subnational_1_feasible=="x") | !(Subnational_2_feasible=="X" | Subnational_2_feasible=="x") | is.na(Subnational_1_feasible) | is.na(Subnational_2_feasible)) & File_Name %in% temp3$`File name`)
-# Build check for ineligible 1's that have alternative data
+# admin0_m = db_m %>% filter(admin == "admin0") %>% select(-admin)
+# admin1_m = db_m %>% filter(admin == "admin1") %>% select(-admin)
+# admin2_m = db_m %>% filter(admin == "admin2") %>% select(-admin)
+# admina_m = db_m %>% filter(admin == "admin_alt") %>% select(-admin)
 
-db_m = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S3_All_Estimates_Means.xlsx"), col_types = c(rep("text",3),rep("numeric",1467)))
-db_s = read_xlsx(paste0(cen_dir,"Downloads/Census/Database/S4_All_Estimates_SE.xlsx"), col_types = c(rep("text",3),rep("numeric",1467)))
+# admin0_mb = admin0_m %>%
+#   filter(survey %in% temp2$File_Name) %>%
+#   rename(country = survey)
+# admin1_mb = admin1_m %>%
+#   filter(
+#     survey %in%
+#       temp2$File_Name[
+#         temp2$Subnational_1_feasible == "X" |
+#           temp2$Subnational_1_feasible == "x"
+#       ]
+#   ) %>%
+#   rename(country = survey)
+# admin2_mb = admin2_m %>%
+#   filter(
+#     survey %in%
+#       temp2$File_Name[
+#         temp2$Subnational_2_feasible == "X" |
+#           temp2$Subnational_2_feasible == "x"
+#       ]
+#   ) %>%
+#   filter(!survey %in% temp3$`File name` | survey %in% temp4$`File name`) %>%
+#   mutate(survey = str_extract(survey, ".+?(?=_)")) %>%
+#   rename(country = survey)
+# admina_mb = admina_m %>%
+#   filter(survey %in% temp2$File_Name) %>%
+#   filter(!survey %in% temp3$`File name` | survey %in% temp4$`File name`) %>%
+#   mutate(survey = str_extract(survey, ".+?(?=_)")) %>%
+#   rename(country = survey)
 
-admin0_m = db_m %>% filter(admin == "admin0") %>% select(-admin)
-admin1_m = db_m %>% filter(admin == "admin1") %>% select(-admin)
-admin2_m = db_m %>% filter(admin == "admin2") %>% select(-admin)
-admina_m = db_m %>% filter(admin == "admin_alt") %>% select(-admin)
-admin0_se = db_s %>% filter(admin == "admin0") %>% select(-admin)
-admin1_se = db_s %>% filter(admin == "admin1") %>% select(-admin)
-admin2_se = db_s %>% filter(admin == "admin2") %>% select(-admin)
-admina_se = db_s %>% filter(admin == "admin_alt") %>% select(-admin)
+# multicountry = bind_cols(
+#   temp3 %>% select(`File name`),
+#   rep(temp3 %>% select(dis_a), 27),
+#   rep(temp3 %>% select(dom_a), 54),
+#   rep(temp3 %>% select(Household_Prevalence), 9),
+#   rep(temp3 %>% select(Ever_attended_school:Multid_poverty), each = 51),
+#   .name_repair = "minimal"
+# )
+# names(multicountry) = names(admin0_m)[-2]
+# multicountry = multicountry %>% filter(survey %in% admin0_m$survey)
 
-admin0_mb = admin0_m %>% filter(survey %in% temp2$File_Name) %>% rename(country=survey)
-admin1_mb = admin1_m %>% filter(survey %in% temp2$File_Name[temp2$Subnational_1_feasible=="X"|temp2$Subnational_1_feasible=="x"]) %>% rename(country=survey)
-admin2_mb = admin2_m %>% filter(survey %in% temp2$File_Name[temp2$Subnational_2_feasible=="X"|temp2$Subnational_2_feasible=="x"]) %>%
-                         filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
-                         mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
-admina_mb = admina_m %>% filter(survey %in% temp2$File_Name) %>% filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
-                         mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
+# multicountry2 = admin1_mb %>%
+#   filter(country %in% multicountry$survey) %>%
+#   select(1:2)
+# multicountry2 = left_join(
+#   multicountry2,
+#   multicountry,
+#   by = join_by(country == survey)
+# )
 
-admin0_seb = admin0_se %>% filter(survey %in% temp2$File_Name) %>% rename(country=survey)
-admin1_seb = admin1_se %>% filter(survey %in% temp2$File_Name[temp2$Subnational_1_feasible=="X"|temp2$Subnational_1_feasible=="x"]) %>% rename(country=survey)
-admin2_seb = admin2_se %>% filter(survey %in% temp2$File_Name[temp2$Subnational_2_feasible=="X"|temp2$Subnational_2_feasible=="x"]) %>%
-                           filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
-                           mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
-admina_seb = admina_se %>% filter(survey %in% temp2$File_Name) %>% filter(!survey %in% temp3$`File name`|survey %in% temp4$`File name`) %>%
-                           mutate(survey = str_extract(survey,".+?(?=_)")) %>% rename(country=survey)
+# rm(admin0_m, admin1_m, admin2_m, admina_m)
 
-multicountry = bind_cols(temp3 %>% select(`File name`), rep(temp3 %>% select(dis_a),27), rep(temp3 %>% select(dom_a),54), rep(temp3 %>% select(Household_Prevalence),9), rep(temp3 %>% select(Ever_attended_school:Multid_poverty),each=51),.name_repair = "minimal")
-names(multicountry) = names(admin0_m)[-2]
-multicountry = multicountry %>% filter(survey %in% admin0_m$survey)
+# admin0_mc = admin0_mb %>% filter(country %in% temp3$`File name`)
+# admin0_mb = admin0_mb %>% filter(!country %in% temp3$`File name`)
+# admin1_mc = admin1_mb %>% filter(country %in% temp3$`File name`)
+# admin1_mb = admin1_mb %>% filter(!country %in% temp3$`File name`)
+# # admin2_mc = admin2_mb %>% filter(country %in% temp3$`File name`)
+# # admin2_mb = admin2_mb %>% filter(!country %in% temp3$`File name`)
 
-multicountry2 = admin1_mb %>% filter(country %in% multicountry$survey) %>% select(1:2)
-multicountry2 = left_join(multicountry2,multicountry,by = join_by(country == survey))
+# static = multicountry
+# names(static) = names(static) %>%
+#   sub("Household_Prevalence_", "Household_Prevalence ", .)
+# names(static)[2:82] = names(static)[2:82] %>% paste0("Prevalence ", .)
+# names(static)[!grepl(" .* ", names(static))][-1] = names(static)[
+#   !grepl(" .* ", names(static))
+# ][-1] %>%
+#   sub("(\\()(.*)(\\))", "\\2 \\1all_adults\\3", .)
+# static = static %>%
+#   pivot_longer(
+#     .,
+#     names(.)[-1],
+#     names_to = c("IndicatorName", "DifficultyName", "PopulationName"),
+#     names_pattern = "(.*) (.*) \\((.*)\\)",
+#     values_to = "Value"
+#   )
+# static = static %>%
+#   filter(
+#     PopulationName == "all_adults",
+#     DifficultyName == "disability",
+#     !is.na(Value)
+#   ) %>%
+#   select(-DifficultyName, -PopulationName, -Value)
+# static = static %>% mutate(source = survey) %>% rename(Country = survey)
+# static = static %>%
+#   add_row(tibble(
+#     Country = rep(admin0_mb$country, each = n_distinct(static$IndicatorName)),
+#     IndicatorName = rep(
+#       unique(static$IndicatorName),
+#       times = n_distinct(admin0_mb$country)
+#     ),
+#     source = rep(admin0_mb$country, each = n_distinct(static$IndicatorName))
+#   ))
+# static = static %>%
+#   mutate(Country = str_extract(Country, ".+?(?=_)")) %>%
+#   complete(Country, IndicatorName)
 
-rm(admin0_m,admin1_m,admin2_m,admina_m,admin0_se,admin1_se,admin2_se,admina_se)
+# temp5 = bind_cols(
+#   admin0_mc[1:2],
+#   admin0_mc[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix()
+# )
+# temp7 = bind_cols(
+#   admin1_mc[1:2],
+#   admin1_mc[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix()
+# )
+# temp5 = temp5 %>% mutate(country = str_extract(country, ".+?(?=_)"))
+# temp7 = temp7 %>% mutate(country = str_extract(country, ".+?(?=_)"))
+# admin0_mc = temp5 %>%
+#   group_by(country) %>%
+#   summarise(
+#     level = first(level),
+#     across(
+#       `disability (all_adults)`:`Multid_poverty (communicating)`,
+#       ~ ifelse(sum(!is.na(.x)) == 1, na.omit(.x), NA)
+#     )
+#   )
+# admin1_mc = temp7 %>%
+#   group_by(country, level) %>%
+#   summarise(across(
+#     `disability (all_adults)`:`Multid_poverty (communicating)`,
+#     ~ ifelse(sum(!is.na(.x)) == 1, na.omit(.x), NA)
+#   ))
+# admin0_mb = admin0_mb %>% mutate(country = str_extract(country, ".+?(?=_)"))
+# admin1_mb = admin1_mb %>% mutate(country = str_extract(country, ".+?(?=_)"))
 
-admin0_mc = admin0_mb %>% filter(country %in% temp3$`File name`)
-admin0_mb = admin0_mb %>% filter(!country %in% temp3$`File name`)
-admin0_sec = admin0_seb %>% filter(country %in% temp3$`File name`)
-admin0_seb = admin0_seb %>% filter(!country %in% temp3$`File name`)
-admin1_mc = admin1_mb %>% filter(country %in% temp3$`File name`)
-admin1_mb = admin1_mb %>% filter(!country %in% temp3$`File name`)
-admin1_sec = admin1_seb %>% filter(country %in% temp3$`File name`)
-admin1_seb = admin1_seb %>% filter(!country %in% temp3$`File name`)
-# admin2_mc = admin2_mb %>% filter(country %in% temp3$`File name`)
-# admin2_mb = admin2_mb %>% filter(!country %in% temp3$`File name`)
-# admin2_sec = admin2_seb %>% filter(country %in% temp3$`File name`)
-# admin2_seb = admin2_seb %>% filter(!country %in% temp3$`File name`)
+# admin0_mb = full_join(admin0_mb, admin0_mc, by = names(admin0_mb)) %>%
+#   arrange(country)
+# admin1_mb = full_join(admin1_mb, admin1_mc, by = names(admin1_mb)) %>%
+#   arrange(country)
 
-static = multicountry
-names(static) = names(static) %>% sub("Household_Prevalence_","Household_Prevalence ",.)
-names(static)[2:82] = names(static)[2:82] %>% paste0("Prevalence ",.)
-names(static)[!grepl(" .* ",names(static))][-1] = names(static)[!grepl(" .* ",names(static))][-1] %>% sub("(\\()(.*)(\\))","\\2 \\1all_adults\\3",.)
-static = static %>% pivot_longer(.,names(.)[-1],names_to = c("IndicatorName","DifficultyName","PopulationName"),names_pattern = "(.*) (.*) \\((.*)\\)",
-                                 values_to = "Value")
-static = static %>% filter(PopulationName == "all_adults", DifficultyName == "disability",!is.na(Value)) %>% select(-DifficultyName,-PopulationName,-Value)
-static = static %>% mutate(source = survey) %>% rename(Country=survey)
-static = static %>% add_row(tibble(Country = rep(admin0_mb$country, each = n_distinct(static$IndicatorName)), IndicatorName = rep(unique(static$IndicatorName), times = n_distinct(admin0_mb$country)), source = rep(admin0_mb$country, each = n_distinct(static$IndicatorName))))
-static = static %>% mutate(Country = str_extract(Country,".+?(?=_)")) %>% complete(Country, IndicatorName)
+# rm(
+#   admin0_mc,
+#   admin1_mc,
+#   temp2,
+#   temp3,
+#   temp3b,
+#   temp4,
+#   temp5,
+#   temp7,
+#   multicountry,
+#   multicountry2
+# )
 
-temp5 = bind_cols(admin0_mc[1:2],admin0_mc[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
-temp6 = bind_cols(admin0_sec[1:2],admin0_sec[3:1469] %>% as.matrix() * multicountry[2:1468] %>% as.matrix())
-temp7 = bind_cols(admin1_mc[1:2],admin1_mc[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix())
-temp8 = bind_cols(admin1_sec[1:2],admin1_sec[3:1469] %>% as.matrix() * multicountry2[3:1469] %>% as.matrix())
-temp5 = temp5 %>% mutate(country = str_extract(country,".+?(?=_)"))
-temp6 = temp6 %>% mutate(country = str_extract(country,".+?(?=_)"))
-temp7 = temp7 %>% mutate(country = str_extract(country,".+?(?=_)"))
-temp8 = temp8 %>% mutate(country = str_extract(country,".+?(?=_)"))
-admin0_mc = temp5 %>% group_by(country) %>% summarise(level = first(level),across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
-admin0_sec = temp6 %>% group_by(country) %>% summarise(level = first(level),across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
-admin1_mc = temp7 %>% group_by(country, level) %>% summarise(across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
-admin1_sec = temp8 %>% group_by(country, level) %>% summarise(across(`disability (all_adults)`:`Multid_poverty (communicating)`,~ifelse(sum(!is.na(.x))==1,na.omit(.x),NA)))
-admin0_mb = admin0_mb %>% mutate(country = str_extract(country,".+?(?=_)"))
-admin0_seb = admin0_seb %>% mutate(country = str_extract(country,".+?(?=_)"))
-admin1_mb = admin1_mb %>% mutate(country = str_extract(country,".+?(?=_)"))
-admin1_seb = admin1_seb %>% mutate(country = str_extract(country,".+?(?=_)"))
+# static2 = admin1_mb %>% rename("Country" = "country")
+# names(static2) = names(static2) %>%
+#   sub("Household_Prevalence_", "Household_Prevalence ", .)
+# names(static2)[3:83] = names(static2)[3:83] %>% paste0("Prevalence ", .)
+# names(static2)[!grepl(" .* ", names(static2))][-c(1:2)] = names(static2)[
+#   !grepl(" .* ", names(static2))
+# ][-c(1:2)] %>%
+#   sub("(\\()(.*)(\\))", "\\2 \\1all_adults\\3", .)
+# static2 = static2 %>%
+#   pivot_longer(
+#     .,
+#     names(.)[-c(1:2)],
+#     names_to = c("IndicatorName", "DifficultyName", "PopulationName"),
+#     names_pattern = "(.*) (.*) \\((.*)\\)",
+#     values_to = "Value"
+#   )
+# static2 = static2 %>%
+#   summarise(
+#     min = min(Value, na.rm = T),
+#     max = max(Value, na.rm = T),
+#     .by = c(Country, IndicatorName)
+#   )
+# static = left_join(static, static2)
 
-admin0_mb = full_join(admin0_mb,admin0_mc,by = names(admin0_mb)) %>% arrange(country)
-admin0_seb = full_join(admin0_seb,admin0_sec,by = names(admin0_seb)) %>% arrange(country)
-admin1_mb = full_join(admin1_mb,admin1_mc,by = names(admin1_mb)) %>% arrange(country)
-admin1_seb = full_join(admin1_seb,admin1_sec,by = names(admin1_seb)) %>% arrange(country)
+# # Use locations from excel to identify blocks of values to assign into ordered list
 
-rm(admin0_mc,admin0_sec,admin1_mc,admin1_sec,temp2,temp3,temp3b,temp4,temp5,temp6,temp7,temp8,multicountry,multicountry2)
+# db_mb = bind_rows(
+#   admin0 = admin0_mb,
+#   admin1 = admin1_mb,
+#   admin2 = admin2_mb,
+#   admin_alt = admina_mb,
+#   .id = "admin"
+# ) %>%
+#   select(country, names(db_m)[-1]) %>%
+#   arrange(country, admin, level)
 
-static2 = admin1_mb %>% rename("Country" = "country")
-names(static2) = names(static2) %>% sub("Household_Prevalence_","Household_Prevalence ",.)
-names(static2)[3:83] = names(static2)[3:83] %>% paste0("Prevalence ",.)
-names(static2)[!grepl(" .* ",names(static2))][-c(1:2)] = names(static2)[!grepl(" .* ",names(static2))][-c(1:2)] %>% sub("(\\()(.*)(\\))","\\2 \\1all_adults\\3",.)
-static2 = static2 %>% pivot_longer(.,names(.)[-c(1:2)],names_to = c("IndicatorName","DifficultyName","PopulationName"),names_pattern = "(.*) (.*) \\((.*)\\)",
-                             values_to = "Value")
-static2 = static2 %>% summarise(min = min(Value, na.rm = T), max = max(Value, na.rm = T), .by = c(Country, IndicatorName))
-static = left_join(static,static2)
+# if (
+#   file.exists(paste0(
+#     cen_dir,
+#     "Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"
+#   ))
+# ) {
+#   file.remove("DS-D files/Static.xlsx")
+#   file.remove(paste0(
+#     cen_dir,
+#     "Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"
+#   ))
+# }
+# write_xlsx(static, "DS-D files/Static.xlsx")
+# write_xlsx(
+#   db_mb,
+#   paste0(cen_dir, "Downloads/Census/Database/S1_Default_Estimates_Means.xlsx")
+# )
 
-# Use locations from excel to identify blocks of values to assign into ordered list
-
-db_mb = bind_rows(admin0 = admin0_mb,admin1 = admin1_mb,admin2 = admin2_mb,admin_alt = admina_mb, .id = "admin") %>% select(country,names(db_m)[-1]) %>% arrange(country,admin,level)
-db_sb = bind_rows(admin0 = admin0_seb,admin1 = admin1_seb,admin2 = admin2_seb,admin_alt = admina_seb, .id = "admin") %>% select(country, names(db_s)[-1]) %>% arrange(country,admin,level)
-
-if(file.exists(paste0(cen_dir,"Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))) {
-  file.remove("DS-D files/Static.xlsx")
-  file.remove(paste0(cen_dir,"Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))
-  file.remove(paste0(cen_dir,"Downloads/Census/Database/S2_Default_Estimates_SE.xlsx"))
-}
-write_xlsx(static,"DS-D files/Static.xlsx")
-write_xlsx(db_mb,paste0(cen_dir,"Downloads/Census/Database/S1_Default_Estimates_Means.xlsx"))
-write_xlsx(db_sb,paste0(cen_dir,"Downloads/Census/Database/S2_Default_Estimates_SE.xlsx"))
-
-rm(admin0_mb,admin1_mb,admin2_mb,admina_mb,admin0_seb,admin1_seb,admin2_seb,admina_seb, static, static2, db_m, db_mb, db_s, db_sb)
-gc()
+# rm(admin0_mb, admin1_mb, admin2_mb, admina_mb, static, static2, db_m, db_mb)
+# gc()
