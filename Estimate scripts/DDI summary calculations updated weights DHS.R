@@ -42,7 +42,7 @@ with_progress({
   load(file = file_name)
   
   dck = dck %>% mutate(disability_sev1 = factor(disability_some + 2*disability_atleast,levels = c(0,1,2),labels = c("no","some","atleast")),
-                       disability_sev2 = factor(disability_some + 2*disability_alot + 3*disability_unable,levels = c(0,1,2,3),labels = c("no","some","alot","unable")),
+                       disability_sev2 = factor(disability_some + 2*disability_alot + 3*disability_unable,levels = c(0,1,2,3),labels = c("no_v","some_v","alot","unable")),
                        disability_any = factor(disability_any,labels = c("no_a","any")),
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
                        disability_alot = factor(disability_some,labels = c("no_t","alot_n")),
@@ -91,8 +91,8 @@ with_progress({
   }
   
   grp_a = c("female","urban_new","age_group")
-  ind_a = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","bmi","overweight_obese","healthcare_prob","alone","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","health_exp_hh","ind_mdp")
-  ind_a1 = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","bmi","overweight_obese","healthcare_prob","alone","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","social_prot","food_insecure","shock_any","ind_mdp")
+  ind_a = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","lit_new","computer","internet","mobile_own","ind_emp","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","fp_demsat_mod","anyviolence_byh_12m","bmi","overweight_obese","child_died","healthcare_prob","death_hh","alone","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","health_insurance","social_prot","food_insecure","shock_any","health_exp_hh","ind_mdp")
+  ind_a1 = c("everattended_new","ind_atleastprimary","ind_atleastsecondary","youth_idle","work_manufacturing","work_managerial","work_informal","ind_water","ind_toilet","bmi","overweight_obese","child_died","healthcare_prob","death_hh","alone","ind_electric","ind_cleanfuel","ind_livingcond","ind_asset_ownership","cell_new","social_prot","food_insecure","shock_any","ind_mdp")
   ind_a2 = c("lit_new","computer","internet","mobile_own","ind_emp","fp_demsat_mod","health_insurance")
   ind_a3 = c("health_exp_hh")
   ind_a4 = c("anyviolence_byh_12m")
