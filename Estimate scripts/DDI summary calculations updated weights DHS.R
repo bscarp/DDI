@@ -26,7 +26,7 @@ dhs_list = r_list[!r_list %in% sum_list&grepl("DHS",r_list)]
 
 #Run analysis for unprocessed datasets
 with_progress({
-  p = progressor(along = seq(length(dhs_list)*(3*85+2)))
+  p = progressor(along = seq(length(dhs_list)*(5*95+2)))
   foreach(r_name = dhs_list, .options.future = list(packages = c("tidyverse","haven"))) %dofuture% {
   
   cen_dir = str_extract(getwd(),"C:\\/Users\\/.+?\\/")
@@ -45,8 +45,8 @@ with_progress({
                        disability_sev2 = factor(disability_some + 2*disability_alot + 3*disability_unable,levels = c(0,1,2,3),labels = c("no_v","some_v","alot","unable")),
                        disability_any = factor(disability_any,labels = c("no_a","any")),
                        disability_some = factor(disability_some,labels = c("no_s","some_n")),
-                       disability_alot = factor(disability_some,labels = c("no_t","alot_n")),
-                       disability_unable = factor(disability_some,labels = c("no_u","unable_n")),
+                       disability_alot = factor(disability_alot,labels = c("no_t","alot_n")),
+                       disability_unable = factor(disability_unable,labels = c("no_u","unable_n")),
                        disability_atleast = factor(disability_atleast,labels = c("no_l","atleast_n")),
                        age_group5 = cut(age,c(14,19,24,29,34,39,44,49,54,59,64,69,74,79,84,89,Inf),c("15 to 19","20 to 24","25 to 29","30 to 34","35 to 39","40 to 44","45 to 49","50 to 54","55 to 59","60 to 64","65 to 69","70 to 74","75 to 79","80 to 84","85 to 89","90+")),
                        age_group10 = cut(age, c(14,24,34,44,54,64,Inf),c("15 to 24","25 to 34","35 to 44","45 to 54","55 to 64","65+")),
