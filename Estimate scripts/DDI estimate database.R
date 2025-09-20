@@ -431,23 +431,23 @@ rm(merged, db, mean1, com_list, order, sum_list, sum_list2, svy_list)
 # rm(db_mean, db_loc, db_m, db_s, chk, chk_list, chk_list2, val_list, val_list2)
 # gc()
 
-# drive_auth("bradley.carpenter@mrc.ac.za")
-# file.remove(paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"))
-# drive_download(
-#   file = "https://docs.google.com/spreadsheets/d/1vIsXVg8xlvJKXxonIggj04oQKsWV56aR/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
-#   path = paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"),
-#   overwrite = TRUE
-# )
-# temp2 = read_xlsx(
-#   paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"),
-#   "Sheet1",
-#   .name_repair = function(x) {
-#     gsub(" ", "_", gsub("-", "", x))
-#   }
-# )
-# temp2 = temp2 |>
-#   select(File_Name, Subnational_1_feasible, Subnational_2_feasible) %>%
-#   arrange(File_Name)
+drive_auth("bradley.carpenter@mrc.ac.za")
+file.remove(paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"))
+drive_download(
+  file = "https://docs.google.com/spreadsheets/d/1vIsXVg8xlvJKXxonIggj04oQKsWV56aR/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
+  path = paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"),
+  overwrite = TRUE
+)
+temp2 = read_xlsx(
+  paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"),
+  "Sheet1",
+  .name_repair = function(x) {
+    gsub(" ", "_", gsub("-", "", x))
+  }
+)
+temp2 = temp2 |>
+  select(File_Name, Subnational_1_feasible, Subnational_2_feasible) %>%
+  arrange(File_Name)
 
 # file.remove(paste0(
 #   cen_dir,
