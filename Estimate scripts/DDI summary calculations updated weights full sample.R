@@ -668,7 +668,7 @@ with_progress({
                       mean = ~ ifelse(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        mean(.x, na.rm = T) * 100
+                        mean(as.numeric(.x) - 1, na.rm = T) * 100
                       ),
                       mean_se = ~ as.double(NA),
                       n = ~ n()
@@ -1413,7 +1413,7 @@ with_progress({
                       mean = ~ ifelse(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        wtd.mean(.x, hh_weight, na.rm = T) * 100
+                        wtd.mean(as.numeric(.x) - 1, hh_weight, na.rm = T) * 100
                       ),
                       mean_se = ~ ifelse(
                         sum(!is.na(.x)) < 50,

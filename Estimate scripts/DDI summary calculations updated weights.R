@@ -897,8 +897,6 @@ with_progress({
                 select(c(-1, -2))
             }
 
-          dck3b = dck2b %>% filter(!duplicated(hh_id))
-
           #Summary for P3
           tab_P3_nr = foreach(
             agg_grp = c("All", "urban_new"),
@@ -907,7 +905,7 @@ with_progress({
             {
               p(sprintf("%s, Tab3, %s, %s", r_name, admin_grp, agg_grp))
               agg = ifelse(agg_grp == "All", agg_grp, as.symbol(agg_grp))
-              tab = dck3b %>%
+              tab = dck2b %>%
                 group_by({{ agg }}, {{ admin }}) %>%
                 summarise(
                   across(
@@ -916,7 +914,8 @@ with_progress({
                       mean = ~ if_else(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        survey_mean(.x, na.rm = T, df = Inf) * 100
+                        survey_mean(as.numeric(.x) - 1, na.rm = T, df = Inf) *
+                          100
                       ),
                       n = ~ n()
                     )
