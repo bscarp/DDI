@@ -715,7 +715,7 @@ with_progress({
                         NA,
                         survey_mean(.x, na.rm = T, df = Inf) * 100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -777,7 +777,7 @@ with_progress({
                           NA,
                           survey_mean(.x, na.rm = T, df = Inf) * 100
                         ),
-                        n = ~ n()
+                        n = ~ sum(!is.na(.x))
                       )
                     ),
                     .groups = "drop"
@@ -845,7 +845,7 @@ with_progress({
                         survey_mean(as.numeric(.x) - 1, na.rm = T, df = Inf) *
                           100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -882,7 +882,7 @@ with_progress({
                         NA,
                         survey_mean(.x, na.rm = T, df = Inf) * 100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -917,7 +917,7 @@ with_progress({
                         survey_mean(as.numeric(.x) - 1, na.rm = T, df = Inf) *
                           100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -957,7 +957,7 @@ with_progress({
                         NA,
                         survey_mean(.x, na.rm = T, df = Inf) * 100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -1006,7 +1006,7 @@ with_progress({
                           NA,
                           survey_mean(.x, na.rm = T, df = Inf) * 100
                         ),
-                        n = ~ n()
+                        n = ~ sum(!is.na(.x))
                       )
                     ),
                     .groups = "drop"

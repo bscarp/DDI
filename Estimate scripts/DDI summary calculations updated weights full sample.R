@@ -466,7 +466,7 @@ with_progress({
                         mean(.x, na.rm = T) * 100
                       ),
                       mean_se = ~ as.double(NA),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -529,7 +529,7 @@ with_progress({
                           mean(.x, na.rm = T) * 100
                         ),
                         mean_se = ~ as.double(NA),
-                        n = ~ n()
+                        n = ~ sum(!is.na(.x))
                       )
                     ),
                     .groups = "drop"
@@ -597,7 +597,7 @@ with_progress({
                         mean(as.numeric(.x) - 1, na.rm = T) * 100
                       ),
                       mean_se = ~ as.double(NA),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -635,7 +635,7 @@ with_progress({
                         mean(.x, na.rm = T) * 100
                       ),
                       mean_se = ~ as.double(NA),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -671,7 +671,7 @@ with_progress({
                         mean(as.numeric(.x) - 1, na.rm = T) * 100
                       ),
                       mean_se = ~ as.double(NA),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -712,7 +712,7 @@ with_progress({
                         mean(.x, na.rm = T) * 100
                       ),
                       mean_se = ~ as.double(NA),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -754,7 +754,7 @@ with_progress({
                         mean(.x, na.rm = T) * 100
                       ),
                       mean_se = ~ as.double(NA),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -1198,9 +1198,12 @@ with_progress({
                       mean_se = ~ ifelse(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        sqrt(wtd.var(.x, ind_weight, na.rm = T) / n()) * 100
+                        sqrt(
+                          wtd.var(.x, ind_weight, na.rm = T) / sum(!is.na(.x))
+                        ) *
+                          100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -1263,9 +1266,12 @@ with_progress({
                         mean_se = ~ ifelse(
                           sum(!is.na(.x)) < 50,
                           NA,
-                          sqrt(wtd.var(.x, hh_weight, na.rm = T) / n()) * 100
+                          sqrt(
+                            wtd.var(.x, hh_weight, na.rm = T) / sum(!is.na(.x))
+                          ) *
+                            100
                         ),
-                        n = ~ n()
+                        n = ~ sum(!is.na(.x))
                       )
                     ),
                     .groups = "drop"
@@ -1336,11 +1342,11 @@ with_progress({
                         NA,
                         sqrt(
                           wtd.var(as.numeric(.x) - 1, ind_weight, na.rm = T) /
-                            n()
+                            sum(!is.na(.x))
                         ) *
                           100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -1378,9 +1384,12 @@ with_progress({
                       mean_se = ~ ifelse(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        sqrt(wtd.var(.x, ind_weight, na.rm = T) / n()) * 100
+                        sqrt(
+                          wtd.var(.x, ind_weight, na.rm = T) / sum(!is.na(.x))
+                        ) *
+                          100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -1418,9 +1427,12 @@ with_progress({
                       mean_se = ~ ifelse(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        sqrt(wtd.var(.x, hh_weight, na.rm = T) / n()) * 100
+                        sqrt(
+                          wtd.var(.x, hh_weight, na.rm = T) / sum(!is.na(.x))
+                        ) *
+                          100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -1461,9 +1473,12 @@ with_progress({
                       mean_se = ~ ifelse(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        sqrt(wtd.var(.x, ind_weight, na.rm = T) / n()) * 100
+                        sqrt(
+                          wtd.var(.x, ind_weight, na.rm = T) / sum(!is.na(.x))
+                        ) *
+                          100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
@@ -1505,9 +1520,12 @@ with_progress({
                       mean_se = ~ ifelse(
                         sum(!is.na(.x)) < 50,
                         NA,
-                        sqrt(wtd.var(.x, hh_weight, na.rm = T) / n()) * 100
+                        sqrt(
+                          wtd.var(.x, hh_weight, na.rm = T) / sum(!is.na(.x))
+                        ) *
+                          100
                       ),
-                      n = ~ n()
+                      n = ~ sum(!is.na(.x))
                     )
                   ),
                   .groups = "drop"
