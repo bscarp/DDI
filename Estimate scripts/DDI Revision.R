@@ -207,30 +207,20 @@ file.remove(paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list_c))
 #sub("KHM_IPUMS_Cleaned_Individual_Data.dta", "Cambodia_IPUMS_2019.dta",.) %>% sub("VNM1_IPUMS_Cleaned_Individual_Data.dta", "Vietnam_IPUMS_2019.dta",.) %>%
 dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
 dta_list2 = dta_list %>%
-  sub("MAR_IPUMS_Cleaned_Individual_Data.dta", "Morocco_IPUMS_2014.dta", .) %>%
-  sub("MMR_IPUMS_Cleaned_Individual_Data.dta", "Myanmar_IPUMS_2014.dta", .) %>%
-  sub(
-    "MUS_IPUMS_Cleaned_Individual_Data.dta",
-    "Mauritius_IPUMS_2011.dta",
-    .
-  ) %>%
-  sub("SEN_IPUMS_Cleaned_Individual_Data.dta", "Senegal_IPUMS_2013.dta", .) %>%
-  sub("SUR_IPUMS_Cleaned_Individual_Data.dta", "Suriname_IPUMS_2012.dta", .) %>%
-  sub("TZA_IPUMS_Cleaned_Individual_Data.dta", "Tanzania_IPUMS_2012.dta", .) %>%
-  sub("UGA_IPUMS_Cleaned_Individual_Data.dta", "Uganda_IPUMS_2014.dta", .) %>%
-  sub("URY_IPUMS_Cleaned_Individual_Data.dta", "Uruguay_IPUMS_2011.dta", .) %>%
-  sub("VNM_IPUMS_Cleaned_Individual_Data.dta", "Vietnam_IPUMS_2009.dta", .) %>%
-  sub(
-    "ZAF_IPUMS_Cleaned_Individual_Data.dta",
-    "South Africa_IPUMS_2011.dta",
-    .
-  ) %>%
-  sub(
-    "ZAF1_IPUMS_Cleaned_Individual_Data.dta",
-    "South Africa_IPUMS_2016.dta",
-    .
-  )
-
+  sub("_Cleaned_Individual_Data", "", .) %>%
+  sub("_Sample", "", .) %>%
+  sub("_Trimmed", "", .) %>%
+  sub("MMR_IPUMS.dta", "Myanmar_IPUMS_2014.dta", .) %>%
+  sub("MUS_IPUMS.dta", "Mauritius_IPUMS_2011.dta", .) %>%
+  sub("SEN_IPUMS.dta", "Senegal_IPUMS_2013.dta", .) %>%
+  sub("SUR_IPUMS.dta", "Suriname_IPUMS_2012.dta", .) %>%
+  sub("TZA_IPUMS.dta", "Tanzania_IPUMS_2012.dta", .) %>%
+  sub("UGA_IPUMS.dta", "Uganda_IPUMS_2014.dta", .) %>%
+  sub("URY_IPUMS.dta", "Uruguay_IPUMS_2011.dta", .) %>%
+  sub("VNM_IPUMS.dta", "Vietnam_IPUMS_2009.dta", .) %>%
+  sub("ZAF_IPUMS.dta", "South Africa_IPUMS_2011.dta", .) %>%
+  sub("ZAF1_IPUMS.dta", "South Africa_IPUMS_2016.dta", .) %>%
+  sub("Philippine_", "Philippines_", .)
 file.rename(
   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list),
   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2)
@@ -244,5 +234,5 @@ dta_list_c = dta_list[
 ]
 file.remove(paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list_c))
 
-rm(temp, dta_list, r_list, dta_list2, dta_list_c, zip_list, i, j, k, unzip_7z)
+rm(temp, dta_list, r_list, dta_list2, dta_list_c, zip_list, i, j, k, l, unzip_7z)
 gc()
