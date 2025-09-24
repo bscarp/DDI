@@ -175,6 +175,13 @@ foreach(i = download$url, j = download$File_Name) %do%
   }
 rm(data_list, temp2, dta_list, download)
 
+dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
+dta_list2 = dta_list %>% sub(" ", "_", .)
+file.rename(
+  paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list),
+  paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2)
+)
+
 unzip_7z <- function(zipfile, exdir) {
   str1 <- sprintf('C:/"Program Files"/7-Zip/7z.exe e %s -o%s', zipfile, exdir)
   shell(str1, wait = TRUE)
@@ -193,10 +200,11 @@ foreach(i = zip_list) %do%
     )
     dta_list2 = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
     dta_list2 = dta_list2[!dta_list2 %in% dta_list & grepl("\\.dta", dta_list2)]
-    file.rename(
-      from = paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2),
-      to = sub(".zip", ".dta", i)
-    )
+    if(!grepl("IPUMS.*International",i)) {
+      file.rename(
+        from = paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2),
+        to = sub(".zip", ".dta", i)
+      )}
     file.remove(i)
   }
 
@@ -210,6 +218,7 @@ dta_list2 = dta_list %>%
   sub("_Cleaned_Individual_Data", "", .) %>%
   sub("_Sample", "", .) %>%
   sub("_Trimmed", "", .) %>%
+  sub("MAR_IPUMS.dta", "Morocco_IPUMS_2014.dta", .) %>%
   sub("MMR_IPUMS.dta", "Myanmar_IPUMS_2014.dta", .) %>%
   sub("MUS_IPUMS.dta", "Mauritius_IPUMS_2011.dta", .) %>%
   sub("SEN_IPUMS.dta", "Senegal_IPUMS_2013.dta", .) %>%
