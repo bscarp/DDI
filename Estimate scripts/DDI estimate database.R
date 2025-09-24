@@ -66,6 +66,7 @@ merged = foreach(
 ) %dofuture%
   {
     ##Load data file created by DDI summary calculations.R
+    tabs = NULL
     load(paste0(cen_dir, "Downloads/Census/Summaries/", file))
     print(svy)
 
@@ -194,6 +195,11 @@ merged = foreach(
     names(db1) = sub("_mean", " mean", names(db1))
     names(db1) = sub("_n", " n", names(db1))
     names(db1) = sub("mean_se", "se", names(db1))
+    names(db1) = sub("disability_any", "any_difficulty", names(db1))
+    names(db1) = sub("disability_some", "some_difficulty", names(db1))
+    names(db1) = sub("disability_alot", "alot_difficulty", names(db1))
+    names(db1) = sub("disability_unable", "cannot_difficulty", names(db1))
+    names(db1) = sub("disability_atleast", "alotcannot_difficulty", names(db1))
 
     names(db2) = sub("everattended_new_", "Ever_attended_school ", names(db2))
     names(db2) = sub("ind_atleastprimary_", "At_least_primary ", names(db2))
@@ -213,7 +219,9 @@ merged = foreach(
     names(db2) = sub("anyviolence_byh_12m_", "Any_Violence ", names(db2))
     names(db2) = sub("bmi_", "BMI ", names(db2))
     names(db2) = sub("overweight_obese_", "Obese ", names(db2))
+    names(db2) = sub("child_died_", "Child_died ", names(db2))
     names(db2) = sub("healthcare_prob_", "Healthcare_access ", names(db2))
+    names(db2) = sub("death_hh_", "Household_Death ", names(db2))
     names(db2) = sub("alone_", "Living_alone ", names(db2))
     names(db2) = sub("ind_electric_", "Electricity ", names(db2))
     names(db2) = sub("ind_cleanfuel_", "Clean_fuel ", names(db2))
@@ -235,42 +243,52 @@ merged = foreach(
       names(db2),
       fixed = FALSE
     )
-    names(db2) = sub(" no_l ", " noandmoderate_disability ", names(db2))
-    names(db2) = sub(" any ", " disability ", names(db2))
-    names(db2) = sub(" no ", " no_disability ", names(db2))
-    names(db2) = sub(" some ", " moderate_disability ", names(db2))
-    names(db2) = sub(" atleast ", " severe_disability ", names(db2))
-    names(db2) = sub(" alot ", " alot_disability ", names(db2))
-    names(db2) = sub(" unable ", " unable_disability ", names(db2))
+    names(db2) = sub(" no_l ", " nosome_difficulty ", names(db2))
+    names(db2) = sub(" any ", " any_difficulty ", names(db2))
+    names(db2) = sub(" no ", " no_difficulty ", names(db2))
+    names(db2) = sub(" some ", " some_difficulty ", names(db2))
+    names(db2) = sub(" atleast ", " alotcannot_difficulty ", names(db2))
+    names(db2) = sub(" alot ", " alot_difficulty ", names(db2))
+    names(db2) = sub(" unable ", " cannot_difficulty ", names(db2))
 
     names(db3) = sub("(.*)(_.*)", "Prevalence \\1\\2", names(db3))
     names(db3) = sub("_mean", " mean", names(db3))
     names(db3) = sub("_n", " n", names(db3))
     names(db3) = sub("mean_se", "se", names(db3))
+    names(db3) = sub("_unable", "_cannot", names(db3))
 
     names(db4) = sub("(.*)(_.*)", "Household_Prevalence \\1\\2", names(db4))
     names(db4) = sub("_mean", " mean", names(db4))
     names(db4) = sub("_n", " n", names(db4))
     names(db4) = sub("mean_se", "se", names(db4))
+    names(db4) = sub("disability_any", "any_difficulty", names(db4))
+    names(db4) = sub("disability_some", "some_difficulty", names(db4))
+    names(db4) = sub("disability_alot", "alot_difficulty", names(db4))
+    names(db4) = sub("disability_unable", "cannot_difficulty", names(db4))
+    names(db4) = sub("disability_atleast", "alotcannot_difficulty", names(db4))
 
     db5 = db5 %>%
       mutate(
         disagg = sub(
-          "seeing$",
-          "seeing_any",
+          "_unable",
+          "_cannot",
           sub(
-            "hearing$",
-            "hearing_any",
+            "seeing$",
+            "seeing_any",
             sub(
-              "mobile$",
-              "mobile_any",
+              "hearing$",
+              "hearing_any",
               sub(
-                "cognition$",
-                "cognition_any",
+                "mobile$",
+                "mobile_any",
                 sub(
-                  "selfcare$",
-                  "selfcare_any",
-                  sub("communicating$", "communicating_any", disagg)
+                  "cognition$",
+                  "cognition_any",
+                  sub(
+                    "selfcare$",
+                    "selfcare_any",
+                    sub("communicating$", "communicating_any", disagg)
+                  )
                 )
               )
             )
@@ -304,7 +322,9 @@ merged = foreach(
     names(db5) = sub("anyviolence_byh_12m_", "Any_Violence ", names(db5))
     names(db5) = sub("bmi_", "BMI ", names(db5))
     names(db5) = sub("overweight_obese_", "Obese ", names(db5))
+    names(db5) = sub("child_died_", "Child_died ", names(db5))
     names(db5) = sub("healthcare_prob_", "Healthcare_access ", names(db5))
+    names(db5) = sub("death_hh_", "Household_Death ", names(db5))
     names(db5) = sub("alone_", "Living_alone ", names(db5))
     names(db5) = sub("ind_electric_", "Electricity ", names(db5))
     names(db5) = sub("ind_cleanfuel_", "Clean_fuel ", names(db5))
@@ -326,10 +346,15 @@ merged = foreach(
       names(db5),
       fixed = FALSE
     )
+    join = join_by(disagg, admin, level)
+    df = full_join(
+      full_join(full_join(full_join(db1, db2, join), db3, join), db4, join),
+      db5,
+      join
+    )
+    rm(join)
 
-    db = full_join(full_join(full_join(full_join(db1, db2), db3), db4), db5)
-
-    db = db %>%
+    df = df %>%
       mutate(
         level = stringi::stri_trans_general(
           sub(
@@ -345,34 +370,42 @@ merged = foreach(
           "latin-ASCII"
         )
       )
-    db = db %>% mutate(Survey = svy, .before = disagg)
+    df = df %>% mutate(Survey = svy, .before = disagg)
 
-    db2 = db %>%
+    df2 = df %>%
       pivot_longer(
         cols = names(.)[-c(1:4)],
         names_to = c("IndicatorName", "DifficultyName", ".value"),
         names_pattern = "(.*) (.*) (.*)"
       )
 
-    db2 = db2 %>%
-      mutate(
-        mean = ifelse(
-          disagg == "all_adults" & IndicatorName == "Managerial_work",
+    #df2 = df2 %>% filter(!is.na(Survey),!is.na(disagg),!is.na(admin),!is.na(level),!is.na(IndicatorName),!is.na(DifficultyName))
+
+    df2 = df2 %>%
+      mutate(across(
+        c(mean, se, n),
+        ~ ifelse(
+          disagg == "all_adults" &
+            IndicatorName %in%
+              c(
+                "Youth_idle_rate",
+                "Managerial_work",
+                "Family_Planning_Met",
+                "Any_Violence",
+                "Healthcare_access",
+                "BMI",
+                "Obese"
+              ),
           NA,
-          mean
-        ),
-        se = ifelse(
-          disagg == "all_adults" & IndicatorName == "Managerial_work",
-          NA,
-          se
+          .x
         )
-      )
+      ))
 
-    write_rds(db2, file = paste0(db_loc, svy, ".rds"), compress = "xz")
+    write_rds(df2, file = paste0(db_loc, svy, ".rds"), compress = "xz")
 
-    rm(ind_a, db)
+    rm(ind_a, df)
     gc()
-    return(db2)
+    return(df2)
   }
 
 #Existing file merge
@@ -390,6 +423,9 @@ db = full_join(
 ) %>%
   arrange(Survey) %>%
   filter(!Survey == "Test")
+
+db = db %>% mutate(n = if_else(n == 0, NA, n))
+db = db %>% mutate(across(c(mean, se), ~ round(.x, 3)))
 
 file.remove(paste0(
   cen_dir,
