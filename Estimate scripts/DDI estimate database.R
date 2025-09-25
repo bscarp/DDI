@@ -401,6 +401,12 @@ merged = foreach(
         )
       ))
 
+    df2 = df2 %>%
+      mutate(across(
+        c(mean, se),
+        ~ if_else(IndicatorName == "BMI", .x / 100, .x)
+      ))
+
     write_rds(df2, file = paste0(db_loc, svy, ".rds"), compress = "xz")
 
     rm(ind_a, df)
@@ -426,15 +432,31 @@ db = full_join(
 
 db = db %>% mutate(n = if_else(n == 0, NA, n))
 db = db %>% mutate(across(c(mean, se), ~ round(.x, 3)))
+db2 = db %>% filter(admin %in% c("admin0"))
+db3 = db %>% filter(admin %in% c("admin0", "admin1"))
 
 file.remove(paste0(
   cen_dir,
-  "Downloads/Census/Database/DS_E2_All_Estimates.xlsx"
+  c(
+    "Downloads/Census/Database/DS_E2_All_Estimates.csv",
+    "Downloads/Census/Database/DS_E2_All_Estimates_National.xlsx",
+    "Downloads/Census/Database/DS_E2_All_Estimates_Admin1.xlsx"
+  )
 ))
 
-write_xlsx(
+write_csv(
   db,
-  paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates.xlsx")
+  paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates.csv")
+)
+
+write_xlsx(
+  db2,
+  paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates_National.xlsx")
+)
+
+write_csv(
+  db3,
+  paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates_Admin1.csv")
 )
 
 rm(merged, db, mean1, com_list, order, sum_list, sum_list2, svy_list)
