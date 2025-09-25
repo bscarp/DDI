@@ -154,6 +154,11 @@ with_progress({
             levels = c(0, 1),
             labels = c("no_u", "unable_n")
           ),
+          disability_nonesome = factor(
+            disability_atleast,
+            levels = c(1, 0),
+            labels = c("al_n", "nonesome_n")
+          ),
           disability_atleast = factor(
             disability_atleast,
             levels = c(0, 1),
@@ -178,6 +183,11 @@ with_progress({
             disability_unable_hh,
             levels = c(0, 1),
             labels = c("no_u", "unable_n")
+          ),
+          disability_nonesome_hh = factor(
+            disability_atleast_hh,
+            levels = c(1, 0),
+            labels = c("al_n", "nonesome_n")
           ),
           disability_atleast_hh = factor(
             disability_atleast_hh,
@@ -348,6 +358,7 @@ with_progress({
         "disability_some",
         "disability_alot",
         "disability_unable",
+        "disability_nonesome",
         "disability_atleast",
         "disability_sev1",
         "disability_sev2"
@@ -357,6 +368,7 @@ with_progress({
         "disability_some",
         "disability_alot",
         "disability_unable",
+        "disability_nonesome",
         "disability_atleast"
       )
       dis_hh_a = c(
@@ -364,6 +376,7 @@ with_progress({
         "disability_some_hh",
         "disability_alot_hh",
         "disability_unable_hh",
+        "disability_nonesome_hh",
         "disability_atleast_hh",
         "disability_sev1_hh",
         "disability_sev2_hh"
@@ -373,6 +386,7 @@ with_progress({
         "disability_some_hh",
         "disability_alot_hh",
         "disability_unable_hh",
+        "disability_nonesome_hh",
         "disability_atleast_hh"
       )
       oth_a = c("age_sex", "as_weight")
@@ -802,7 +816,7 @@ with_progress({
                 contains("everattended_new"),
                 contains("ind_atleastprimary"),
                 contains("ind_atleastsecondary")
-              )
+              ) %>% filter(grepl("urban|All", Agg))
             tab_m_nr2 = tab_m_nr2 %>%
               mutate(
                 across(contains("_mean_"), ~ as.double(NA)),
