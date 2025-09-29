@@ -193,12 +193,13 @@ merged = foreach(
 
     names(db1) = sub("disability", "Prevalence disability", names(db1))
     names(db1) = sub("_mean", " mean", names(db1))
-    names(db1) = sub("_n", " n", names(db1))
+    names(db1) = sub("_n$", " n", names(db1))
     names(db1) = sub("mean_se", "se", names(db1))
     names(db1) = sub("disability_any", "any_difficulty", names(db1))
     names(db1) = sub("disability_some", "some_difficulty", names(db1))
     names(db1) = sub("disability_alot", "alot_difficulty", names(db1))
     names(db1) = sub("disability_unable", "cannot_difficulty", names(db1))
+    names(db1) = sub("disability_nonesome", "nosome_difficulty", names(db1))
     names(db1) = sub("disability_atleast", "alotcannot_difficulty", names(db1))
 
     names(db2) = sub("everattended_new_", "Ever_attended_school ", names(db2))
@@ -253,19 +254,24 @@ merged = foreach(
 
     names(db3) = sub("(.*)(_.*)", "Prevalence \\1\\2", names(db3))
     names(db3) = sub("_mean", " mean", names(db3))
-    names(db3) = sub("_n", " n", names(db3))
+    names(db3) = sub("_n$", " n", names(db3))
     names(db3) = sub("mean_se", "se", names(db3))
     names(db3) = sub("_unable", "_cannot", names(db3))
 
     names(db4) = sub("(.*)(_.*)", "Household_Prevalence \\1\\2", names(db4))
     names(db4) = sub("_mean", " mean", names(db4))
-    names(db4) = sub("_n", " n", names(db4))
+    names(db4) = sub("_n$", " n", names(db4))
     names(db4) = sub("mean_se", "se", names(db4))
-    names(db4) = sub("disability_any", "any_difficulty", names(db4))
-    names(db4) = sub("disability_some", "some_difficulty", names(db4))
-    names(db4) = sub("disability_alot", "alot_difficulty", names(db4))
-    names(db4) = sub("disability_unable", "cannot_difficulty", names(db4))
-    names(db4) = sub("disability_atleast", "alotcannot_difficulty", names(db4))
+    names(db4) = sub("disability_any_hh", "any_difficulty", names(db4))
+    names(db4) = sub("disability_some_hh", "some_difficulty", names(db4))
+    names(db4) = sub("disability_alot_hh", "alot_difficulty", names(db4))
+    names(db4) = sub("disability_unable_hh", "cannot_difficulty", names(db4))
+    names(db4) = sub("disability_nonesome_hh", "nosome_difficulty", names(db4))
+    names(db4) = sub(
+      "disability_atleast_hh",
+      "alotcannot_difficulty",
+      names(db4)
+    )
 
     db5 = db5 %>%
       mutate(
@@ -405,7 +411,11 @@ merged = foreach(
       mutate(across(
         c(mean, se),
         ~ if_else(IndicatorName == "BMI", .x / 100, .x)
-      ))
+      )) %>%
+      filter(
+        !(grepl("Prevalence", IndicatorName) &
+          DifficultyName == "nosome_difficulty")
+      )
 
     write_rds(df2, file = paste0(db_loc, svy, ".rds"), compress = "xz")
 
@@ -459,7 +469,7 @@ write_csv(
   paste0(cen_dir, "Downloads/Census/Database/DS_E2_All_Estimates_Admin1.csv")
 )
 
-rm(merged, db, mean1, com_list, order, sum_list, sum_list2, svy_list)
+rm(merged, db, db2, db3, mean1, com_list, order, sum_list, sum_list2, svy_list)
 
 # db_m = read_xlsx(paste0(
 #   cen_dir,
