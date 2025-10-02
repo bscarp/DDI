@@ -771,7 +771,7 @@ server <- function(session, input, output) {
     # draw the plot using data
     data_g = data_sel0() %>%
       mutate(
-        Country = i18n_r()$t(Country),
+        Country = factor(Country, unique(Country), i18n_r()$t(unique(Country))),
         DifficultyName = factor(
           DifficultyName,
           levels(DifficultyName),
