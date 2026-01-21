@@ -10,7 +10,7 @@ options(java.parameters = "-Xmx8192m")
 library(readxl)
 library(writexl)
 
-cen_dir = str_extract(getwd(), "C:\\/Users\\/.+?\\/")
+cen_dir = str_extract(getwd(), "[c,C]:\\/Users\\/.+?\\/")
 
 drive_auth("bradley.carpenter@mrc.ac.za")
 file.remove(paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"))
@@ -200,11 +200,12 @@ foreach(i = zip_list) %do%
     )
     dta_list2 = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
     dta_list2 = dta_list2[!dta_list2 %in% dta_list & grepl("\\.dta", dta_list2)]
-    if(!grepl("IPUMS.*International",i)) {
+    if (!grepl("IPUMS.*International", i)) {
       file.rename(
         from = paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2),
         to = sub(".zip", ".dta", i)
-      )}
+      )
+    }
     file.remove(i)
   }
 
@@ -243,5 +244,17 @@ dta_list_c = dta_list[
 ]
 file.remove(paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list_c))
 
-rm(temp, dta_list, r_list, dta_list2, dta_list_c, zip_list, i, j, k, l, unzip_7z)
+rm(
+  temp,
+  dta_list,
+  r_list,
+  dta_list2,
+  dta_list_c,
+  zip_list,
+  i,
+  j,
+  k,
+  l,
+  unzip_7z
+)
 gc()
