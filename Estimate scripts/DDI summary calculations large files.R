@@ -16,7 +16,7 @@ handlers("progress")
 drive_auth("bradley.carpenter@mrc.ac.za")
 file.remove(paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"))
 drive_download(
-  file = "https://docs.google.com/spreadsheets/d/1vIsXVg8xlvJKXxonIggj04oQKsWV56aR/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
+  file = "https://docs.google.com/spreadsheets/d/1QweNwgkecGAknSQ-ICNSsXHsaBqZgtTA/edit?usp=drive_link&ouid=104552820408951429298&rtpof=true&sd=true",
   path = paste0(cen_dir, "Downloads/Census/Dataset list.xlsx"),
   overwrite = TRUE
 )

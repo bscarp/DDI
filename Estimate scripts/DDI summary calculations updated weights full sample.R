@@ -21,7 +21,7 @@ cen_dir = str_extract(getwd(), "[c,C]:\\/Users\\/.+?\\/")
 drive_auth("bradley.carpenter@mrc.ac.za")
 file.remove(paste0(cen_dir, "Downloads/Census/Sampling design table.xlsx"))
 drive_download(
-  file = "https://docs.google.com/spreadsheets/d/16jafMGLTW7XxLK69nNDewkCEfGIZx6K-/edit?usp=sharing&ouid=104552820408951429298&rtpof=true&sd=true",
+  file = "https://docs.google.com/spreadsheets/d/1XGeo5j6oSjAYW8vTjgen9rnjoxQC6kr2/edit?usp=drive_link&ouid=104552820408951429298&rtpof=true&sd=true",
   path = paste0(cen_dir, "Downloads/Census/Sampling design table.xlsx"),
   overwrite = TRUE
 )
