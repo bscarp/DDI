@@ -1,14 +1,18 @@
-/*******************************************************************************
-******************Mexico Census 2020 ********************************************
-********************************************************************************
+/*
 This do file was written to code variables to generate estimates for the Disability Statistics – Estimates database, available at https://www.ds-e.disabilitydatainitiative.org/
+
 Reference to appendix and paper:
+
 For more information on indicators, see the appendices on the website above as well as Carpenter et al (2024).
-Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, GVS, Pinilla-Roncancio, M.,  Rivas Velarde, M., Teodoro, D.,  and Mitra, S. (2024). The Disability Statistics – Estimates Database: an innovative database of internationally comparable statistics on disability inequalities. International Journal of Population Data Science.
+
+Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, G., Pinilla-Roncancio, M., Rivas Velarde, M. and Mitra, S. (2024) "Data Resource Profile: The Disability Statistics - Estimates Database (DS-E Database). An innovative database of internationally comparable statistics on disability inequalities", International Journal of Population Data Science, 8(6). doi: 10.23889/ijpds.v8i6.2478
+
 Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
+
 Author: Monica Pinilla-Roncancio
-Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
-*******************************************************************************/
+
+Suggested citation: Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, G., Pinilla-Roncancio, M., Rivas Velarde, M. and Mitra, S. (2024) "Data Resource Profile: The Disability Statistics - Estimates Database (DS-E Database). An innovative database of internationally comparable statistics on disability inequalities", International Journal of Population Data Science, 8(6). doi: 10.23889/ijpds.v8i6.2478
+*/
 *===============================================================================*
 * Project: DDI - Guatemala
 * Last modified:  28112024
@@ -46,6 +50,20 @@ gl dta_work "${dta}/dta/work"
 use "${dta_work}/data_final.dta", replace
 
 ******* Country information 
+
+use "D:\DDI\Estimate run\Census\Guatemala raw data-20250728T050407Z-1-001\Guatemala raw data\HOGAR_BDP.dta",clear
+merge m:1 NUM_VIVIENDA using "D:\DDI\Estimate run\Census\Guatemala raw data-20250728T050407Z-1-001\Guatemala raw data\VIVIENDA_BDP.dta"
+drop if _merge==2
+drop _merge
+merge 1:m NUM_VIVIENDA NUM_HOGAR using "D:\DDI\Estimate run\Census\Guatemala raw data-20250728T050407Z-1-001\Guatemala raw data\PERSONA_BDP.dta"
+drop if _merge==2
+drop _merge
+
+*rename  age PCP7 
+egen hh_id = group(NUM_VIVIENDA NUM_HOGAR)
+
+
+
 
 gen country_name="Guatemala"
 gen country_abrev="GT"
@@ -143,11 +161,35 @@ replace selfcare_atleast_alot=. if selfcare_diff_new ==.
 gen communicating_atleast_alot = (comm_diff_new>=3) 
 replace communicating_atleast_alot=. if comm_diff_new ==.
 
+local diffvars seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new
 
-gen disability_none = (disability_any==0)
-gen disability_nonesome = (disability_none==1|disability_some==1)
+foreach var of local diffvars {
+    
+    local rawdomain = subinstr("`var'", "_diff_new", "", .)
+
+    local domain "`rawdomain'"
+	if "`rawdomain'" == "mobility" local domain "mobile"
+    if "`rawdomain'" == "cognitive" local domain "cognition"
+    if "`rawdomain'" == "comm" local domain "communicating"
+	
+    gen `domain'_alot = (`var' == 3)
+    replace `domain'_alot = . if `var' == .
+
+    gen `domain'_unable = (`var' == 4)
+    replace `domain'_unable = . if `var' == .
+
+}
 
 
+
+	gen disability_none = (disability_any==0)
+	gen disability_nonesome = (disability_none==1|disability_some==1)
+
+	gen disability_alot=(func_difficulty==3)
+	replace disability_alot=. if func_difficulty==.
+	
+	gen disability_unable=(func_difficulty==4)
+	replace disability_unable=. if func_difficulty==.
  
 ****** Social Characteristic
 
@@ -167,26 +209,26 @@ label   def age_group 1 "15 to 29" 2 "30 to 44" 3 " 45 to 64" 4 "65 or more"
 label   val age_group age_group
 label   var age_group "Age group"
 tab     age_group, m 
-rename  PCP7 age 
-la var  age_group "Age Group"
 
+la var  age_group "Age Group"
+rename  PCP7 age 
 gen urban_new=(area==2)
 label var urban_new "1 for rural 0 for urban"
 
 
 ****** Education  
-tab NIVGRADO 
+tab nivgrado
 
 ** Ever attend school 
 
-gen     everattended_new=(NIVGRADO!=10 | PCP18 ==1) 
-replace everattended_new =. if  NIVGRADO==. & PCP18==. 
+gen     everattended_new=(nivgrado!=10 | PCP18 ==1) 
+replace everattended_new =. if  nivgrado==. & PCP18==. 
 lab var everattended_new "E1_Ever_attended_school binary"
 tab     everattended_new
 
 ** Adults ages 25+ who have completed primary school or higher 
-codebook NIVGRADO , tab(39)
-gen     escoacum_new=NIVGRADO
+codebook nivgrado , tab(39)
+gen     escoacum_new=nivgrado
 
 gen     ind_atleastprimary =( escoacum_new>=36)  if  escoacum_new!=.   // Primary education 6 years
 replace ind_atleastprimary  =. if age<25
@@ -203,6 +245,10 @@ label var ind_atleastsecondary "Adults ages 25+ who have completed upper seconda
 
 *variable for ages 15+ used for the deprivation variable for multidimensional poverty
 gen     ind_atleastprimary_all = ( escoacum_new>=36)  if  escoacum_new!=.
+
+gen education=0 if nivgrado==10
+replace education=1 if inrange(nivgrado, 20,45)
+replace education=2 if nivgrado>=46
 
 ** Literacy
 
@@ -226,12 +272,18 @@ gen     ind_emp= (acivity_labour==1)  if acivity_labour!=.
 lab var ind_emp "W1_employed"
 tab     ind_emp, m 
 
+gen ind_emp2=ind_emp
+replace ind_emp2=0 if PCP31_D==7
 
 ** Youth Idle Rate 
 
 gen d_age_15_24 = (age>14&age<25) if age!=.
 gen youth_idle=(ind_emp==0 & PCP18==2) if d_age_15_24==1
 replace youth_idle =. if PCP18 ==. & ind_emp==.
+lab var youth_idle "W2_youth idle binary"
+
+gen youth_idle2=(ind_emp2==0 & PCP18==2) if d_age_15_24==1
+replace youth_idle2 =. if PCP18 ==. & ind_emp2==.
 lab var youth_idle "W2_youth idle binary"
 
 tab youth_idle  disability_atleast, nof col
@@ -293,7 +345,7 @@ tab PCH6, m nol
 recode PCH5 (1/3=1) (4/5=0), gen (ind_toilet)
 replace ind_toilet=0 if PCH6==2
 
-*** Living Alone
+/*** Living Alone
 
 gen member = 1 										// hh size
 bys NUM_VIVIENDA NUM_HOGAR: egen hhsize = sum(member)
@@ -322,7 +374,7 @@ bys NUM_VIVIENDA NUM_HOGAR: egen hh_mujer10 = max(mujer_10)
 bys NUM_VIVIENDA NUM_HOGAR: egen child_mortality_hh = max(mortality)
 replace child_mortality_hh=0 if hh_mujer10==0 
 lab var child_mortality_hh "Any child in a household has died"
-tab     child_mortality_hh, m   // missing because no information from women in age group. 
+tab     child_mortality_hh, m   // missing because no information from women in age group. */
 
 ****** Standard of Living
 
@@ -398,23 +450,23 @@ gen ind_phone = (PCP26_A==1) if PCP26_A!=.
 lab var cell_new "Individual in a household that owns cell-phone"
 
 
-gen 	admin1=1 if DEPARTAMENTO==1
-replace admin1=2 if DEPARTAMENTO==15 |DEPARTAMENTO==16
-replace admin1=3 if DEPARTAMENTO==2 |DEPARTAMENTO==19 |DEPARTAMENTO==18|DEPARTAMENTO==20
-replace admin1=4 if DEPARTAMENTO==6 |DEPARTAMENTO==22 |DEPARTAMENTO==21
-replace admin1=5 if DEPARTAMENTO==3 |DEPARTAMENTO==4 
-replace admin1=6 if DEPARTAMENTO==7 |DEPARTAMENTO==8 |DEPARTAMENTO==9|DEPARTAMENTO==12
-replace admin1=7 if DEPARTAMENTO==14 |DEPARTAMENTO==13
-replace admin1=8 if DEPARTAMENTO==17
-replace admin1=9 if DEPARTAMENTO==11 |DEPARTAMENTO==10 |DEPARTAMENTO==5
+gen 	admin1=1 if departamento==1
+replace admin1=2 if departamento==15 |departamento==16
+replace admin1=3 if departamento==2 |departamento==19 |departamento==18|departamento==20
+replace admin1=4 if departamento==6 |departamento==22 |departamento==21
+replace admin1=5 if departamento==3 |departamento==4 
+replace admin1=6 if departamento==7 |departamento==8 |departamento==9|departamento==12
+replace admin1=7 if departamento==14 |departamento==13
+replace admin1=8 if departamento==17
+replace admin1=9 if departamento==11 |departamento==10 |departamento==5
 
 
 
 label define admin1 1 "Metropolitana" 2 "Las Verapaces" 3 "Nororiente" 4 "Suroriente" 5"Centro" 6"Occidente"  7"Noroccidente" 8"Petén" 9 "Costa Sur"
 label values admin1 admin1
 rename PCP1 ind_id 
-rename DEPARTAMENTO admin2
-rename MUNICIPIO district 
+rename departamento admin2
+rename municipio district 
 
 
 la var admin1 "Admin 1 Level"
@@ -434,7 +486,7 @@ la var admin1 "Admin 1 Level"
 rename admin3 admin2
 la var admin2 "Admin 2 Level"
 
-
+gen alone=(TOTAL_PERS==1)
 
 
 ****** Multidimensional Poverty 
@@ -519,6 +571,15 @@ replace disability_atleast_hh=. if func_difficulty_hh==.
 
 lab var disability_atleast_hh "P3 At least a lot of difficulty in Any Domain for any adult in the hh"
 
+gen disability_none_hh = (disability_any_hh==0)
+	gen disability_nonesome_hh = (disability_none_hh==1|disability_some_hh==1)
+	
+	gen disability_alot_hh=(func_difficulty_hh==3)
+	replace disability_alot_hh=. if func_difficulty_hh==.
+	
+	gen disability_unable_hh=(func_difficulty_hh==4)
+	replace disability_unable_hh=. if func_difficulty_hh==.
+
 egen func_diff_missing = rowmiss(seeing_diff_new hearing_diff_new comm_diff_new cognitive_diff_new mobility_diff_new selfcare_diff_new)
 gen ind_func_diff_missing= (func_diff_missing==6)
 
@@ -538,7 +599,7 @@ drop if ind_func_diff_missing==1 | ind_disaggvar_missing==1
 *gen disability_nonesome = (disability_none==1|disability_some==1)
 *lab var disability_nonesome "No or Some Difficulty"
 
-egen hh_id = group(NUM_VIVIENDA NUM_HOGAR)
+
 
 gen     hh_weight=1
 lab var hh_weight "Household Sample weight"
@@ -549,7 +610,7 @@ lab var ind_weight "Individual Sample weight"
 drop func_diff_missing ind_func_diff_missing disaggvar_missing ind_disaggvar_missing 
 
 *Run this to check if variable exists. if not, it will automatically generate variable with missing values
-local variable_tocheck "country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary   computer internet mobile_own ind_emp youth_idle work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh bmi obese overweight_obese child_mortality_hh mosquito_net healthcare_prob death_hh alone not_owned_hh overcrowd not_owned_hh overcrowd"
+local variable_tocheck "country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable education everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh"
 
 foreach var in `variable_tocheck'  {
 capture confirm variable `var', exact
@@ -561,96 +622,135 @@ else {
 di "`var' exists"
 }
  }
+ 
+lab var country_name "Country name"
+lab var country_abrev "Country abbreviation"
+lab var country_dataset_year "Country Data and year"
+lab var ind_id "Individual ID"
+lab var hh_id "Household ID"
+lab var admin1 "Admin 1 level"
+lab var admin2 "Admin 2 level"
+lab var admin3 "Admin 3 level"
+lab var admin_alt "alternative admin"
+lab var ind_weight "Individaul Sample weight"
+lab var hh_weight "Household Sample weight"
+lab var dv_weight "DHS Domestic Violence sample weight"
+lab var sample_strata "Strata weight"
+lab var psu "Primary sampling unit"
+lab var female "Female or Male"
+lab var urban_new "Urban or Rural"
+lab var age "Age"
+lab var age_group "Age group"
+lab var seeing_diff_new "Difficulty in seeing"
+lab var hearing_diff_new "Difficulty in hearing"
+lab var mobility_diff_new "Difficulty in walking"
+lab var cognitive_diff_new "Difficulty in cognitive"
+lab var selfcare_diff_new "Difficulty in selfcare"
+lab var comm_diff_new "Difficulty in communication"
+lab var func_difficulty "Functional difficulty"
+lab var disability_any "Any Difficulty"
+lab var disability_some "Some Difficulty"
+lab var disability_atleast "At least a lot of difficulty"
+lab var disability_alot "Alot Difficulty"
+lab var disability_unable "Unable"
+lab var seeing_any "Any Difficulty in seeing"
+lab var hearing_any "Any Difficulty in hearing"
+lab var mobile_any "Any Difficulty in walking"
+lab var cognition_any "Any Difficulty in cognition"
+lab var selfcare_any "Any Difficulty in selfcare"
+lab var communicating_any "Any Difficulty in communicating"
+lab var seeing_some "Some Difficulty in seeing"
+lab var hearing_some "Some Difficulty in hearing"
+lab var mobile_some "Some Difficulty in walking"
+lab var cognition_some "Some Difficulty in cognition"
+lab var selfcare_some "Some Difficulty in selfcare"
+lab var communicating_some "Some Difficulty in communicating"
+lab var seeing_atleast_alot "At least a lot Difficulty in seeing"
+lab var hearing_atleast_alot "At least a lot Difficulty in hearing"
+lab var mobile_atleast_alot "At least a lot Difficulty in walking"
+lab var cognition_atleast_alot "At least a lot Difficulty in cognition"
+lab var selfcare_atleast_alot "At least a lot Difficulty in selfcare"
+lab var communicating_atleast_alot "At least a lot Difficulty in communicating"
+lab var seeing_alot "Some Difficulty in seeing"
+lab var hearing_alot "Some Difficulty in hearing"
+lab var mobile_alot "Some Difficulty in walking"
+lab var cognition_alot "Some Difficulty in cognition"
+lab var selfcare_alot "Some Difficulty in selfcare"
+lab var communicating_alot "Some Difficulty in communicating"
+lab var seeing_unable "Some Difficulty in seeing"
+lab var hearing_unable "Some Difficulty in hearing"
+lab var mobile_unable "Some Difficulty in walking"
+lab var cognition_unable "Some Difficulty in cognition"
+lab var selfcare_unable "Some Difficulty in selfcare"
+lab var communicating_unable "Some Difficulty in communicating"
+lab var func_difficulty_hh "Max Difficulty in HH"
+lab var disability_any_hh "P3 Any difficulty in Any Domain for any adult in the hh"
+lab var disability_some_hh "P3 Some difficulty in Any Domain for any adult in the hh"
+lab var disability_atleast_hh "P3 At least a lot of difficulty in Any Domain for any adult in the hh"
+lab var disability_alot_hh "Alot Difficulty in the hh"
+lab var disability_unable_hh "Unable in the hh"
+lab var edattain_new "1 Less than Prim 2 Prim 3 Sec 4 Higher"
+lab var everattended_new "Ever attended school"
+lab var ind_atleastprimary "Primary school completion or higher adults 25+"
+lab var ind_atleastprimary_all "Primary school completion or higher adults 15+"
+lab var ind_atleastsecondary "Upper secondary school completion or higher adults 25+"
+lab var lit_new "Literacy"
+lab var school_new "Currently attending school"
+lab var computer "Individual uses computer"
+lab var internet "Individual uses internet"
+lab var mobile_own "Adult owns mobile phone"
+lab var ind_emp "Employed"
+lab var youth_idle "Youth is idle"
+lab var work_manufacturing "In manufacturing"
+lab var work_managerial2 "Women in managerial position"
+lab var work_informal2 "Informal work"
+lab var ind_water "Safely managed water source"
+lab var ind_toilet "Safely managed sanitation"
+lab var fp_demsat_mod "H3_Family_planning"
+lab var anyviolence_byh_12m "Experienced any violence last 12 months"
+lab var bmi "Body Mass Index"
+lab var overweight_obese "Overweight or Obese"
+lab var child_died "Women who reported having child died"
+lab var healthcare_prob "Women having atleast one problem in accessing healthcare"
+lab var death_hh "Recent death in past 12 months"
+lab var alone "Living alone"
+lab var ind_electric "Electricity"
+lab var ind_cleanfuel "Clean cooking fuel"
+lab var ind_floor "Floor quality"
+lab var ind_wall "Wall quality"
+lab var ind_roof "Roof quality"
+lab var ind_livingcond "Adequate housing"
+lab var ind_radio "Household has radio"
+lab var ind_tv "Household has television"
+lab var ind_refrig "Household has refrigerator"
+lab var ind_bike "Household has bike"
+lab var ind_motorcycle "Household has motorcycle"
+lab var ind_phone "Household has telephone"
+lab var ind_computer "Household has computer"
+lab var ind_autos "Household has automobile"
+lab var cell_new "Household has mobile"
+lab var ind_asset_ownership "Share of Assets"
+lab var cell_new "Individual in household with cell phone"
+lab var health_insurance "Adults with a health insurance coverage"
+lab var social_prot "Household received any transfer or social protection"
+lab var food_insecure "Household respondent said they worried about not having enough food in the past week OR experienced not having enough food sometime in the past year"
+lab var shock_any "Household respondent said they experienced any negative shock based on a list of shocks"
+lab var health_exp_hh "Proportion of health expenditures of the household relative to total expenditures (food and non-food)."
+lab var deprive_educ "Deprived if less than primary school completion"
+lab var deprive_health_water "Deprived in water"
+lab var deprive_health_sanitation "Deprived in terms of sanitation"
+lab var deprive_work "Deprived in work"
+lab var deprive_sl_electricity "Deprived for electricity"
+lab var deprive_sl_fuel "Deprived in terms of clean fuel"
+lab var deprive_sl_housing "Deprived in terms housing binary"
+lab var deprive_sl_asset "Deprived in terms of assets ownership"
+lab var mdp_score "Multidimensional poverty Score"
+lab var ind_mdp "M1_Multidemensional Poverty status"
 
-la var ind_emp "Employed"
-la var youth_idle "Youth is idle"
-la var work_managerial "Women in managerial position"
-la var work_informal "Informal work"
-la var ind_water "Safely managed water source "
-la var ind_toilet "Safely managed sanitation"
-la var ind_electric "Electricity"
-la var ind_cleanfuel "Clean cooking fuel"
-la var ind_floor "Floor quality"
-la var ind_wall "Wall quality"
-la var ind_roof "Roof quality"
-la var ind_livingcond "Adequate housing"
-la var ind_radio "Household has radio"
-la var ind_tv "Household has television"
-la var ind_refrig "Household has refrigerator"
-la var ind_bike "Household has bike"
-la var ind_motorcycle "Household has motocycle"
-la var ind_phone "Household has telephone"
-la var ind_computer "Household has computer"
-la var ind_autos "Household has automobile"
-la var cell_new "Household has mobile"
-la var ind_asset_ownership "Share of  Assets"
+ 
+keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable education everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh 
 
-la var disability_any "Any Difficulty"
-la var seeing_any "Any Difficulty in seeing"
-la var hearing_any "Any Difficulty in hearing"
-la var mobile_any "Any Difficulty in walking"
-la var cognition_any "Any Difficulty in cognition"
-la var selfcare_any "Any Difficulty in selfcare"
-la var communicating_any "Any Difficulty in communicating"
-
-la var disability_some "Some Difficulty"
-la var seeing_some "Some Difficulty in seeing"
-la var hearing_some "Some Difficulty in hearing"
-la var mobile_some "Some Difficulty in walking"
-la var cognition_some "Some Difficulty in cognition"
-la var selfcare_some "Some Difficulty in selfcare"
-la var communicating_some "Some Difficulty in communicating"
-
-la var disability_atleast "At least a lot  Difficulty"
-la var seeing_atleast_alot "At least a lot  Difficulty in seeing"
-la var hearing_atleast_alot "At least a lot  Difficulty in hearing"
-la var mobile_atleast_alot "At least a lot  Difficulty in walking"
-la var cognition_atleast_alot "At least a lot  Difficulty in cognition"
-la var selfcare_atleast_alot "At least a lot  Difficulty in selfcare"
-la var communicating_atleast_alot "At least a lot  Difficulty in communicating"
-
-la var seeing_diff_new "Difficulty in seeing"
-la var hearing_diff_new "Difficulty in hearing"
-la var comm_diff_new "Difficulty in communicating"
-la var cognitive_diff_new "Difficulty in cognition"
-la var mobility_diff_new "Difficulty in walking"
-
-la var selfcare_diff_new "Difficulty in selfcare"
-la var func_difficulty "Difficulty in Any Domain"
-
-keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2  admin_alt///
-ind_weight hh_weight dv_weight sample_strata psu /* demographics*/ female urban_new age  age_group ///
- /* functional difficulty*/ seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new ///
- comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome ///
- seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some ///
- cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot ///
- selfcare_atleast_alot communicating_atleast_alot /*education*/ everattended_new lit_new school_new edattain_new ind_atleastprimary ///
- ind_atleastprimary_all ind_atleastsecondary  /*personal activities*/ computer internet mobile_own /*employment*/ind_emp youth_idle ///
- work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2/*health*/ ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ///
- bmi obese overweight_obese child_mortality_hh mosquito_net healthcare_prob death_hh alone ///
- /*standard of living*/ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond  not_owned_hh overcrowd ///
- /*asset*/ ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos ///
- cell_new ind_asset_ownership /*insecurity*/ health_insurance social_prot food_insecure shock_any health_exp_hh ///
- /*mdp*/ deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  ///
- deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp /* household indicator*/ func_difficulty_hh disability_any_hh ///
- disability_some_hh disability_atleast_hh  admin_alt 
-
-order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin_alt ///
-ind_weight hh_weight dv_weight sample_strata psu /* demographics*/ female urban_new age  age_group ///
- /* functional difficulty*/ seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new ///
- comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome ///
- seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some ///
- cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot ///
- selfcare_atleast_alot communicating_atleast_alot /*education*/ everattended_new lit_new school_new edattain_new ind_atleastprimary ///
- ind_atleastprimary_all ind_atleastsecondary  /*personal activities*/ computer internet mobile_own /*employment*/ind_emp youth_idle ///
- work_manufacturing  work_managerial  work_informal work_managerial2  work_informal2/*health*/ ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m ///
- /*standard of living*/ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ///
- /*asset*/ ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos ///
- cell_new ind_asset_ownership /*insecurity*/ health_insurance social_prot food_insecure shock_any health_exp_hh ///
- /*mdp*/ deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  ///
- deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp /* household indicator*/ func_difficulty_hh disability_any_hh ///
- disability_some_hh disability_atleast_hh 
-
+order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable education everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh
  
  
  save "${dta_work}/Guatemala_Cleaned_Individual_Data_Trimmed.dta", replace

@@ -14,155 +14,218 @@ Author: Kaviyarasan Patchaiappan
 Suggested citation: Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, G., Pinilla-Roncancio, M., Rivas Velarde, M. and Mitra, S. (2024) "Data Resource Profile: The Disability Statistics - Estimates Database (DS-E Database). An innovative database of internationally comparable statistics on disability inequalities", International Journal of Population Data Science, 8(6). doi: 10.23889/ijpds.v8i6.2478
 */
 
-****Merging***
+use "D:\DDI\Vanuatu\raw_files-20241106T093943Z-001\raw_files\vhousing.dta", clear
 
-use "D:\DDI\Kiribati\SPC_KIR_2020_PHC_Person_v01.dta", clear
+recast float province island ea hhno
 
-merge m:1 interview__key using "D:\DDI\Kiribati\SPC_KIR_2020_PHC_Household_v01.dta", keep (match)
+save "D:\DDI\Vanuatu\raw_files-20241106T093943Z-001\raw_files\vhousing.dta", replace
+
+use "D:\DDI\Vanuatu\raw_files-20241106T093943Z-001\raw_files\Vanuatu_old.dta", clear
+
+recast float province island ea hhno
+
+merge m:1 province island ea hhno using "D:\DDI\Vanuatu\raw_files-20241106T093943Z-001\raw_files\vhousing.dta"
+*, keep(match)
 
     /*Result                           # of obs.
     -----------------------------------------
-    not matched                         3,067
-        from master                         0  (_merge==1)
-        from using                      3,067  (_merge==2)
+    not matched                         5,140
+        from master                     5,140  (_merge==1)
+        from using                          0  (_merge==2)
 
-    matched                           119,438  (_merge==3)
+    matched                           228,883  (_merge==3)
     -----------------------------------------*/
-save "D:\DDI\Kiribati\Kiribati_Census_2020.dta", replace
+
+save "D:\DDI\Vanuatu\Vanuatu_2009_Census.dta",replace
+egen hh_id= concat(province island ea hhno), format(%25.0g) punct(_)
+bysort hh_id: gen hh_size= _N
+
+drop if p4age<15
+
+*Total number of observation: 139,642
+
+gen country_name="Vanuatu"
+
+gen country_abrev="VUT"
+
+gen country_dataset_year="Vanuatu Census 2009"
+
+decode province , gen(admin1)
+
+decode island , gen(admin2)
 
 
-drop if age<15
-*(42,920 observations deleted)
+*gen hh_id=string( province)+"_"+ string(island)+"_"+string(ea)+"_"+ string(hhno)
 
-drop if seeing==.& hearing==.& walking==.& remembering==.& selfcare==.& communication==.
-*(4,177 observations deleted)
-
-gen country_name="Kiribati"
-
-gen country_abrev="KIR"
-
-gen country_dataset_year="Kiribati Census 2020"
-
-*decode island , gen(admin1)
-gen admin1=1 if inrange( island, 1,20)
-replace admin1=2 if island==24
-replace admin1=3 if inlist( island, 21,22,23)
-label define admin1 1 "Gilbert Islands" 2 "Phoenix Islands" 3 "Line Islands"
-label value admin1 admin1
-
-clonevar admin2=island
-replace admin2=7 if admin2==8
-replace admin2=14 if admin2==15
-label define island 1 "Banaba" 2 "Makin" 3 "Butaritari" 4 "Marakei" 5 "Abaiang" 6 "North Tarawa" 7 "South Tarawa" 9 "Maiana" 10 "Abemama" 11 "Kuria" 12 "Aranuka" 13 "Nonouti" 14 "Tabiteuea" 16 "Beru" 17 "Nikunau" 18 "Onotoa" 19 "Tamana" 20 "Arorae" 21 "Teeraina" 22 "Tabuaeran" 23 "Kiritimati" 24 "Kanton", replace
-
-/*decode village , gen(village_split)
-split village_split, parse("-") generate(words)
-*the split command is used because after decode the admin2 place name was eg., "715 - Bairiki" to keep only the name this and following command was used.
-drop village_split words1
-rename words2 admin2
-replace admin2="Betio East" if admin2==" Betio_East"
-replace admin2=trim(admin2)
-*trim is used remove the space before the name
-*replace admin2 = subinstr(admin2, "_", " ", .)*/
-
-gen hh_id= interview__key
-
-egen ind_id= concat( interview__key person_roster__id ), format(%25.0g) punct(-)
+egen ind_id= concat(province island ea hhno p1 p2 p3 dob p4age), format(%25.0g) punct(_)
 
 gen ind_weight=1
 gen hh_weight=1
 
-***Urban/Rural***
+***Age_Group**
 
-gen urban_new=1 if urbrur ==1
-replace urban_new=0 if urbrur ==2
-
-***Gender***
-
-gen female= 1 if (sex==2)
-replace female=0 if (sex==1)
-
-***Age Group***
+gen age= p4age
 
 gen age_group = 1 if age <=29
 replace age_group = 2 if age>=30&age<=44
 replace age_group = 3 if age>=45&age<=64
 replace age_group = 4 if age>=65
 
-***Disability***
+***Gender***
 
-clonevar seeing_diff_new=seeing 
-clonevar hearing_diff_new=hearing 
-clonevar mobility_diff_new=walking 
-clonevar cognitive_diff_new=remembering 
-clonevar selfcare_diff_new=selfcare 
-clonevar comm_diff_new=communication
+gen female= 1 if (p3==2)
+replace female=0 if (p3==1)
 
-egen func_difficulty = rowmax(seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new)
+
+***generating Literacy***
+
+gen lit_new=(p19_eng==1 | p19_frc==1 | p19_bis==1 | p19_oth==1)
+
+***generating Evere attended school***
+
+gen everattended_new=cond(mi(p17),.,cond(p17==4,0,1))
+
+*Education - completed primary school +15 year age
+
+gen ind_atleastprimary_all= inrange(p22, 4, 14)
+replace ind_atleastprimary_all=. if (p22==99)
+
+***Individual atleast Primary Education***
+
+gen ind_atleastprimary= inrange(p22, 4, 14) if age>=25
+replace ind_atleastprimary=. if (p22==99)
+
+***Individual  secondary Education***
+
+gen ind_atleastsecondary= inrange(p22, 7, 14) if age>=25
+replace ind_atleastsecondary=. if (p22==99)
+
+gen education=0 if p22==1
+replace education=1 if inrange(p22,2,6)
+replace education=2 if inrange(p22,7,14)
+
+***Employment status***
+
+gen ind_emp=cond(mi( p24 ) & mi( p25 ),.,cond( p24 ==1| p25 ==1,1,0))
+
+***managerial work****
+
+gen work_managerial= inrange( p27 ,111,145) | p27==11
+replace work_managerial=. if female==0
+
+***Individual at Manufacture***
+
+gen work_manufacturing= cond(mi(p28),.,cond(inrange(p28,101,332),1,0))
+replace work_manufacturing=. if ind_emp==0
+
+***Youth Idle***
+
+*gen not_in_school= (p17>=3)
+
+gen school_new=(p17<3)
+
+*gen youth_idle = (ind_emp==0&not_in_school==1)
+*replace youth_idle=. if age>24
+
+gen youth_idle= (ind_emp==0&school_new==0)
+replace youth_idle=. if age>24
+
+***Informal Work***
+
+ gen work_informal =inlist(p26, 4, 5, 6, 8)
+ 
+*work_managerial is a binary for women in managerial work among all women while work_managerial2 code  women in managerial work among working women only. We use  work_managerial2  to generate the  women in managerial work   indicator for the DS-E database.
+
+gen work_managerial2=0 if ind_emp==1 & female==1
+replace work_managerial2= 1 if ind_emp==1 & work_managerial==1 & female==1
+replace work_managerial2= . if (ind_emp==. & work_managerial==.) 
+
+*work_informal is a binary variable for informal work status among all adults while work_informal2 codes informal work among workers only. We use work_informal2 to generate the informal work indicator for the DS-E database.
+
+gen work_informal2=.
+replace work_informal2=0 if ind_emp==1
+replace work_informal2=1 if ind_emp==1 & work_informal==1
+replace work_informal2=. if ind_emp==. & work_informal==.
+ 
+ ***Internet usage***
+ 
+ gen internet=p20==1
+ 
+
+clonevar seeing_diff_new=p15a 
+clonevar hearing_diff_new= p15b
+clonevar mobility_diff_new= p15c
+clonevar cognitive_diff_new= p15d
+
+
+egen func_difficulty = rowmax(seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new)
 
 ***Disability levels for any domain***
  
 gen disability_any = (func_difficulty>=2)
+replace disability_any = . if func_difficulty==.
 
 gen disability_some = (func_difficulty==2)
+replace disability_some = . if func_difficulty==.
 
 gen disability_atleast = (func_difficulty>=3)
+replace disability_atleast = . if func_difficulty==.
 
 gen disability_none = (disability_any==0)
 
 gen disability_nonesome = (disability_none==1|disability_some==1)
 
-gen disability_alot=(func_difficulty==3)
+	gen disability_alot=(func_difficulty==3)
 	replace disability_alot=. if func_difficulty==.
 
 	gen disability_unable=(func_difficulty==4)
 	replace disability_unable=. if func_difficulty==.
 
-
 ***Any difficulty for each domain***
 
 gen seeing_any = (seeing_diff_new>=2) 
+replace seeing_any=. if seeing_diff_new ==.
 
 gen hearing_any = (hearing_diff_new>=2) 
+replace hearing_any=. if hearing_diff_new ==.
 
 gen mobile_any = (mobility_diff_new>=2) 
+replace mobile_any=. if mobility_diff_new ==.
 
 gen cognition_any = (cognitive_diff_new>=2) 
-
-gen selfcare_any = (selfcare_diff_new>=2) 
-
-gen communicating_any = (comm_diff_new>=2) 
+replace cognition_any=. if cognitive_diff_new ==.
 
 
 ***Some difficulty for each domain***
 
 gen seeing_some = (seeing_diff_new==2) 
+replace seeing_some=. if seeing_diff_new ==.
 
 gen hearing_some = (hearing_diff_new==2) 
+replace hearing_some=. if hearing_diff_new ==.
 
 gen mobile_some = (mobility_diff_new==2) 
+replace mobile_some=. if mobility_diff_new ==.
 
 gen cognition_some = (cognitive_diff_new==2) 
+replace cognition_some=. if cognitive_diff_new ==.
 
-gen selfcare_some = (selfcare_diff_new==2) 
-
-gen communicating_some = (comm_diff_new==2) 
 
 ***At least alot difficulty for each domain***
 
 gen seeing_atleast_alot = (seeing_diff_new>=3) 
+replace seeing_atleast_alot=. if seeing_diff_new ==.
 
 gen hearing_atleast_alot = (hearing_diff_new>=3) 
+replace hearing_atleast_alot=. if hearing_diff_new ==.
 
 gen mobile_atleast_alot = (mobility_diff_new>=3) 
+replace mobile_atleast_alot=. if mobility_diff_new ==.
 
 gen cognition_atleast_alot = (cognitive_diff_new>=3) 
+replace cognition_atleast_alot=. if cognitive_diff_new ==.
 
-gen selfcare_atleast_alot = (selfcare_diff_new>=3) 
-
-gen communicating_atleast_alot = (comm_diff_new>=3) 
-
-local diffvars seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new
+local diffvars seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new 
 
 	foreach var of local diffvars {
     
@@ -182,175 +245,49 @@ local diffvars seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff
 	}
 
 
-*Household level Disability 
+***Housing***
 
-egen func_difficulty_hh=max(func_difficulty), by(hh_id)
-lab var func_difficulty_hh "Max Difficulty in HH"
+gen ind_floor=inlist(floor, 2,3)
+gen ind_roof=inlist(roof, 2,3)
+gen ind_wall=(walls==3)
 
-gen disability_any_hh=1 if func_difficulty_hh>1
-replace disability_any_hh=0 if func_difficulty_hh==1
-replace disability_any_hh=. if func_difficulty_hh==.
-lab var disability_any_hh "P3 Any difficulty in Any Domain for any adult in the hh"
-
-gen disability_some_hh=1 if func_difficulty_hh==2
-replace disability_some_hh=0 if func_difficulty_hh!=2
-replace disability_some_hh=. if func_difficulty_hh==.
-lab var disability_some_hh "P3 Some difficulty in Any Domain for any adult in the hh"
-
-gen disability_atleast_hh=1 if func_difficulty_hh>2
-replace disability_atleast_hh=0 if func_difficulty_hh<3
-replace disability_atleast_hh=. if func_difficulty_hh==.
-lab var disability_atleast_hh "P3 At least a lot of difficulty in Any Domain for any adult in the hh"
-
-gen disability_alot_hh=(func_difficulty_hh==3)
-	replace disability_alot_hh=. if func_difficulty_hh==.
-	gen disability_unable_hh=(func_difficulty_hh==4)
-	replace disability_unable_hh=. if func_difficulty_hh==.
-	
-	gen disability_none_hh = (disability_any_hh==0)
-
-	gen disability_nonesome_hh = (disability_none_hh==1|disability_some_hh==1)
-
-***Everattended school***
-
-gen everattended_new = cond((ever_attended==3), ., cond(ever_attended==1, 1, 0))
-
-***Literacy***
-
-gen lit_new=(reading==1 & writing==1)
-
-*Education - completed primary school
-*This variable was created for computing multidimensional poverty
-gen ind_atleastprimary_all=1 if inrange(grade_completed , 16, 51) 
-replace ind_atleastprimary_all=0 if inlist(grade_completed, 1, 2, 3, 11, 12, 13, 14, 15)| everattended_new==0
-
-***Individual atleast Primary Education***
-
-gen ind_atleastprimary=1 if inrange(grade_completed , 16, 51) & age>=25
-replace ind_atleastprimary=0 if (inlist(grade_completed, 1, 2, 3, 11, 12, 13, 14, 15) | everattended_new==0)  & age>=25
-
-
-***Individual atleast secondary Education***
-
-gen ind_atleastsecondary=1 if inrange(grade_completed , 27, 51) & age>=25
-replace ind_atleastsecondary=0 if (inrange(grade_completed , 1, 26)| everattended_new==0) & age>=25
-
-gen education=0 if ever_attended==2
-replace education=1 if inrange(grade_completed,1,26)
-replace education=2 if inrange(grade_completed,27,51)
-
-**********Employment***********
-
-gen ind_emp=inlist(lf1, 1,2,3,6,7)
-
-***Women at Managerial Work***
-
-gen work_managerial =cond(occup_1digit==1,1,0)
-replace work_managerial = 0 if ind_emp==0
-replace work_managerial = . if female==0
-
-***Women at Manufacturing Work***
-
-gen work_manufacturing=cond( indus_1digit==3 ,1,0)
-replace work_manufacturing=. if ind_emp==0
-
-*****Youth idle********
-
-gen school_new=(current_attend==1)
-replace school_new=3 if current_attend==.
-
-gen youth_idle=0 if age<=24
-replace youth_idle=1 if age<=24 & ind_emp==0 & school_new==0
-
-***Informal work***
-
-gen work_informal=inlist(lf8, 4,5)
-replace work_informal=1 if lf8a==3 | lf8a==5
-
-*work_managerial is a binary for women in managerial work among all women while work_managerial2 code  women in managerial work among working women only. We use  work_managerial2  to generate the  women in managerial work   indicator for the DS-E database.
-
-gen work_managerial2=0 if ind_emp==1 & female==1
-replace work_managerial2= 1 if ind_emp==1 & work_managerial==1 & female==1
-replace work_managerial2= . if (ind_emp==. & work_managerial==.) 
-
-*work_informal is a binary variable for informal work status among all adults while work_informal2 codes informal work among workers only. We use work_informal2 to generate the informal work indicator for the DS-E database.
-
-gen work_informal2=.
-replace work_informal2=0 if ind_emp==1
-replace work_informal2=1 if ind_emp==1 & work_informal==1
-replace work_informal2=. if ind_emp==. & work_informal==.
-
-
-***Mobile own***
-
-gen mobile_own=(h4_mobile_phone==1)
-replace mobile_own=. if h4_mobile_phone==9
-
-***internet use***
-
-gen internet=(h1_internet_access==1)
+gen ind_livingcond = (ind_floor==1&ind_roof==1&ind_wall==1)
 
 ***Water***
 
-gen ind_water=(drink_piped_dwell==1| drink_piped_compound==1| drink_public_tap==1| drink_piped_neighbour==1| drink_well_protect==1| drink_rain_inside==1| drink_rain_outside==1| drink_bottled_water==1 | drink_comm_tank==1)
+ gen ind_water=inlist(drinkingwater,1,2,3,4,6,7,8)
+ 
+ ***Saniatation***
+ 
+ gen ind_toilet=inlist(toilet,1,3,5,7)
+ 
+ ***Electricity**
+ 
+ gen ind_electric=inlist(lighting_electric, 1,3)
+ 
+ ***Cooking Fuel***
+ 
+ gen ind_cleanfuel= inlist(fuelcook,1,5)
+ 
+ ****Assets***
+ 
+gen ind_autos=(h20_1>0)
+ 
+gen ind_motorcycle=(h20_2>0)
 
-***Sanitation***
+gen ind_refrige=(h20_6>0)
 
-gen ind_toilet=(toilet_facility__1==1| toilet_facility__2==1| toilet_facility__3==1| toilet_facility__5==1| toilet_facility__7==1)
+gen ind_tv=(h20_7>0)
 
-***Electricity***
+gen ind_radio=(h20_8>0)
 
-gen ind_electric=(electric_govt==1 | electric_solar==1)
+gen ind_computer=(h20_9>0)
 
-***Cookingfuel***
+gen cell_new=(h20_13>0)
 
-gen ind_cleanfuel=(cookfuel_electricity==1 | cookfuel_lpg==1)
-
-***Assets***
-
-rename computer computer_old 
-
-*This is renamed for the purpose of standrisation
-*radio
-gen ind_radio=(radio==1)
-*autos
-gen ind_autos=(hhld_goods__1==1)
-*refrig
-gen ind_refrig=(hhld_goods__6==1)
-*computer
-gen ind_computer=(hhld_goods__23==1)
-*tv
-gen ind_tv=( hhld_goods__19==1)
-*telephone
-gen ind_phone=( hhld_goods__22==1)
-*bike
-gen ind_bike=( hhld_goods__5==1)
-*motorcycle
-gen ind_motorcycle=( hhld_goods__4==1)
-*cell phone
-egen cell_new=max(mobile_own), by(hh_id)
-
-*****Asset Ownership*****
-
-egen ind_asset_ownership=rowmean( ind_autos ind_motorcycle ind_bike ind_radio ind_phone ind_refrig ind_computer cell_new ind_tv)
-
-** Adequate housing
-
-*Wall
-gen ind_wall=(walls==4)
-
-*floor
-gen ind_floor=inlist(floor, 3,4,8,9,10)
-
-*roof
-gen ind_roof=inlist(roof, 2,3)
-
-*Living Condition
-gen ind_livingcond = (ind_floor==1&ind_roof==1&ind_wall==1)
-
-**Living alone
-gen alone=(hhsize==1)
-
+gen ind_phone=(h20_14>0)
+ 
+egen ind_asset_ownership =rowmean(ind_radio ind_tv ind_refrig ind_phone ind_motorcycle ind_autos ind_computer)
 
 *Multidimensional poverty 	
 *if observation has labor information labor_tag==1, otherwise ==0
@@ -377,8 +314,8 @@ gen deprive_sl_fuel=cond(mi(ind_cleanfuel),.,cond(ind_cleanfuel==0,1,0))
 gen deprive_sl_housing=cond(mi(ind_livingcond),.,cond(ind_livingcond==0,1,0))
 
 gen deprive_sl_asset = 0
-replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + ind_phone + ind_refrig + ind_bike + ind_motorcycle) < 2) & ind_autos==0
-replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & ind_phone==. & ind_refrig==. & ind_bike==. & ind_motorcycle==. & ind_autos==.
+replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + ind_phone + ind_refrig +  ind_motorcycle) < 2) & ind_autos==0
+replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & ind_phone==. & ind_refrig==. & ind_motorcycle==. & ind_autos==.
 
 lab var deprive_educ "Deprived if less than primary school completion"
 lab var deprive_work "Deprived in work binary"
@@ -410,17 +347,82 @@ replace mdp_score=cond(mi(deprive_educ)|mi(deprive_work)|mi(deprive_health)|mi(d
 
 gen ind_mdp=cond(mi(mdp_score),.,cond((labor_tag==1 &mdp_score>0.25)|(labor_tag==0 &mdp_score>0.33),1,0))
 
-save "D:\DDI\Kiribati_Census_2020.dta", replace
+******************************************************************************** 
+/*Household level Disability Threshold 3
 
-egen func_diff_missing = rowmiss(seeing_diff_new hearing_diff_new cognitive_diff_new mobility_diff_new selfcare_diff_new comm_diff_new)
+egen func_difficulty_hh=max(func_difficulty), by(province island ea hhno)
+lab var func_difficulty_hh "Max Difficulty in HH"
 
-gen ind_func_diff_missing= (func_diff_missing==6)
+gen disability_any_hh=1 if func_difficulty_hh>1
+replace disability_any_hh=0 if func_difficulty_hh==1
+replace disability_any_hh=. if func_difficulty_hh==.
 
-egen disaggvar_missing = rowmiss(female age urban_new)
+lab var disability_any_hh "P3 Any difficulty in Any Domain for any adult in the hh"
+
+gen disability_some_hh=1 if func_difficulty_hh==2
+replace disability_some_hh=0 if func_difficulty_hh!=2
+replace disability_some_hh=. if func_difficulty_hh==.
+
+lab var disability_some_hh "P3 Some difficulty in Any Domain for any adult in the hh"
+
+gen disability_atleast_hh=1 if func_difficulty_hh>2
+replace disability_atleast_hh=0 if func_difficulty_hh<3
+replace disability_atleast_hh=. if func_difficulty_hh==.
+
+duplicates drop province island ea hhno, force
+
+su disability_any_hh disability_some_hh disability_atleast_hh*/
+******************************************************************************** 
+*Household level Disability 
+
+egen func_difficulty_hh=max(func_difficulty), by(hh_id)
+lab var func_difficulty_hh "Max Difficulty in HH"
+
+gen disability_any_hh=1 if func_difficulty_hh>1
+replace disability_any_hh=0 if func_difficulty_hh==1
+replace disability_any_hh=. if func_difficulty_hh==.
+lab var disability_any_hh "P3 Any difficulty in Any Domain for any adult in the hh"
+
+gen disability_some_hh=1 if func_difficulty_hh==2
+replace disability_some_hh=0 if func_difficulty_hh!=2
+replace disability_some_hh=. if func_difficulty_hh==.
+lab var disability_some_hh "P3 Some difficulty in Any Domain for any adult in the hh"
+
+gen disability_atleast_hh=1 if func_difficulty_hh>2
+replace disability_atleast_hh=0 if func_difficulty_hh<3
+replace disability_atleast_hh=. if func_difficulty_hh==.
+lab var disability_atleast_hh "P3 At least a lot of difficulty in Any Domain for any adult in the hh"
+
+gen disability_none_hh=(disability_any_hh==0)
+replace disability_none_hh=. if disability_any_hh==.
+
+
+gen disability_nonesome_hh = (disability_none_hh==1|disability_some_hh==1)
+
+gen alone=(hh_size==1)
+
+
+gen death_hh=( h22==1)
+replace death_hh=. if h22==.
+
+*gen child_died=0
+*destring h22_age_1 h22_age_2 h22_age_3,replace
+*replace child_died=1 if ( h22_age_1<18 | h22_age_2 <18 | h22_age_3 <18)
+
+
+*save "D:\DDI\Vanuatu\Vanuatu_Census_2009.dta", replace
+
+egen func_diff_missing = rowmiss(seeing_diff_new hearing_diff_new cognitive_diff_new mobility_diff_new)
+*change domain
+gen ind_func_diff_missing= (func_diff_missing==4)
+*change domain
+egen disaggvar_missing = rowmiss(female age)
 
 gen ind_disaggvar_missing = (disaggvar_missing >0)
 
-save "D:\DDI\Kiribati_Census_2020 with missing.dta", replace
+
+
+*save "D:\DDI\Vanuatu\Vanuatu_2009_Census with missing.dta", replace
 
 drop if ind_func_diff_missing==1 | ind_disaggvar_missing==1
 
@@ -563,17 +565,16 @@ lab var mdp_score "Multidimensional poverty Score"
 lab var ind_mdp "M1_Multidemensional Poverty status"
 
  
-keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable everattended_new lit_new school_new education edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh
+keep country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable education everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh
 
-order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable everattended_new lit_new school_new education edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh
+order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable education everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh
 
 compress
 
-
-save "D:\DDI\Kiribati_Census_2020_Cleaned_Individual_Data_Trimmed.dta", replace
+save "D:\DDI\Vanuatu\Vanuatu_Census_2009_Cleaned_Individual_Data_Trimmed.dta", replace
 
 duplicates drop hh_id, force
 
-save "D:\DDI\Kiribati_Census_2020_Cleaned_Household_Level_Data_Trimmed.dta", replace
+save "D:\DDI\Vanuatu\Vanuatu_Census_2009_Cleaned_Household_Level_Data_Trimmed.dta", replace
 
 su disability_any_hh disability_some_hh disability_atleast_hh
