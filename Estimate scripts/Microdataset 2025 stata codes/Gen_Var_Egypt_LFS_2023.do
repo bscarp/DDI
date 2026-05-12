@@ -13,172 +13,53 @@ Author: Kaviyarasan Patchaiappan
 
 Suggested citation: Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, G., Pinilla-Roncancio, M., Rivas Velarde, M. and Mitra, S. (2024) "Data Resource Profile: The Disability Statistics - Estimates Database (DS-E Database). An innovative database of internationally comparable statistics on disability inequalities", International Journal of Population Data Science, 8(6). doi: 10.23889/ijpds.v8i6.2478
 */
+use "C:\Users\kavip\Downloads\elmps 2023 xs v2.1 all\elmps 2023 xs v2.1 all.dta",clear
+drop if age<15
+*(24,471 observations deleted)
 
-use "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_30-ExpenditureAggreg_v01_PUF.dta" ,clear
-destring exp_id,replace
-bysort anon_id07: egen total_exp = total(exp_id)
-gen exp_health = exp_id if coicop_division == 6
-bysort anon_id07: egen health_exp = total(exp_health)
-duplicates drop anon_id07, force
-save "D:\DDI\Marshall Island HIES 2019\Marshall Island HIES 2019 health exp.dta",replace
+	gen country_name="Egypt"
 
-use "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_11-Dwelling_v01_PUF.dta", clear
-merge 1:1 anon_id07 using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_12-Assets_v01_PUF.dta", generate(_merge_assets)
-/*	Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                               873  (_merge_assets==3)
-    -----------------------------------------*/
-merge 1:1 anon_id07 using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_16-FIES_v01_PUF.dta", generate(_merge_food_in)
+	gen country_abrev="EG"
 
-/*    Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                               873  (_merge_food_in==3)
-    -----------------------------------------*/
+	gen country_dataset_year="Egypt LFS 2023"
 
+	rename hhid hh_id
+	rename indid ind_id
 	
-merge 1:1 anon_id07 using "D:\DDI\Marshall Island HIES 2019\MHL_2019_HIES_Vehicle_wide.dta", generate(_merge_vehicle)
+	clonevar admin1=gov
 
-/*	Result                      Number of obs
-    -----------------------------------------
-    Not matched                           522
-        from master                       522  (_merge_vehicle==1)
-        from using                          0  (_merge_vehicle==2)
-
-    Matched                               351  (_merge_vehicle==3)
-    -----------------------------------------*/
-
-merge 1:1 anon_id07 using "D:\DDI\Marshall Island HIES 2019\Marshall Island HIES 2019 health exp.dta", generate(_merge_he_exp)
-
-/*    Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                               873  (_merge_he_exp==3)
-    -----------------------------------------*/
-
-merge 1:m anon_id07 using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_1-DemoCharacter_v01_PUF.dta", generate(_merge_hh)
-/*	Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                             4,769  (_merge_hh==3)
-    -----------------------------------------*/
+	gen sample_strata=gov 
 
 
-merge 1:1 anon_id07 hm_basic__id using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_2-Education_v01_PUF.dta", generate(_merge_edu)
-/*    Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                             4,769  (_merge_edu==3)
-    -----------------------------------------*/
-merge 1:1 anon_id07 hm_basic__id using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_5-Communication_v01_PUF.dta", generate(_merge_comm)
-/*	Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                             4,769  (_merge_comm==3)
-    -----------------------------------------*/
-
-merge 1:1 anon_id07 hm_basic__id using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_8-Labour_v01_PUF.dta", generate(_merge_labo)
-/*   Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                             4,769  (_merge_labo==3)
-    -----------------------------------------*/
-
-merge 1:1 anon_id07 hm_basic__id using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_o4-Disability_v01_PUF.dta", generate(_merge_dis)
-
-
-/*    Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                             4,769  (_merge_dis==3)
-    -----------------------------------------*/
-merge 1:1 anon_id07 hm_basic__id using "D:\DDI\Marshall Island HIES 2019\SPC_MHL_2019_HIES_3-Health_v01_PUF.dta" , gen(_merge_health)
-/*    Result                      Number of obs
-    -----------------------------------------
-    Not matched                             0
-    Matched                             4,769  (_merge==3)
-    -----------------------------------------*/
-
-save "D:\DDI\Marshall Island HIES 2019\Marshall Island HIES 2019.dta",replace
-use "D:\DDI\Marshall Island HIES 2019\Marshall Island HIES 2019.dta",clear
-*******************************************************************************
-
-drop if age_grp5<=3
-
-
-gen country_name="Marshall Islands"
-
-gen country_abrev="MH"
-
-gen country_dataset_year="Marshall Islands HIES 2019"
-
-
-rename anon_id07 hh_id
-egen ind_id= concat(hh_id hm_basic__id), format(%25.0g) punct(_)
-duplicates tag ind_id, generate(dup)
-
-/*      dup |      Freq.     Percent        Cum.
-------------+-----------------------------------
-          0 |      3,069      100.00      100.00
-------------+-----------------------------------
-      Total |      3,069      100.00 */
-tab dup
-drop dup
-gen admin1=anon_atoll
-
-label define admin1 ///
-1 "Ailinglaplap" ///
-2 "Ailuk" ///
-3 "Arno" ///
-4 "Aur" ///
-6 "Ebon" ///
-7 "Enewetak" ///
-9 "Jaluit" ///
-10 "Kili" ///
-11 "Kwajalein" ///
-13 "Lib" ///
-14 "Likiep" ///
-15 "Majuro" ///
-16 "Maloelap" ///
-17 "Mejit" ///
-19 "Namdrik"
-
-label values admin1 admin1
-
-	gen sample_strata=cluster 
-	gen psu= anon_ea
-
-	gen ind_weight=fweight 
-	gen hh_weight=fweight
-
+	gen ind_weight=expan_indiv 
+	gen hh_weight=expan_hh 
+	
 *Urban/Rural
 
-	gen urban_new=1 if urb_rur==1
-	replace urban_new=0 if urb_rur==2
+	gen urban_new=1 if urban==1
+	replace urban_new=0 if urban==2
 
-rename age age_asset
 *Gender
 
 	gen female= 1 if (sex==2)
 	replace female=0 if (sex==1)
-gen age=age_grp5
-*Age group
 
-	gen age_group = 1 if age_grp5 <=6
-	replace age_group = 2 if age_grp5>=7&age_grp5<=9
-	replace age_group = 3 if age_grp5>=10&age_grp5<=13
-	replace age_group = 4 if age_grp5>=14
-	replace age_group =. if age_grp5==.
+	*Age group
+
+	gen age_group = 1 if age <=29
+	replace age_group = 2 if age>=30&age<=44
+	replace age_group = 3 if age>=45&age<=64
+	replace age_group = 4 if age>=65
+	replace age_group =. if age==.
 
 *Difficulties
 
-	clonevar seeing_diff_new= p401 
-	clonevar hearing_diff_new= p402 
-	clonevar mobility_diff_new= p403 
-	clonevar cognitive_diff_new= p404 
-	clonevar selfcare_diff_new= p405 
-	clonevar comm_diff_new= p406  
+	clonevar seeing_diff_new= q2507  
+	clonevar hearing_diff_new= q2508  
+	clonevar mobility_diff_new= q2509  
+	clonevar cognitive_diff_new= q2510  
+	clonevar selfcare_diff_new= q2511  
+	clonevar comm_diff_new= q2512  
 
 	egen func_difficulty = rowmax(seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new)
 	replace func_difficulty =. if seeing_diff_new==. & hearing_diff_new==. & mobility_diff_new==. & cognitive_diff_new==. & selfcare_diff_new==. & comm_diff_new==.
@@ -195,7 +76,7 @@ gen age=age_grp5
 	gen disability_atleast = (func_difficulty>=3)
 	replace disability_atleast = . if func_difficulty==.
 
-		gen disability_none = (disability_any==0)
+	gen disability_none = (disability_any==0)
 	replace disability_none = . if func_difficulty==.
 
 	gen disability_nonesome = (disability_none==1|disability_some==1)
@@ -207,8 +88,7 @@ gen age=age_grp5
 	gen disability_unable=(func_difficulty==4)
 	replace disability_unable=. if func_difficulty==.
 
-
-***Any difficulty for each domain***
+/***Any difficulty for each domain***
 
 	gen seeing_any = (seeing_diff_new>=2) 
 	replace seeing_any=. if seeing_diff_new ==.
@@ -267,7 +147,7 @@ gen age=age_grp5
 
 	gen communicating_atleast_alot = (comm_diff_new>=3) 
 	replace communicating_atleast_alot=. if comm_diff_new ==.
-	
+	*/
 	local diffvars seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new
 
 foreach var of local diffvars {
@@ -278,6 +158,15 @@ foreach var of local diffvars {
 	if "`rawdomain'" == "mobility" local domain "mobile"
     if "`rawdomain'" == "cognitive" local domain "cognition"
     if "`rawdomain'" == "comm" local domain "communicating"
+	
+	gen `domain'_any = (`var' >= 2)
+    replace `domain'_any = . if `var' == .
+	
+	gen `domain'_some = (`var' == 2)
+    replace `domain'_some = . if `var' == .
+	
+	gen `domain'_atleast_alot = (`var' >=3)
+    replace `domain'_atleast_alot = . if `var' == .
 	
     gen `domain'_alot = (`var' == 3)
     replace `domain'_alot = . if `var' == .
@@ -309,174 +198,152 @@ foreach var of local diffvars {
 	
 	gen disability_none_hh = (disability_any_hh==0)
 
-gen disability_nonesome_hh = (disability_none_hh==1|disability_some_hh==1)
+	gen disability_nonesome_hh = (disability_none_hh==1|disability_some_hh==1)
 	
-	gen disability_alot_hh=(func_difficulty_hh==3)
-replace disability_alot_hh=. if func_difficulty_hh==.
-gen disability_unable_hh=(func_difficulty_hh==4)
-replace disability_unable_hh=. if func_difficulty_hh==.
-
+	gen disability_alot_hh=(func_difficulty_hh==2)
+	replace disability_alot_hh=. if func_difficulty_hh==.
+	gen disability_unable_hh=(func_difficulty_hh==3)
+	replace disability_unable_hh=. if func_difficulty_hh==.
+	
 *Lit
 
-	gen lit_new=(p201==1 & p202==1) 
-	replace lit_new=. if p201==. & p202==. 
-
+	gen lit_new=(q3185==1 & q3186==1)
+	replace lit_new=. if q3185==98 | q3186==98
+	
 *Everattended School
 
-	gen everattended_new=(p205==1)
-	replace everattended_new=. if p205==3
-
+	gen everattended_new=inlist(q3101, 2,3)
+	replace everattended_new=. if q3101==.
+	
 *Education - completed primary school
-	*This variable was created for computing multidimensional poverty
-	gen ind_atleastprimary_all = (p208>=16)
-	replace ind_atleastprimary_all =. if (p208==.a |p208==. )
-	replace ind_atleastprimary_all=0 if everattended_new==0
+*This variable was created for computing multidimensional poverty
+	gen ind_atleastprimary_all =(q3104_1>=2)
+	replace ind_atleastprimary_all =0 if q3104_1==.
+	replace ind_atleastprimary_all =. if (q3104_1==. & q3101==.)
 
 *Atleastprimary education
 
-	gen ind_atleastprimary = (p208>=16)
-	replace ind_atleastprimary =. if (p208==.a |p208==. )
-	replace ind_atleastprimary=0 if everattended_new==0
-	replace ind_atleastprimary=. if age_grp5<=5
+	gen ind_atleastprimary = (q3104_1>=2)  if age>=25
+	replace ind_atleastprimary =0 if everattended_new==0 & age>=25
+	replace ind_atleastprimary =. if (q3104_1==. & q3101==.)
 
 *Atleastsecondary education
 
-	gen ind_atleastsecondary = (p208>=24)
-	replace ind_atleastsecondary =. if (p208==.a |p208==. )
-	replace ind_atleastsecondary=0 if everattended_new==0
-	replace ind_atleastsecondary=. if age_grp5<=5
-*Internet uses
+	gen ind_atleastsecondary =(q3104_1>=4) if age>=25
+	replace ind_atleastsecondary =0 if everattended_new==0 & age>=25
+	replace ind_atleastsecondary =. if (q3104_1==. & q3101==.)
 	
-	gen internet=(p501==1)
-	replace internet=. if p501==. | p501==.a
-	
-*Mobile ownership
-
-	gen mobile_own=(p505==1)
-	replace mobile_own=. if p505==. | p505==.a
-
 *Employment status
-
-	gen ind_emp=inlist(p801, 2,3,4,7)
-	replace ind_emp=. if p801==.a
+*There is a question ever work	
+	gen ind_emp=(crwrkst1==1)
 	
 *Female at Managerial Work
 
-	gen work_managerial2=0 if ind_emp==1 & female==1
-	replace work_managerial2= 1 if ind_emp==1 & p814_1==1 & female==1
-	replace work_managerial2= . if (ind_emp==. & p814_1==. ) 
+	gen work_managerial2=0 if ind_emp==1 | female==1
+	replace work_managerial2=1 if crocp1d==1 & ind_emp==1 & female==1 
+	replace work_managerial2= . if crocp1d==. & ind_emp==.
 
 *Manufacturing Worker
 
-	gen work_manufacturing=cond(mi(p812_1),.,cond(p812_1==3,1,0))
-	replace work_manufacturing=. if ind_emp==0 
-	
-*Infromal Work
-	
+	gen work_manufacturing=(crecac1d==2) if ind_emp==1
+	replace work_manufacturing=. if ind_emp==. & crecac1d==.
+
+*Informal Work
+
 	gen work_informal2=0 if ind_emp==1
-	replace work_informal2=1 if inlist(p815, 2,4,5) & ind_emp==1
+	replace work_informal2=1 if inlist(usempstp, 2,3) & ind_emp==1
+	replace work_informal2=. if usempstp==. & ind_emp==.
 	
-*youth idle
+*Not in schools
+	gen school_new=(q3101==3)
+	replace school_new=. if (q3101==.)
 	
-	gen school_new=(p209==1)
-	replace school_new=. if p209==3
+* Youth idle
 
 	gen youth_idle=1 if (school_new==0 & ind_emp==0)
 	replace youth_idle=0 if (school_new==1 | ind_emp==1)
 	replace youth_idle=. if (school_new==. & ind_emp==.)
-	replace youth_idle=. if age_grp5>5
-
-*roof
+	replace youth_idle=. if age>24
+*Health Insurance
 	
-	gen ind_roof=inlist(h1102, 1,2)
+	gen health_insurance=(q2503>1)
+	replace health_insurance=. if q2503==.
 	
-*wall
-
-	gen ind_wall=(h1103==1)
-	
-*floor
-
-	gen ind_floor=inlist(h1104, 1,4)
-	
-	gen ind_livingcond=(ind_floor==1&ind_roof==1&ind_wall==1) 
-	
-*water
-
-	gen ind_water=inlist(h1116, 1,2,4,5,7,9)
-	
-*Sanitation
-
-gen ind_toilet=(h1119==1 & h1119a==2 )
-
 *Electricity
 
-gen ind_electric=(h1108_1==1 | h1108_2==1 | h1108_5==1)
+	gen ind_electric=inlist( q411, 1, 5)
+	replace ind_electric=. if q411==.
 
 *Cooking fuel
 
-gen ind_cleanfuel=(h1108_1==1 | h1108_5==1 | h1108_8==1)
+	gen ind_cleanfuel=inlist(q412, 1,3,4,6)
+	replace ind_cleanfuel=. if q412==.
+	
+*Water
 
-*Assets
+	gen ind_water=inlist(q409, 1,2,5,8,9,3,7)
+	replace ind_water=. if q409==.
+	
+*Sanitation
 
-*Radio
-gen ind_radio= ( h1201_28==1 )
-replace ind_radio=. if h1201_28==.
+	gen ind_toilet=inlist(q415,1,2)
+	replace ind_toilet=. if q415==.
+	
+** Adequate housing
 
-*Phone
-gen ind_phone=(h1123==1)
-replace ind_phone=. if h1123==.
+*Floor 
 
-*Cell
-egen cell_new=max(mobile_own), by(hh_id)
+	gen ind_floor=inlist(q402, 3,4,5,6,7)
+	replace ind_floor=. if q402==.
+	
+*Roof
 
-*Television
-gen ind_tv= ( h1201_27==1)
-replace ind_tv=. if h1201_27==.
+	gen ind_roof=inlist(q404, 4,5,6)
+	replace ind_roof=. if q404==.
+	
+*Wall
 
-*Computer
-gen ind_computer=( h1201_33 ==1)
-replace ind_computer=. if h1201_33 ==.
+	gen ind_wall=inlist(q403, 1,4)
+	replace ind_wall=. if q403==.
 
-*Refrig
-gen ind_refrig=( h1201_7==1)
-replace ind_refrig=. if h1201_7==.
+	gen ind_livingcond=(ind_floor==1&ind_roof==1&ind_wall==1)
+	replace ind_livingcond=. if (ind_floor==.&ind_roof==.&ind_wall==.)
+	
+*assets 
 
-*Motorcycle
-gen ind_motorcycle=inlist(3, car_id1, car_id2, car_id3, car_id4, car_id5, car_id6, car_id7, car_id8, car_id9, car_id10, car_id11 )
-*replace ind_motorcycle=. if car_id1==.
-
-*Bike
-gen ind_bike=inlist(4, car_id1, car_id2, car_id3, car_id4, car_id5, car_id6, car_id7, car_id8, car_id9, car_id10, car_id11 )
-*replace ind_bike=. if car_id1==.
-
-*Autos
-gen ind_autos=inlist(1, car_id1, car_id2, car_id3, car_id4, car_id5, car_id6, car_id7, car_id8, car_id9, car_id10, car_id11 )
-*replace ind_autos=. if car_id1==.
-
-*Health expenditures
-
-gen health_exp_hh = health_exp/total_exp
-
-gen health_insurance=p303==1
-replace health_insurance=. if p303==7 | p303==.a
-
-*Food insecure
-
-gen food_insecure=(worried==1 | healthy==1 | fewfood==1 | skipped==1 | ateless==1 | ranout==1 | hungry==1 | whlday==1)
-replace food_insecure=. if (worried>=3 & healthy>=3 & fewfood>=3 & skipped>=3 & ateless>=3 & ranout>=3 & hungry>=3 & whlday>=3)
-
-*Social Portection
-
-gen social_prot=(p860__1==1 | p860__4==1 | p860__5==1 | p860__6==1)
-replace social_prot=. if (p860__1==.a & p860__4==.a & p860__5==.a & p860__6==.a)
-
-*Assests
-
-egen ind_asset_ownership=rowmean(ind_radio ind_tv ind_refrig ind_phone cell_new ind_autos ind_computer ind_bike ind_motorcycle)
-
-gen alone=(hhsize==1)
-
-*Multidimensional poverty 	
+	gen ind_tv=( q419_4==1 | q419_5==1)
+	replace ind_tv=. if ( q419_4==98 & q419_5==98) | ( q419_4==. & q419_5==.)
+	
+	gen ind_radio=(q419_16==1)
+	replace ind_radio=. if (q419_16==. | q419_16==98)
+	
+	gen ind_phone=(q419_28==1)
+	replace ind_phone=. if q419_28==. | q419_28==98
+	
+	gen cell_new=(q419_29==1 | q419_30==1)
+	
+	replace cell_new=. if (q419_29==. & q419_30==.) | (q419_29==98 & q419_30==98)
+	
+	gen ind_autos=(q419_21==1)
+	replace ind_autos=. if (q419_21==98 | q419_21==.)
+	
+	gen ind_bike=(q419_19==1)
+	replace ind_bike=. if q419_19==. | q419_19==98
+	
+	gen ind_motorcycle=(q419_20==1)
+	replace ind_motorcycle=. if q419_20==98 | q419_20==.
+	
+	gen ind_computer=(q419_25==1)
+	replace ind_computer=. if q419_25==. | q419_25==98
+	
+	gen ind_refrig=( q419_1==1)
+	replace ind_refrig=. if q419_1==. | q419_1==98
+	
+	egen ind_asset_ownership=rowmean(ind_radio ind_tv ind_refrig ind_phone cell_new ind_autos ind_computer ind_bike ind_motorcycle)
+	
+	gen alone=(hhsize==1)
+	
+	*Multidimensional poverty 	
 *if observation has labor information labor_tag==1, otherwise ==0
 gen labor_tag=1 if ind_emp!=.
 replace labor_tag=0 if ind_emp==.
@@ -497,6 +364,9 @@ gen deprive_sl_fuel=cond(mi(ind_cleanfuel),.,cond(ind_cleanfuel==0,1,0))
 
 gen deprive_sl_housing=cond(mi(ind_livingcond),.,cond(ind_livingcond==0,1,0))
 
+gen deprive_sl_asset = 0
+replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + ind_phone + ind_refrig + ind_bike + ind_motorcycle) < 2) & ind_autos==0
+replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & ind_phone==. & ind_refrig==. & ind_bike==. & ind_motorcycle==. & ind_autos==.
 
 lab var deprive_educ "Deprived if less than primary school completion"
 lab var deprive_work "Deprived in work binary"
@@ -505,15 +375,16 @@ lab var deprive_health_sanitation "Deprived in terms of sanitation binary"
 lab var deprive_sl_electricity "Deprived for electricity binary"
 lab var deprive_sl_fuel "Deprived in terms of clean fuel binary"
 lab var deprive_sl_housing "Deprived in terms of housing binary"
+lab var deprive_sl_asset "Deprived in terms of asset ownership binary"
 
 *we assume that dimensions can not be missing but indicators inside can be missing. The dimension weights remain the same but the indicators weights should change
 egen missing_health=rowmiss(deprive_health_water deprive_health_sanitation)
 replace missing_health=2-missing_health
 egen health_temp=rowtotal(deprive_health_water deprive_health_sanitation)
 					
-egen missing_sl=rowmiss(deprive_sl_electricity deprive_sl_fuel deprive_sl_housing)
+egen missing_sl=rowmiss(deprive_sl_electricity deprive_sl_fuel deprive_sl_housing deprive_sl_asset)
 replace missing_sl=4-missing_sl
-egen sl_temp=rowtotal(deprive_sl_electricity deprive_sl_fuel deprive_sl_housing)
+egen sl_temp=rowtotal(deprive_sl_electricity deprive_sl_fuel deprive_sl_housing deprive_sl_asset)
 						
 gen deprive_health=(1/missing_health)*0.33*health_temp if  labor_tag==0
 replace deprive_health=(1/missing_health)*0.25*health_temp if labor_tag==1 
@@ -527,12 +398,7 @@ replace mdp_score=cond(mi(deprive_educ)|mi(deprive_work)|mi(deprive_health)|mi(d
 
 gen ind_mdp=cond(mi(mdp_score),.,cond((labor_tag==1 &mdp_score>0.25)|(labor_tag==0 &mdp_score>0.33),1,0))
 
-
-
-
-save "D:\DDI\Marshall Island HIES 2019\Marshall_Island_HIES_2019.dta",replace 
-
-
+save "D:\DDI\Egypt LFS 2023\Egypt_LFS_2023.dta", replace
 
 egen func_diff_missing = rowmiss(seeing_diff_new hearing_diff_new cognitive_diff_new mobility_diff_new selfcare_diff_new comm_diff_new)
 *change domain
@@ -542,9 +408,10 @@ egen disaggvar_missing = rowmiss(female age urban_new)
 
 gen ind_disaggvar_missing = (disaggvar_missing >0) 
 
-save "D:\DDI\Marshall Island HIES 2019\Marshall_Island_HIES_2019 with missing.dta", replace
+save "D:\DDI\Egypt LFS 2023\Egypt_LFS_2023 with missing.dta", replace
 
 drop if ind_func_diff_missing==1 | ind_disaggvar_missing==1
+
 
 *Run this to check if variable exists. if not, it will automatically generate variable with missing values
 local variable_tocheck "country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin2 admin3 admin_alt ind_weight hh_weight dv_weight sample_strata psu   female urban_new age  age_group seeing_diff_new hearing_diff_new mobility_diff_new cognitive_diff_new selfcare_diff_new comm_diff_new func_difficulty disability_any disability_some disability_atleast disability_none disability_nonesome disability_alot disability_unable seeing_any hearing_any mobile_any cognition_any selfcare_any communicating_any seeing_some hearing_some mobile_some cognition_some selfcare_some communicating_some seeing_atleast_alot hearing_atleast_alot mobile_atleast_alot cognition_atleast_alot selfcare_atleast_alot communicating_atleast_alot seeing_alot hearing_alot mobile_alot cognition_alot selfcare_alot communicating_alot seeing_unable hearing_unable mobile_unable cognition_unable selfcare_unable communicating_unable everattended_new lit_new school_new edattain_new ind_atleastprimary ind_atleastprimary_all ind_atleastsecondary computer internet mobile_own ind_emp youth_idle work_manufacturing work_managerial2  work_informal2 ind_water ind_toilet fp_demsat_mod anyviolence_byh_12m bmi overweight_obese child_died healthcare_prob death_hh alone ind_electric ind_cleanfuel ind_floor ind_wall ind_roof ind_livingcond ind_radio ind_tv ind_refrig ind_bike ind_motorcycle ind_phone ind_computer ind_autos cell_new ind_asset_ownership health_insurance social_prot food_insecure shock_any health_exp_hh deprive_educ  deprive_health_water  deprive_health_sanitation  deprive_work deprive_sl_electricity deprive_sl_fuel  deprive_sl_housing  deprive_sl_asset mdp_score ind_mdp func_difficulty_hh disability_none_hh disability_nonesome_hh disability_any_hh disability_some_hh disability_atleast_hh disability_alot_hh disability_unable_hh"
@@ -691,11 +558,9 @@ order country_name country_abrev country_dataset_year ind_id hh_id  admin1 admin
 
 compress
 
-save "D:\DDI\Marshall Island HIES 2019\Marshall_Island_HIES_2019_Cleaned_Individual_Data_Trimmed.dta", replace
+
+save "D:\DDI\Egypt LFS 2023\Egypt_LFS_2023_Cleaned_Individual_Data.dta", replace
 
 duplicates drop hh_id, force
 
-save "D:\DDI\Marshall Island HIES 2019\Marshall_Island_HIES_2019_Cleaned_Household_Level_Data_Trimmed.dta", replace
-
-su disability_any_hh disability_some_hh disability_atleast_hh
-
+save "D:\DDI\Egypt LFS 2023\Egypt_LFS_2023_Cleaned_Household_Level_Data_Trimmed.dta", replace
