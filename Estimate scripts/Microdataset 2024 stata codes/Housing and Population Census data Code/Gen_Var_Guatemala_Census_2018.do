@@ -320,8 +320,8 @@ replace work_informal2=1 if ind_emp==1 & work_informal==1
 replace work_informal2=. if ind_emp==. & work_informal==.
 
 ** Cell phone
-recode PCP26_A (1=1) (2=0) (9=.), gen(cell_new)
-lab var cell_new "P2_Adults who used a cell last 3 months"
+recode PCP26_A (1=1) (2=0) (9=.), gen(mobile_own)
+lab var mobile_own "P2_Adults who used a cell last 3 months"
 
 
 ** Computer
@@ -411,11 +411,13 @@ lab var ind_wall "Individual in a house with quality wall materials"
 gen ind_livingcond=(ind_floor==1 | ind_roof==1 | ind_wall==1) if ind_floor!=. & ind_roof!=. &ind_wall!=.
 lab var ind_livingcond "S3_Individual in a house with  adequate housing (quality floor, quality roof, quality wall materials)"
 
-
+***Phone 
+egen cell_new=max(mobile_own), by(hh_id)
+lab var cell_new "Individual in a household that owns cell-phone"
 ** Owing Assets:  radio, TV, telephone, bike, or motorbike or fridge); and the household does not own a car (or truck).
 tab1   PCH9_*, m
 recode PCH9_* (1=1) (2=0)  (99=.)
-egen   ind_asset_ownership=rowmean(PCH9_A PCH9_C PCH9_E PCH9_H PCH9_L)
+egen   ind_asset_ownership=rowmean(PCH9_A PCH9_C PCH9_E PCH9_H PCH9_L cell_new)
 lab var ind_asset_ownership "S4_Owns_assets"
 gen     ind_asset_ownership_binary = ind_asset_ownership>1 if  ind_asset_ownership!=.
 replace ind_asset_ownership_binary = 1 if PCH9_M==1  
@@ -445,9 +447,7 @@ lab var ind_autos "Individual in a household that owns autos"
 gen ind_computer=(PCH9_H==1) if PCH9_H!=.
 lab var ind_computer "Individual in a household that owns computer"
 
-***Phone 
-gen ind_phone = (PCP26_A==1) if PCP26_A!=.
-lab var cell_new "Individual in a household that owns cell-phone"
+
 
 
 gen 	admin1=1 if departamento==1
@@ -516,8 +516,8 @@ gen deprive_sl_housing=cond(mi(ind_livingcond),.,cond(ind_livingcond==0,1,0))
 	
 
 gen     deprive_sl_asset = 0
-replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + ind_phone + ind_refrig + /*ind_bike +*/ ind_motorcycle < 2) & ind_autos==0)
-replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & ind_phone==. & ind_refrig==. /*& ind_bike==.*/ & ind_motorcycle==. & ind_autos==.
+replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + /*ind_phone +*/ ind_refrig + /*ind_bike +*/ ind_motorcycle < 2) & ind_autos==0)
+replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & /*ind_phone==. &*/ ind_refrig==. /*& ind_bike==.*/ & ind_motorcycle==. & ind_autos==.
 
 lab var deprive_educ "Deprived if less than primary school completion"
 lab var deprive_work "Deprived in work binary"

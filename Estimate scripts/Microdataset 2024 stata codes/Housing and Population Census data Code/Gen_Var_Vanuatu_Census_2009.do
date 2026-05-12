@@ -88,16 +88,19 @@ gen everattended_new=cond(mi(p17),.,cond(p17==4,0,1))
 *Education - completed primary school +15 year age
 
 gen ind_atleastprimary_all= inrange(p22, 4, 14)
+replace ind_atleastprimary_all=0 if everattended_new==0
 replace ind_atleastprimary_all=. if (p22==99)
 
 ***Individual atleast Primary Education***
 
 gen ind_atleastprimary= inrange(p22, 4, 14) if age>=25
+replace ind_atleastprimary=0 if everattended_new==0 & age>=25
 replace ind_atleastprimary=. if (p22==99)
 
 ***Individual  secondary Education***
 
 gen ind_atleastsecondary= inrange(p22, 7, 14) if age>=25
+replace ind_atleastsecondary=0 if everattended_new==0 & age>=25
 replace ind_atleastsecondary=. if (p22==99)
 
 gen education=0 if p22==1

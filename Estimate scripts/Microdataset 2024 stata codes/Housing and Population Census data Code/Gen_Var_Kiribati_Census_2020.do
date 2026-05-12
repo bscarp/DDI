@@ -304,7 +304,7 @@ gen ind_electric=(electric_govt==1 | electric_solar==1)
 
 ***Cookingfuel***
 
-gen ind_cleanfuel=(cookfuel_electricity==1 | cookfuel_lpg==1)
+gen ind_cleanfuel=(cookfuel_electricity==1 | cookfuel_lpg==1 | cookfuel_solar==1)
 
 ***Assets***
 
