@@ -1,14 +1,3 @@
-/*******************************************************************************
-********************************DHS*********************************************
-********************************************************************************
-This do file was written to code variables to generate estimates for the Disability Statistics – Estimates database, available at https://www.ds-e.disabilitydatainitiative.org/
-Reference to appendix and paper:
-For more information on indicators, see the appendices on the website above as well as Carpenter et al (2024).
-Carpenter, B., Kamalakannan, S., Patchaiappan, K., Theiss, K., Yap, J., Hanass-Hancock, J., Murthy, GVS, Pinilla-Roncancio, M.,  Rivas Velarde, M., Teodoro, D.,  and Mitra, S. (2024). The Disability Statistics – Estimates Database: an innovative database of internationally comparable statistics on disability inequalities. International Journal of Population Data Science.
-Questions or comments can be sent to: disabilitydatainitiative.help@gmail.com
-Author: Katherine Theiss
-Suggested citation: DDI. Disability Statistics Database - Estimates (DS-E Database)). Disability Data Initiative collective. Fordham University: New York, USA. 2024.
-*******************************************************************************/
 ********************************************************************************
 *Globals 
 ********************************************************************************
@@ -17,12 +6,13 @@ clear matrix
 clear mata 
 set maxvar 30000
 
-global survey_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data
+global survey_data D:\DDI\DHS
 *\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data
-global clean_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Clean Data
+global clean_data D:\DDI\DHS\_Clean Data
 *\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Clean Data
-global combined_data C:\Users\16313\Dropbox\Apporto - Fordham\Disability Project\DDI 2023 Report\DHS_country_data\_Combined Data
+global combined_data D:\DDI\DHS\_Combined Data
 *\\apporto.com\dfs\FORDHAM\Users\ktheiss_fordham\Documents\DDI 2023 Report\DHS_country_data\_Combined Data
+
 
 *******************************************************************
 *Household Level Analysis: Create Indicators and Clean data
@@ -34,6 +24,7 @@ global MV_SR 2009
 global HT_SR 2016_2017
 global KH_SR 2014
 global SN_SR 2018
+global SN2_SR 2019
 global ZA_SR 2016
 global RW_SR 2019_2020
 global NG_SR 2018 
@@ -44,12 +35,21 @@ global KE_SR 2022
 global KH2_SR 2021_2022
 global TZ_SR 2022
 global NP_SR 2022
+global JO_SR 2023
+global MZ_SR 2022_2023
+global AO_SR 2023_2024
 
-local country_list PK ML HT KH SN ZA RW NG MR TL UG MV KE KH2 TZ NP
+
+local country_list PK ML HT KH SN SN2 ZA RW NG MR TL UG MV KE KH2 TZ NP JO MZ AO
+
+
 
 foreach country of local country_list  {
 
 use "${survey_data}\\`country'_${`country'_SR}\\`country'_Household.dta", clear
+
+gen alone=(hv009==1)
+replace alone=. if hv009==.
 
 if hv000!= "KH6"  {
 decode hv201, gen(water_source)
@@ -93,7 +93,7 @@ if v000== "KH6"| v000== "MV5" {
 	
 }
 
-if v000== "PK7" | v000== "ML7" | v000== "RW7" | v000== "NG7" | v000== "MR7" | v000== "TL7" | v000== "KE8" | v000== "KH8" | v000== "TZ8" | v000== "NP8" {
+if v000== "PK7" | v000== "ML7" | v000== "RW7" | v000== "NG7" | v000== "MR7" | v000== "TL7" | v000== "KE8" | v000== "KH8" | v000== "TZ8" | v000== "NP8"{
 	
 	gen safe_water=1
 	replace safe_water=0 if hv201==32|hv201==42|hv201==43|hv201==61|hv201==62|hv201==96	
@@ -156,7 +156,65 @@ if v000== "PK7" | v000== "ML7" | v000== "RW7" | v000== "NG7" | v000== "MR7" | v0
 	replace adequate_housing=0 if quality_floor==0|quality_roof==0|quality_wall==0
 	replace adequate_housing=. if quality_floor==.&quality_roof==.&quality_wall==.
 	}
+if v000== "JO8"{
+	
+	gen safe_water=1
+	replace safe_water=0 if hv201==32|hv201==42|hv201==43|hv201==61|hv201==62|hv201==96	
+	*Members of household are considered to have safe sanitation if the household is facility improved and not shared with other households (hv225). 
+	replace hv225=0 if hv205==31
+	
+	gen safe_sanitation=1
+	replace safe_sanitation=. if hv205==.
+	replace safe_sanitation=1 if hv205==11|hv205==12|hv205==13|hv205==21|hv205==22|hv205==41
+	replace safe_sanitation=0 if hv205==14|hv205==15|hv205==23|hv205==31|hv205==42|hv205==43|hv205==51|hv205==61|hv205==96
+	*replace safe_sanitation=0 if hv238a==3
+	replace safe_sanitation=0 if hv225==1
+				
+	gen clean_cook_fuel=1 if hv226==1|hv226==2|hv226==3|hv226==4
+	replace  clean_cook_fuel=0 if hv226==5|hv226==6|hv226==7|hv226==8|hv226==9|hv226==10|hv226==11|hv226==12|hv226==13|hv226==95|hv226==96
+	replace  clean_cook_fuel=. if hv226==.
+	
+	
+	rename hv207 ind_radio 
+	rename hv208 ind_tv
+	rename hv209 ind_refrig
+	rename hv221 ind_phone
+	rename hv243a cell_new
+	rename hv210 ind_bike 
+	rename hv211 ind_motorcycle 
+	rename hv212 ind_autos
+	rename hv243e ind_computer 
 
+	gen deprive_sl_asset = 0
+	replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + ind_phone + ind_refrig + ind_bike + ind_motorcycle < 2) & ind_autos==0)
+	replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & ind_phone==. & ind_refrig==. & ind_bike==. & ind_motorcycle==. & ind_autos==.
+	
+	egen ind_asset_ownership=rowmean(ind_radio ind_tv ind_refrig ind_phone cell_new ind_motorcycle ind_autos ind_computer ind_bike)
+
+	gen quality_floor=1 
+	replace quality_floor=0 if hv213==11|hv213==12|hv213==13|hv213==21|hv213==22|hv213==96
+	replace quality_floor=1 if  hv213==31|hv213==32|hv213==33|hv213==34|hv213==35|hv213==36
+	replace quality_floor=. if hv213==.|hv213==.a
+	
+	gen quality_roof=1 if inlist(hv215, 31, 32)
+	replace quality_roof=0 if inlist(hv215, 21, 22, 96)
+	decode hv215, gen(roof_source)
+	gen quality_wall=1 
+	replace quality_wall=0 if hv214==11|hv214==12|hv214==13|hv214==14|hv214==15|hv214==21|hv214==22|hv214==23|hv214==24|hv214==25|hv214==26|hv214==96
+	replace quality_wall=1 if hv214==31|hv214==32|hv214==33|hv214==34|hv214==35|hv214==36
+	replace quality_wall=. if hv214==.|hv214==.a
+	
+	decode hv214, gen(wall_source)
+	replace quality_wall =0 if wall_source=="bricks, unplastered"|wall_source=="thin plywood/wood sticks"|wall_source=="tree trunks with mud and cement"|wall_source=="unburnt bricks with cement"|wall_source=="wood planks"|wall_source=="wood planks/shingles"
+	replace quality_wall =1 if wall_source=="metal"
+		
+	gen adequate_housing=1 if quality_floor==1&quality_roof==1&quality_wall==1
+	replace adequate_housing=0 if quality_floor==0|quality_roof==0|quality_wall==0
+	replace adequate_housing=. if quality_floor==.&quality_roof==.&quality_wall==.
+	
+	gen ind_electric=inlist(hv262, 1, 2)
+	
+	}
 if v000== "HT7"  {
 	
 	gen safe_water=1
@@ -481,7 +539,107 @@ if v000== "UG7" {
 	replace adequate_housing=. if quality_floor==.&quality_roof==.&quality_wall==.
 	
 	}
+if v000== "MZ8"{
+	
+	gen safe_water=1
+	replace safe_water=0 if hv201==32|hv201==42|hv201==43|hv201==61|hv201==62|hv201==96	
+	*Members of household are considered to have safe sanitation if the household is facility improved and not shared with other households (hv225). 
+	replace hv225=0 if hv205==31
+	
+	gen safe_sanitation=inlist(hv205, 11, 12, 21, 22)
+	replace safe_sanitation=. if hv205==.
+	
+	*replace safe_sanitation=0 if hv238a==3
+	replace safe_sanitation=0 if hv225==1
+				
+	gen clean_cook_fuel=1 if hv226==1|hv226==2|hv226==4 |hv226==5
+	replace  clean_cook_fuel=0 if hv226==6|hv226==7|hv226==8|hv226==9|hv226==10|hv226==11|hv226==12|hv226==13|hv226==14|hv226==15 |hv226==16 |hv226==17|hv226==95|hv226==96
+	replace  clean_cook_fuel=. if hv226==.
+	
+	
+	rename hv207 ind_radio 
+	rename hv208 ind_tv
+	rename hv209 ind_refrig
+	rename hv221 ind_phone
+	rename hv243a cell_new
+	rename hv210 ind_bike 
+	rename hv211 ind_motorcycle 
+	rename hv212 ind_autos
+	rename hv243e ind_computer 
 
+	gen deprive_sl_asset = 0
+	replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + ind_phone + ind_refrig + ind_bike + ind_motorcycle < 2) & ind_autos==0)
+	replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & ind_phone==. & ind_refrig==. & ind_bike==. & ind_motorcycle==. & ind_autos==.
+	
+	egen ind_asset_ownership=rowmean(ind_radio ind_tv ind_refrig ind_phone cell_new ind_motorcycle ind_autos ind_computer ind_bike)
+
+	gen quality_floor=1 
+	replace quality_floor=0 if hv213==11|hv213==12|hv213==13|hv213==21|hv213==22|hv213==96
+	replace quality_floor=1 if  hv213==31|hv213==32|hv213==33|hv213==34|hv213==35|hv213==36
+	replace quality_floor=. if hv213==.|hv213==.a
+	
+	gen quality_roof=1 if inlist(hv215, 31, 33, 34)
+	replace quality_roof=0 if inlist(hv215, 11, 12, 22, 32, 96)
+	decode hv215, gen(roof_source)
+	gen quality_wall=1 
+	replace quality_wall=0 if hv214==11|hv214==12|hv214==13|hv214==14|hv214==15|hv214==21|hv214==22|hv214==23|hv214==24|hv214==25|hv214==26|hv214==96
+	replace quality_wall=1 if hv214==31|hv214==32|hv214==33|hv214==34|hv214==35|hv214==36
+	replace quality_wall=. if hv214==.|hv214==.a
+	
+	decode hv214, gen(wall_source)
+	replace quality_wall =0 if wall_source=="bricks, unplastered"|wall_source=="thin plywood/wood sticks"|wall_source=="tree trunks with mud and cement"|wall_source=="unburnt bricks with cement"|wall_source=="wood planks"|wall_source=="wood planks/shingles"
+	replace quality_wall =1 if wall_source=="metal"
+		
+	gen adequate_housing=1 if quality_floor==1&quality_roof==1&quality_wall==1
+	replace adequate_housing=0 if quality_floor==0|quality_roof==0|quality_wall==0
+	replace adequate_housing=. if quality_floor==.&quality_roof==.&quality_wall==.
+	
+	*gen ind_electric=inlist(hv262, 1, 2)
+	
+	}
+	
+if v000=="AO8"{
+	
+	gen safe_water=1
+	replace safe_water=0 if hv201==32|hv201==42|hv201==43|hv201==61|hv201==62|hv201==96
+	
+	gen safe_sanitation=inlist(hv205, 11,12,21,22)
+	replace safe_sanitation=. if hv205==.
+	replace safe_sanitation=0 if hv225==1
+		
+	gen clean_cook_fuel=inlist(hv226, 1,4)
+	replace  clean_cook_fuel=. if hv226==.
+	
+	rename hv207 ind_radio 
+	rename hv208 ind_tv
+	rename hv209 ind_refrig
+	rename hv221 ind_phone
+	rename hv243a cell_new
+	rename hv210 ind_bike 
+	rename hv211 ind_motorcycle 
+	rename hv212 ind_autos
+	rename hv243e ind_computer 
+	
+	gen deprive_sl_asset = 0
+	replace deprive_sl_asset = 1 if (( ind_radio + ind_tv + ind_phone + ind_refrig + ind_bike + ind_motorcycle < 2) & ind_autos==0)
+	replace deprive_sl_asset = . if ind_radio==. & ind_tv==. & ind_phone==. & ind_refrig==. & ind_bike==. & ind_motorcycle==. & ind_autos==.
+	
+	egen ind_asset_ownership=rowmean(ind_radio ind_tv ind_refrig ind_phone cell_new ind_motorcycle ind_autos ind_computer ind_bike)
+	
+	gen quality_floor=inlist(hv213, 32, 33, 34)
+	replace quality_floor=. if hv213==.
+	
+	gen quality_roof=inlist(hv215, 31,33,34,35,36)  
+	replace quality_roof=. if hv215==.
+	
+	gen quality_wall=inlist(hv214, 26,31,33,34)
+	replace quality_wall=. if hv214==.
+	
+	gen adequate_housing=1 if quality_floor==1&quality_roof==1&quality_wall==1
+	replace adequate_housing=0 if quality_floor==0|quality_roof==0|quality_wall==0
+	replace adequate_housing=. if quality_floor==.&quality_roof==.&quality_wall==.
+	
+}
 
 if v000== "ZA7"  {
 	gen safe_water=1
@@ -545,8 +703,9 @@ if v000== "ZA7"  {
 	replace adequate_housing=. if quality_floor==.&quality_roof==.&quality_wall==.
 	
 }
-
-rename hv206 ind_electric
+if v000!="JO8"{
+  rename hv206 ind_electric
+}
 rename clean_cook_fuel ind_cleanfuel
 
 	lab var ind_electric "Electricity"
@@ -593,7 +752,7 @@ rename hv802 hh_surveytime_end
 
 save "${clean_data}//`country'_${`country'_SR}_Household_Updated_Intermediate.dta", replace
 
-keep hh_line hh_weight hv022 hv023 hv024 hv025 hv803 hv804 v000 v001 v002 hv003 deprive_sl_asset ind_cleanfuel ind_electric water_source sanit_source fuel_type hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond roof_source floor_source wall_source hh_surveytime_start hh_surveytime_end
+keep hh_line hh_weight hv022 hv023 hv024 hv025 hv803 hv804 v000 v001 v002 hv003 deprive_sl_asset ind_cleanfuel ind_electric water_source sanit_source fuel_type hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond /*roof_source floor_source wall_source*/ hh_surveytime_start hh_surveytime_end alone hv009
 
 sort v000 v001 v002 
 
@@ -606,7 +765,7 @@ merge 1:m v001 v002 using "${clean_data}//`country'_${`country'_SR}_Household_Me
 
 duplicates drop v001 v002, force
 
-keep hhid hh_weight v000 v001 v002 hv005 hv022 hv023 hv024 hv025 survey_month survey_year hv025 func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh hv206 hv207 hv208 hv221 ind_cleanfuel ind_electric water_source sanit_source fuel_type hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond roof_source roof_source floor_source wall_source hh_surveytime_start hh_surveytime_end
+keep hhid hh_weight v000 v001 v002 hv005 hv022 hv023 hv024 hv025 survey_month survey_year hv025 func_difficulty_hh disability_any_hh disability_some_hh disability_atleast_hh hv206 hv207 hv208 hv221 ind_cleanfuel ind_electric water_source sanit_source fuel_type hv201 hv205 ind_computer ind_radio ind_tv ind_refrig ind_phone cell_new ind_bike ind_motorcycle ind_autos ind_computer ind_floor ind_roof ind_wall ind_water ind_toilet ind_asset_ownership ind_livingcond /*roof_source roof_source floor_source wall_source*/ hh_surveytime_start hh_surveytime_end alone hv009
 rename hv025 ResidenceType
 rename v001 cluster_number
 rename v002 hh_number
