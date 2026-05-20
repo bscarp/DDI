@@ -3,6 +3,7 @@ library(doFuture)
 options(future.globals.maxSize = 4e9)
 library(foreach)
 library(tidyverse)
+library(janitor)
 library(haven)
 library(readxl)
 library(googledrive)
@@ -29,7 +30,25 @@ data_list = read_xlsx(
 ) |>
   filter(!is.na(Country))
 data_list = data_list |>
-  select(File_Name, Subnational_1_feasible, Subnational_2_feasible)
+  select(File_Name, Subnational_1_feasible, Subnational_2_feasible,Clean_data_file__date_of_last_version,Output__date_of_last_version,Output_needs_revision) |>
+  mutate(
+    Clean_data_file__date_of_last_version = convert_to_date(
+      Clean_data_file__date_of_last_version,
+      character_fun = lubridate::dmy
+    ),
+    Output__date_of_last_version = convert_to_date(
+      Output__date_of_last_version,
+      character_fun = lubridate::dmy
+    )
+  )
+temp = data_list |>
+  filter(
+    !File_Name %in%
+      sub(".RData", "", dir(paste0(cen_dir, "Downloads/Census/R Datasets/"))) |
+      Clean_data_file__date_of_last_version > Output__date_of_last_version |
+      Output_needs_revision == "X" |
+      Output_needs_revision == "x"
+  )
 
 data_loc = paste0(cen_dir, "Downloads/Census/R Datasets/")
 data_loc2 = paste0(cen_dir, "Downloads/Census/Summaries/")
@@ -52,7 +71,8 @@ if ("IPUMS_Cleaned_Individual_Data_Trimmed.dta" %in% dta_list) {
     mutate(
       country_dataset_year = sub(" IPUMS ", "_IPUMS_", country_dataset_year)
     )
-  dck2 = dck2 %>% filter(!country_dataset_year == "Vietnam_IPUMS_2009")
+  dck2 = dck2 %>% filter(!country_dataset_year == "Vietnam_IPUMS_2009") %>%
+    filter(country_dataset_year %in% temp$File_Name)
   datasets = unique(dck2$country_dataset_year)
   foreach(i = datasets) %do%
     {
@@ -99,7 +119,8 @@ if (
         "_DHS_",
         gsub("Cambodia2", "Cambodia", country_dataset_year)
       )
-    )
+    ) %>%
+    filter(country_dataset_year %in% temp$File_Name)
   datasets = unique(dck2$country_dataset_year)
   foreach(
     i = datasets,

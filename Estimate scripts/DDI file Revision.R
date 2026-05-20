@@ -103,47 +103,47 @@ if (length(bac_list2) > 0) {
 }
 rm(bac_list, bac_list2)
 
-if (
-  !file.exists(paste0(
-    cen_dir,
-    "Downloads/Census/Database/S3_All_Estimates_Means.xlsx"
-  ))
-) {
-  file.copy(
-    paste0(
-      cen_dir,
-      "Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"
-    ),
-    paste0(cen_dir, "Downloads/Census/Database/S3_All_Estimates_Means.xlsx")
-  )
-  file.copy(
-    paste0(
-      cen_dir,
-      "Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"
-    ),
-    paste0(cen_dir, "Downloads/Census/Database/S4_All_Estimates_SE.xlsx")
-  )
-}
+# if (
+#   !file.exists(paste0(
+#     cen_dir,
+#     "Downloads/Census/Database/S3_All_Estimates_Means.xlsx"
+#   ))
+# ) {
+#   file.copy(
+#     paste0(
+#       cen_dir,
+#       "Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"
+#     ),
+#     paste0(cen_dir, "Downloads/Census/Database/S3_All_Estimates_Means.xlsx")
+#   )
+#   file.copy(
+#     paste0(
+#       cen_dir,
+#       "Downloads/Census/Database/S3_All_Estimates_Means - Copy.xlsx"
+#     ),
+#     paste0(cen_dir, "Downloads/Census/Database/S4_All_Estimates_SE.xlsx")
+#   )
+# }
 
-db_m = read_xlsx(paste0(
-  cen_dir,
-  "Downloads/Census/Database/S3_All_Estimates_Means.xlsx"
-)) %>%
-  filter(!survey %in% temp$File_Name & survey %in% data_list$File_Name)
-db_se = read_xlsx(paste0(
-  cen_dir,
-  "Downloads/Census/Database/S4_All_Estimates_SE.xlsx"
-)) %>%
-  filter(!survey %in% temp$File_Name & survey %in% data_list$File_Name)
-write_xlsx(
-  db_m,
-  paste0(cen_dir, "Downloads/Census/Database/S3_All_Estimates_Means.xlsx")
-)
-write_xlsx(
-  db_se,
-  paste0(cen_dir, "Downloads/Census/Database/S4_All_Estimates_SE.xlsx")
-)
-rm(db_m, db_se)
+# db_m = read_xlsx(paste0(
+#   cen_dir,
+#   "Downloads/Census/Database/S3_All_Estimates_Means.xlsx"
+# )) %>%
+#   filter(!survey %in% temp$File_Name & survey %in% data_list$File_Name)
+# db_se = read_xlsx(paste0(
+#   cen_dir,
+#   "Downloads/Census/Database/S4_All_Estimates_SE.xlsx"
+# )) %>%
+#   filter(!survey %in% temp$File_Name & survey %in% data_list$File_Name)
+# write_xlsx(
+#   db_m,
+#   paste0(cen_dir, "Downloads/Census/Database/S3_All_Estimates_Means.xlsx")
+# )
+# write_xlsx(
+#   db_se,
+#   paste0(cen_dir, "Downloads/Census/Database/S4_All_Estimates_SE.xlsx")
+# )
+# rm(db_m, db_se)
 
 # temp2 = temp |> mutate(File_Name = ifelse(grepl("IPUMS",File_Name)&!grepl("Vietnam.*2019|Cambodia",File_Name),"IPUMS_Cleaned_Individual_Data_Trimmed",File_Name),
 #                       File_Name = ifelse(grepl("DHS",File_Name),"Final_Individual_DHS_only",File_Name))
@@ -164,8 +164,8 @@ foreach(i = download$url, j = download$File_Name) %do%
   {
     k = drive_download(file = i)
     l = ifelse(
-      grepl(".dta", k$name) & !k$name == "Final_Individual_DHS_only.dta",
-      j,
+      grepl(".dta$", k$name) & !k$name == "Final_Individual_DHS_only.dta",
+      paste0(j,".dta"),
       k$name
     )
     file.rename(
@@ -175,12 +175,12 @@ foreach(i = download$url, j = download$File_Name) %do%
   }
 rm(data_list, temp2, dta_list, download)
 
-dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
-dta_list2 = dta_list %>% sub(" ", "_", .)
-file.rename(
-  paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list),
-  paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2)
-)
+# dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
+# dta_list2 = dta_list %>% gsub(" ", "_", .)
+# file.rename(
+#   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list),
+#   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2)
+# )
 
 unzip_7z <- function(zipfile, exdir) {
   str1 <- sprintf('C:/"Program Files"/7-Zip/7z.exe e %s -o%s', zipfile, exdir)
@@ -195,7 +195,7 @@ foreach(i = zip_list) %do%
   {
     dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
     unzip_7z(
-      sub('Stata Datasets', '"Stata Datasets"', i),
+      paste0('"',i,'"'),
       paste0(cen_dir, 'Downloads/Census/"Stata Datasets"/')
     )
     dta_list2 = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
@@ -209,8 +209,8 @@ foreach(i = zip_list) %do%
     file.remove(i)
   }
 
-dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
-dta_list_c = dta_list[grepl("house", dta_list, ignore.case = TRUE)]
+dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"), all.files = TRUE)
+dta_list_c = dta_list[grepl("house|^\\._", dta_list, ignore.case = TRUE)]
 file.remove(paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list_c))
 
 #sub("KHM_IPUMS_Cleaned_Individual_Data.dta", "Cambodia_IPUMS_2019.dta",.) %>% sub("VNM1_IPUMS_Cleaned_Individual_Data.dta", "Vietnam_IPUMS_2019.dta",.) %>%
@@ -218,7 +218,9 @@ dta_list = dir(paste0(cen_dir, "Downloads/Census/Stata Datasets/"))
 dta_list2 = dta_list %>%
   sub("_Cleaned_Individual_Data", "", .) %>%
   sub("_Sample", "", .) %>%
+  sub("_Clean", "", .) %>%
   sub("_Trimmed", "", .) %>%
+  sub(".dta.dta", ".dta", .) %>%
   sub("MAR_IPUMS.dta", "Morocco_IPUMS_2014.dta", .) %>%
   sub("MMR_IPUMS.dta", "Myanmar_IPUMS_2014.dta", .) %>%
   sub("MUS_IPUMS.dta", "Mauritius_IPUMS_2011.dta", .) %>%
@@ -230,7 +232,11 @@ dta_list2 = dta_list %>%
   sub("VNM_IPUMS.dta", "Vietnam_IPUMS_2009.dta", .) %>%
   sub("ZAF_IPUMS.dta", "South Africa_IPUMS_2011.dta", .) %>%
   sub("ZAF1_IPUMS.dta", "South Africa_IPUMS_2016.dta", .) %>%
-  sub("Philippine_", "Philippines_", .)
+  sub("Philippine_", "Philippines_", .) %>%
+  sub("Guatemala.dta", "Guatemala_Census_2018.dta", .) %>%
+  sub("Ecuador.dta", "Ecuador_Census_2022.dta", .) %>%
+  sub("Colombia.dta", "Colombia_GEIH_2023.dta", .) %>%
+  sub("Bolivia.dta", "Bolivia_EH_2021.dta", .)
 file.rename(
   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list),
   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2)

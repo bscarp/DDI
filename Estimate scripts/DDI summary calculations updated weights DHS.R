@@ -131,68 +131,7 @@ with_progress({
             levels = c(0, 1),
             labels = c("no_l", "atleast_n")
           ),
-          age_group5 = cut(
-            age,
-            c(
-              14,
-              19,
-              24,
-              29,
-              34,
-              39,
-              44,
-              49,
-              54,
-              59,
-              64,
-              69,
-              74,
-              79,
-              84,
-              89,
-              Inf
-            ),
-            c(
-              "15 to 19",
-              "20 to 24",
-              "25 to 29",
-              "30 to 34",
-              "35 to 39",
-              "40 to 44",
-              "45 to 49",
-              "50 to 54",
-              "55 to 59",
-              "60 to 64",
-              "65 to 69",
-              "70 to 74",
-              "75 to 79",
-              "80 to 84",
-              "85 to 89",
-              "90+"
-            )
-          ),
-          age_group10 = cut(
-            age,
-            c(14, 24, 34, 44, 54, 64, Inf),
-            c("15 to 24", "25 to 34", "35 to 44", "45 to 54", "55 to 64", "65+")
-          ),
-          male = factor(1 - female, labels = c("Female", "Male")),
-          age_sex = interaction(age_group10, male, lex.order = T, sep = " "),
-          as_weight = case_when(
-            age_sex == "15 to 24 Female" ~ 0.107823219959552,
-            age_sex == "15 to 24 Male" ~ 0.114985391312909,
-            age_sex == "25 to 34 Female" ~ 0.104530062206990,
-            age_sex == "25 to 34 Male" ~ 0.109379985244955,
-            age_sex == "35 to 44 Female" ~ 0.090482564098174,
-            age_sex == "35 to 44 Male" ~ 0.092693136884689,
-            age_sex == "45 to 54 Female" ~ 0.077908667689967,
-            age_sex == "45 to 54 Male" ~ 0.077798687417348,
-            age_sex == "55 to 64 Female" ~ 0.059590620455815,
-            age_sex == "55 to 64 Male" ~ 0.056425978108021,
-            age_sex == "65+ Female" ~ 0.060324813942667,
-            age_sex == "65+ Male" ~ 0.048056872678913,
-            TRUE ~ NA
-          )
+          male = factor(1 - female, labels = c("Female", "Male"))
         )
       dck = dck %>%
         mutate(across(
@@ -353,7 +292,6 @@ with_progress({
         "disability_nonesome_hh",
         "disability_atleast_hh"
       )
-      oth_a = c("age_sex", "as_weight")
       cou_a = dck %>%
         select(any_of(c("admin1", "admin2", "admin_alt"))) %>%
         names()
@@ -371,38 +309,8 @@ with_progress({
         "country_abrev"
       )
       dom_a = dck %>%
-        select(any_of(c(
-          "seeing_any",
-          "hearing_any",
-          "mobile_any",
-          "cognition_any",
-          "selfcare_any",
-          "communicating_any",
-          "seeing_some",
-          "hearing_some",
-          "mobile_some",
-          "cognition_some",
-          "selfcare_some",
-          "communicating_some",
-          "seeing_alot",
-          "hearing_alot",
-          "mobile_alot",
-          "cognition_alot",
-          "selfcare_alot",
-          "communicating_alot",
-          "seeing_unable",
-          "hearing_unable",
-          "mobile_unable",
-          "cognition_unable",
-          "selfcare_unable",
-          "communicating_unable"
-        ))) %>%
+        select(contains(c("seeing","hearing","mobile","cognition","selfcare","communicating")) & !contains("diff") & !contains("own")) %>%
         names()
-      df_age_sex = dck %>%
-        mutate(n = sum(ind_weight, na.rm = TRUE)) %>%
-        summarise(n = first(as_weight) * first(n), .by = age_sex) %>%
-        arrange(age_sex) %>%
-        as.data.frame()
 
       dck = dck %>%
         select(
@@ -413,7 +321,6 @@ with_progress({
           all_of(grp_a),
           any_of(dom_a),
           all_of(dis_hh_a),
-          all_of(oth_a),
           any_of(psu_a)
         )
       dck = dck %>% mutate(hh_id = cur_group_id(), .by = "hh_id")
@@ -521,8 +428,7 @@ with_progress({
             all_of(grp_a),
             any_of(dom_a),
             any_of(psu_a),
-            all_of(ind_a1),
-            all_of(oth_a)
+            all_of(ind_a1)
           ) %>%
           filter(
             !is.na(psu) &
@@ -793,7 +699,7 @@ with_progress({
                 across(contains("_n_"), ~ as.integer(NA))
               )
             names(tab_m_nr3) = sub(
-              "everattended_new_",
+              "everattended_new",
               "anyviolence_byh_12m",
               names(tab_m_nr3)
             )
@@ -876,8 +782,8 @@ with_progress({
                 across(contains("_n_"), ~ as.integer(NA))
               )
             names(tab_m_nr4) = sub(
-              "everattended_new_",
-              "health_exp_hh_",
+              "everattended_new",
+              "health_exp_hh",
               sub(
                 "ind_atleastprimary",
                 "child_died",
@@ -1125,7 +1031,7 @@ with_progress({
                 across(contains("_n_"), ~ as.integer(NA))
               )
             names(tab_P4_nr3) = sub(
-              "everattended_new_",
+              "everattended_new",
               "anyviolence_byh_12m",
               names(tab_P4_nr3)
             )
@@ -1195,8 +1101,8 @@ with_progress({
                 across(contains("_n_"), ~ as.integer(NA))
               )
             names(tab_P4_nr4) = sub(
-              "everattended_new_",
-              "health_exp_hh_",
+              "everattended_new",
+              "health_exp_hh",
               sub(
                 "ind_atleastprimary",
                 "child_died",
