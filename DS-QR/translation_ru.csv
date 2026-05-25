@@ -1,0 +1,474 @@
+﻿en,ru
+Disability Statistics Database (DS-E),База статистических данных по инвалидности (DS-E)
+Language,Язык
+Change language,Изменение языка
+English,Английский
+French,Французский
+Spanish,Испанский
+Russian,Русский
+Chinese,Китайский
+Arabic,Арабский
+Home,Главная страница
+Countries (select multiple),Страны (выбрать несколько)
+Select all countries,Выбрать все страны
+Reset countries,Сбросить страны
+Country (select single),Страна (выбрать одну)
+The Methods tab above has definitions and details about breakdowns,Вкладка Методы выше содержит определения и подробную информацию о разбивках
+Select the subnational level,Выбрать субнациональный уровень
+Indicators,Показатели
+Population Groups,Группы населения
+Disability breakdown,Разбивка по инвалидности
+Disability group,Группа инвалидности
+Other disability group,Другая группа инвалидности
+Indicator scale,Шкала показателей
+Pick a colour theme,Выбрать цветовую гамму
+Cross-country estimates,Межстрановые оценки
+Graph,График
+Table,Таблица
+Estimates within countries,Оценки внутри стран
+Map,Карта
+Methods,Таблица
+Accessibility,Доступность
+Citation,Таблица
+"By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to https://ds-e.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in part on the Data, will cite the source as follows:","Используя Данные, вы соглашаетесь с указанием авторства DDI. Электронные публикации будут содержать гиперссылку на https://ds-e.disabilitydatainitiative.org/. Публикации, будь то печатные, электронные или вещательные, основанные полностью или частично на Данных, должны ссылаться на источник следующим образом:"
+"DDI. Disability Statistics – Estimates Database (DS-E Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.","DDI. Статистика инвалидности – база данных оценок (база данных DS-E). Коллектив Инициативы по данным об инвалидности. Фордхэмский университет: Нью-Йорк, США. 2024."
+"For the full terms and conditions, click the link below:","Для ознакомления с полными условиями и положениями, нажмите на ссылку ниже:"
+Terms and conditions,Положения и условия
+Graph showing,На графике показаны
+Table showing,На таблице показаны
+for,для
+by,по
+Map showing,На карте показаны 
+at,по
+Key message:,Ключевой посыл:
+Indicator definition:,Определение показателя
+Insufficient Sample Size,Недостаточный размер выборки
+A blank cell indicates that the estimate is not available.,"Пустая ячейка указывает на то, что оценка недоступна."
+Data source(s):,Источник(и) данных:
+Proportion with disabilities (Prevalence),Доля людей с инвалидностью (распространенность)
+Education,Образование
+Health,Здоровье
+Personal activities,Личная деятельность
+Standard of living,Уровень жизни
+Insecurity,Небезопасность
+Adults with disabilities,Взрослые с инвалидностью
+Households with disabilities,Домохозяйства людей с инвалидностью
+Ever attended school,Когда-либо посещал школу
+Primary school or higher,Начальная школа или выше
+Secondary school or higher,Средняя школа или выше
+Literacy,Грамотность
+Water,Вода
+Sanitation,Санитария
+Family planning,Планирование семьи
+Violence,Насилие
+Computer,Компьютер
+Internet,Интернет
+Own mobile,Собственный мобильный телефон
+Employment,Занятость
+Youth idle,Неработающая молодежь
+Manufacturing work,Производственные работы
+Managerial work,Работа на руководящей должности
+Informal work,Неформальная работа
+Electricity,Электричество
+Clean cooking fuel,Чистое топливо для приготовления пищи
+Adequate housing,Адекватное жилище
+Assets owned,Активы в собственности
+Household mobile,Мобильный в домохозяйстве
+Health insurance,Медицинская страховка
+Social protection,Социальная защита
+Food insecure,Отсутствие продовольственной безопасности
+Experienced shock,Пережитый шок
+Health expenditures,Расходы на здравоохранение
+Multidimensional poverty,Многомерная бедность
+"The proportion of adults with disabilities varies across countries, with the lowest at 5%, the highest at 33%, and the median at 14.2%. ","Доля взрослых с инвалидностью варьируется в зависимости от страны: самая низкая – 5%, самая высокая – 33%, а медианная – 14,2%."
+"The proportion of households who have at least one adult with disabilities varies across countries with the lowest at 10.4%, the highest at 61.7%, and the median at 28.5%.","Доля домохозяйств, в которых есть хотя бы один взрослый с инвалидностью, варьируется в разных странах: самая низкая – 10,4%, самая высокая – 61,7%, а медианная – 28,5%."
+"The proportion of adults who have ever been to school is lower among adults with disabilities, than among adults without disabilities.","Доля взрослых, которые когда-либо посещали школу, ниже среди взрослых с инвалидностью, чем среди взрослых без инвалидности."
+"The proportion of adults who at least completed primary school is lower among adults with disabilities, than among adults without disabilities.","Доля взрослых, окончивших по крайней мере начальную школу, ниже среди взрослых с инвалидностью, чем среди взрослых без инвалидности."
+"The proportion of adults who at least completed upper secondary school is lower among adults with disabilities, than among adults without disabilities.","Доля взрослых, имеющих как минимум полное среднее образование, ниже среди взрослых с инвалидностью, чем среди взрослых без инвалидности."
+"The proportion of adults who can read and write in any language is lower among adults with disabilities, than among adults without disabilities.","Доля взрослых, умеющих читать и писать на любом языке, ниже среди взрослых с инвалидностью, чем среди взрослых без инвалидности."
+"Across countries, the proportion of adults who live in households who have safely managed drinking water is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","Во всех странах доля взрослых, проживающих в домохозяйствах, обеспеченных безопасной питьевой водой, среди взрослых с инвалидностью аналогична, ниже или выше, чем среди взрослых без инвалидности. В исследуемых странах не наблюдается какой-либо устойчивой тенденции."
+"Across countries, the proportion of adults who live in households who have safely managed sanitation services is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","Во всех странах доля взрослых, проживающих в домохозяйствах, которые имеют доступ к безопасным услугам в области санитарии, аналогична, ниже или выше для взрослых с инвалидностью по сравнению со взрослыми без инвалидности. В исследуемых странах не наблюдается какой-либо последовательной закономерности."
+"Across countries, the proportion of women who report that they have their family planning needs met. In other words, women who want and have access to modern contraceptive methods, is similar, lower or higher for women with disabilities, compared to women without disabilities. There is no consistent pattern in the countries under study.","В разных странах доля женщин, сообщающих о том, что их потребности в области планирования семьи удовлетворены. Другими словами, женщины, которые хотят и имеют доступ к современным методам контрацепции, аналогично, ниже или выше у женщин с инвалидностью, по сравнению с женщинами без инвалидности. В исследуемых странах не наблюдается устойчивой закономерности."
+"In most of the countries under study, the proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months is higher among women with disabilities, than among women without disabilities.","В большинстве исследуемых стран доля женщин, сообщивших о том, что они подвергались домашнему насилию со стороны своего интимного партнера в течение последних 12 месяцев, выше среди женщин с инвалидностью, чем среди женщин без инвалидности."
+"The proportion of adults who have or use a computer is lower among adults with disabilities, than among adults without disabilities.","Доля взрослых, имеющих или использующих компьютер, ниже среди взрослых с инвалидностью, чем среди взрослых без инвалидности."
+"In most countries, the proportion of adults who have or use the internet is lower among adults with disabilities, than among adults without disabilities.  ","В большинстве стран доля взрослых, имеющих доступ к интернету или пользующихся им, ниже среди взрослых с инвалидностью, чем среди взрослых без инвалидности."
+"In most countries, the proportion of adults who have their own mobile phone is lower among adults with disabilities, than among adults without disabilities.","В большинстве стран доля взрослых, имеющих собственный мобильный телефон, среди взрослых с инвалидностью ниже, чем среди взрослых без инвалидности."
+"In most countries, the proportion of the adult population who work for pay, profit (self-employed) or for a family business/farm (whether paid or unpaid) is lower among persons with disabilities, than among persons without disabilities.","В большинстве стран доля взрослого населения, работающего за плату, прибыль (самозанятые) или на семейный бизнес/ферму (оплачиваемую или неоплачиваемую), среди людей с инвалидностью ниже, чем среди людей без инвалидности."
+"In most countries, the proportion of youth who are not enrolled in school and not employed is higher among youths with disabilities, than among youths without disabilities.","В большинстве стран доля молодых людей, не посещающих школу и не работающих, выше среди молодых людей с инвалидностью, чем среди молодых людей без инвалидности."
+"Across countries, the proportion of workers who work in the manufacturing sector is similar. Lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","В разных странах доля работников, занятых в производственном секторе, одинакова. Ниже или выше для взрослых с инвалидностью, по сравнению со взрослыми без инвалидности. В исследуемых странах не наблюдается устойчивой закономерности."
+"In most countries, the proportion of women workers who have managerial positions is lower among women with disabilities, compared to women without disabilities.","В большинстве стран доля работающих женщин, занимающих руководящие должности, ниже среди женщин с инвалидностью по сравнению с женщинами без инвалидности."
+"Workers who do informal work, are ones who are self-employed, work for small firm or a firm that is unregistered, or have no written contract with their employers or work without pay. In most countries, the proportion of these workers is higher among workers with disabilities, than among workers without disabilities.","Работники, которые работают в неформальном секторе, являются самозанятыми, работают в небольших фирмах или фирмах, которые не зарегистрированы, или не имеют письменного договора со своими работодателями или работают без оплаты. В большинстве стран доля этих работников выше среди работников с инвалидностью, чем среди работников без инвалидности."
+"In most countries, the proportion of adults who live in households with access to electricity is lower among persons with disabilities compared to persons without disabilities.","В большинстве стран доля взрослых, живущих в домохозяйствах, имеющих доступ к электричеству, ниже среди людей с инвалидностью по сравнению с лицами без инвалидности."
+"In most countries, the proportion of adults who live in households who use clean cooking fuel is lower among persons with disabilities compared to persons without disabilities.","В большинстве стран доля взрослых, живущих в домохозяйствах, использующих чистое топливо для приготовления пищи, ниже среди людей с инвалидностью по сравнению с лицами без инвалидности."
+"In most countries, the proportion of adults who live in households with quality floor, roof and wall materials is lower among persons with disabilities compared to persons without disabilities.","В большинстве стран доля взрослых, живущих в домохозяйствах с качественными материалами для пола, крыши и стен, ниже среди людей с инвалидностью по сравнению с лицами без инвалидности."
+"In most countries, the proportion of assets owned by an adult's household is lower among persons with disabilities compared to persons without disabilities.","В большинстве стран доля активов, принадлежащих взрослому домохозяйству, ниже среди людей с инвалидностью по сравнению с лицами без инвалидности."
+"In most countries, the proportion of adults who live in households with a mobile phone is lower among persons with disabilities compared to persons without disabilities.","В большинстве стран доля взрослых, живущих в домохозяйствах с мобильными телефонами, ниже среди людей с инвалидностью по сравнению с лицами без инвалидности."
+"In most countries, the proportion of adults who live in households with health insurance is higher among persons with disabilities compared to persons without disabilities.","В большинстве стран доля взрослых, проживающих в домохозяйствах с медицинской страховкой, выше среди людей с инвалидностью по сравнению с лицами без инвалидности."
+"In most countries, the proportion of adults who live in households who receive social protection benefits is higher among persons with disabilities compared to persons without disabilities.","В большинстве стран доля взрослых, проживающих в домохозяйствах и получающих пособия по социальной защите, выше среди людей с инвалидностью по сравнению с лицами без инвалидности."
+The proportion of adults who live in food insecure households is higher among persons with disabilities than among persons without disabilities.,"Доля взрослых, живущих в домохозяйствах с нехваткой продовольствия, выше среди людей с инвалидностью, чем среди людей без инвалидности."
+The proportion of adults who live in households that were recently exposed to at least one negative shock such as a flood or the loss of a job is higher among persons with disabilities than among persons without disabilities.,"Доля взрослых, проживающих в домохозяйствах, которые недавно подверглись по крайней мере одному негативному потрясению, такому как наводнение или потеря работы, выше среди людей с инвалидностью, чем среди людей без инвалидности."
+"In most countries, the proportion of a household’s total consumption expenditures that are dedicated to health is higher among persons with disabilities than among persons without disabilities.","В большинстве стран доля общих потребительских расходов домохозяйства, предназначенных для здравоохранения, выше среди людей с инвалидностью, чем среди людей без инвалидности."
+The proportion of adults who experience multidimensional poverty is higher among persons with disabilities than among persons without disabilities.,"Доля взрослых, живущих в условиях многомерной нищеты, выше среди людей с инвалидностью, чем среди людей без инвалидности."
+"Proportion of adults ages 15 and older with disabilities. The proportion is available for adults with any disability (adults with disability), by disability type, and by degree (moderate and severe disability). ","Доля взрослых в возрасте 15 лет и старше с инвалидностью. Доля доступна для взрослых с любой инвалидностью (взрослые с инвалидностью), по типу инвалидности и по степени (инвалидность умеренной и тяжелой степени). "
+"Proportion of households who have at least one adult aged 15 and older with disabilities. The proportion is available for households with adults with any disability (adults with disability), and by degree (moderate and severe disability). ","Доля домохозяйств, в которых проживает хотя бы один взрослый в возрасте 15 лет и старше с инвалидностью. Данная доля приводится для домохозяйств, в которых проживают взрослые с любой инвалидностью (взрослые с инвалидностью), а также в разбивке по степени инвалидности (инвалидность умеренной и тяжелой степени). "
+Proportion of adults ages 15 and older who have ever been to school.,"Доля взрослых в возрасте 15 лет и старше, которые когда-либо посещали школу."
+Proportion of adults ages 25 and older who at least completed primary school. ,"Доля взрослых в возрасте 25 лет и старше, окончивших по крайней мере начальную школу."
+"Proportion of adults ages 25 and older who completed upper secondary school, whether or not they also attended tertiary school","Доля взрослых в возрасте 25 лет и старше, окончивших старшие классы средней школы, независимо от того, посещали ли они высшее учебное заведение или нет"
+Proportion of adults 15 and older who can read and write in at least one language.,"Доля взрослых в возрасте 15 лет и старше, которые умеют читать и писать хотя бы на одном языке."
+Proportion of adults ages 15 and older who live in households that have safely managed drinking water.,"Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах, где обеспечено безопасное водоснабжение."
+Proportion of adults ages 15 and older who live in households that have safely managed sanitation services.,"Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах, которые имеют доступ к безопасным санитарным услугам."
+Proportion of women who report that they have their family planning needs met; they want and have access to modern contraceptive methods.,"Доля женщин, которые сообщают, что их потребности в области планирования семьи удовлетворены; они хотят и имеют доступ к современным методам контрацепции."
+"Proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months. Domestic violence may be physical, psychological or sexual.","Доля женщин, которые сообщают о том, что подвергались домашнему насилию со стороны своего интимного партнера в течение последних 12 месяцев. Домашнее насилие может быть физическим, психологическим или сексуальным."
+Proportion of adults ages 15 and older who have or use a computer.  ,"Доля взрослых в возрасте 15 лет и старше, имеющих или использующих компьютер."
+Proportion of adults ages 15 and older who have or use the internet.  ,"Доля взрослых в возрасте 15 лет и старше, которые имеют доступ к Интернету или пользуются им.  "
+Proportion of adults ages 15 and older who have their own mobile phone.,"Доля взрослых в возрасте 15 лет и старше, имеющих собственный мобильный телефон."
+"Proportion of the adult population ages 15 and older who work for pay, profit (self-employed) or for a family business or  farm (whether paid or unpaid). ","Доля взрослого населения в возрасте 15 лет и старше, которые работают за плату, прибыль (самозанятые) или на семейном предприятии или ферме (оплачиваемые или неоплачиваемые)."
+Proportion of youth ages 15 to 24 who are not enrolled in school and not employed.,"Доля молодежи в возрасте от 15 до 24 лет, которые не учатся в школе и не работают."
+Proportion of workers ages 15 and older who work in the manufacturing sector.,"Доля работников в возрасте 15 лет и старше, занятых в производственном секторе."
+Proportion of women workers who have managerial positions.,"Доля работающих женщин, занимающих руководящие должности."
+"Proportion of workers ages 15 and older who do informal work. They could be self-employed, work for a microenterprise of five or fewer employees or in a firm that is unregistered, or have no written contract with their employers. Family workers without pay are included as informal workers.","Доля работников в возрасте 15 лет и старше, занятых в неформальном секторе. Они могут быть самозанятыми, работать на микропредприятии с пятью или менее сотрудниками или в фирме, которая не зарегистрирована, или не иметь письменного договора со своим работодателем. Семейные работники без оплаты труда включены в неформальный сектор."
+Proportion of adults ages 15 and older who live in households with access to electricity.,"Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах с доступом к электричеству."
+Proportion of adults ages 15 and older who live in households who use clean cooking fuel.,"Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах, использующих экологически чистое топливо для приготовления пищи."
+"Proportion of adults ages 15 and older who live in households with quality floor, roof and wall materials.","Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах с качественными материалами для пола, крыши и стен."
+"Proportion of assets owned by an adult's household among the following assets:  a radio, TV, telephone, mobile phone, bike, motorbike, refrigerator, car (or truck) and computer.","Доля имущества, принадлежащего домохозяйству взрослого человека, среди следующих видов имущества:  радио, телевизор, телефон, мобильный телефон, велосипед, мотоцикл, холодильник, автомобиль (или грузовик) и компьютер."
+Proportion of adults ages 15 and older who live in households with a mobile phone.,"Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах с мобильным телефоном."
+Proportion of adults ages 15 and older who live in households with health insurance.,"Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах с медицинской страховкой."
+"Proportion of adults ages 15 and older who live in households who received social protection benefits in the past year or who currently receive them (e.g. cash benefits, in kind transfers). Benefits may be from Government or Non-Government institutions.","Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах, которые в течение последнего года получали социальные пособия или получают их в настоящее время (например, денежные пособия, передача натуральных благ). Пособия могут предоставляться государственными или негосударственными учреждениями."
+"Proportion of adults ages 15 and older who live in households  that recently (in the past week, month or 12 months) did not have access to adequate food. ","Доля взрослых в возрасте 15 лет и старше, которые живут в домохозяйствах, которые недавно (в течение последней недели, месяца или 12 месяцев) не имели доступа к достаточному питанию."
+"Proportion of adults ages 15 and older who live in households that were recently exposed to at least one negative shock. The time frame is usually the past 12 months and shocks include:
+- shocks related to the weather (drought, flood, heavy rains), 
+- negative events affecting household members (death of a household member, illness of a household member),
+- economic hardships (loss of a job, crop damage) and
+- disasters (e.g. fire, landslide).","Доля взрослых в возрасте 15 лет и старше, проживающих в домохозяйствах, которые недавно подверглись по крайней мере одному негативному потрясению. Период времени обычно составляет последние 12 месяцев, а потрясения включают:
+- потрясения, связанные с погодными условиями (засуха, наводнение, проливные дожди),
+- негативные события, затронувшие членов домохозяйства (смерть члена домохозяйства, болезнь члена домохозяйства),
+- экономические трудности (потеря работы, ущерб урожаю) и
+- стихийные бедствия (например, пожар, оползень)."
+"Proportion of a household’s total consumption expenditures that are dedicated to health (inpatient care and outpatient care out of pocket expenditures, medicines).","Доля общих потребительских расходов домохозяйства, которые направляются на здравоохранение (стационарное лечение и амбулаторное лечение из собственных средств, лекарства)."
+Proportion of adults ages 15 and older who experience more than one deprivation such as not working.,"Доля взрослых в возрасте 15 лет и старше, которые испытывают более одного лишения, например, не работают."
+All adults (ages 15 and older),Все взрослые (в возрасте от 15 лет и старше)
+Women,Женщины
+Men,Мужчины
+Rural residents,Сельские жители
+Urban residents,Городские жители
+Adults ages 15 to 29,Взрослые в возрасте от 15 до 29 лет
+Adults ages 30 to 44,Взрослые в возрасте от 30 до 44 лет
+Adults ages 45 to 64,Взрослые в возрасте от 45 до 64 лет
+Adults ages 65 and older,Взрослые в возрасте 65 лет и старше
+Adults ages 25 to 29,Взрослые в возрасте от 25 до 29 лет
+No disability,Без инвалидности
+Moderate disability,Инвалидность средней степени тяжести
+No and moderate disability,Без инвалидности и с инвалидностью средней степени
+Severe disability,Тяжелая инвалидность
+Disability,Инвалидность
+Seeing disability,Инвалидность по зрению
+Hearing disability,Инвалидность по слуху
+Mobility disability,"Инвалидность, связанная с ограниченной подвижностью"
+Self-care disability,"Инвалидность, связанная с неспособностью ухаживать за собой"
+Cognition disability,Нарушение когнитивных способностей
+Communication disability,Нарушение коммуникации
+National,Национальный
+Subnational division 1,Субнациональный уровень 1
+Subnational division 2,Субнациональный уровень 2
+Alternative subnational division,Альтернативное субнациональное деление
+Disability versus no disability,Инвалидность в сравнении с отсутствием инвалидности
+Severe versus moderate versus no disability,Тяжелая степень инвалидности по сравнению с умеренной степенью инвалидности по сравнению с отсутствием инвалидности
+Severe versus moderate or no disability,Тяжелая степень инвалидности по сравнению с умеренной или отсутствием инвалидности
+Disability by type,Инвалидность по типам
+Level,Уровень
+ISO Code,Код ISO
+Afghanistan,Афганистан
+Albania,Албания
+Algeria,Алжир
+American Samoa,Американское Самоа
+Angola,Ангола
+Antigua and Barbuda,Антигуа и Барбуда
+Argentina,Аргентина
+Armenia,Армения
+Australia,Австралия
+Austria,Австрия
+Azerbaijan,Азербайджан
+Bahamas,Багамы
+Bahrain,Бахрейн
+Bangladesh,Бангладеш
+Barbados,Барбадос
+Belarus,Беларусь
+Belgium,Бельгия
+Belize,Белиз
+Benin,Бенин
+Bhutan,Бутан
+Bolivia,Боливия
+Bosnia and Herz.,Босния и Герц.
+Bosnia and Herzegovina,Босния и Герцеговина
+Botswana,Ботсвана
+Brazil,Бразилия
+Brunei Darussalam,Бруней Дар-эс-Салам
+Bulgaria,Болгария
+Burkina Faso,Буркина-Фасо
+Burundi,Бурунди
+Cabo Verde,Кабо-Верде
+Cambodia,Камбоджа
+Cameroon,Камерун
+Canada,Канада
+Cayman Islands,Каймановы острова
+Central African Rep.,Центральноафриканский представитель.
+Chad,Чад
+Chile,Чили
+China,Китай
+Colombia,Колумбия
+Comoros,Коморские острова
+Congo,Конго
+"Congo, Dem. Rep.","Конго, демократ. Конгрессмен."
+"Congo, Rep.","Конго, представитель."
+Cook Islands,Острова Кука
+Costa Rica,Коста-Рика
+Côte d'Ivoire,Кот-д'Ивуар
+Croatia,Хорватия
+Cuba,Куба
+Cyprus,Кипр
+Czech Republic,Чешская Республика
+Czechia,Чехия
+Dem. Rep. Congo,Демократ Конго
+Denmark,Дания
+Djibouti,Джибути
+Dominica,Доминика
+Dominican Rep.,Представитель Доминиканской Республики
+Dominican Republic,Доминиканская Республика
+Ecuador,Эквадор
+"Egypt, Arab Rep.","Египет, арабский представитель."
+El Salvador,Сальвадор
+Eq. Guinea,Экв. Гвинея
+Equatorial Guinea,Экваториальная Гвинея
+Eritrea,Эритрея
+Estonia,Эстония
+Eswatini,Эсватини
+eSwatini,eSwatini
+Ethiopia,Эфиопия
+Falkland Is.,Фолкленд — да.
+Faroe Islands,Фарерские о-ва
+Fiji,Фиджи
+Finland,Финляндия
+Fr. S. Antarctic Lands,Отец С. Антарктические земли
+France,Франция
+Gabon,Габон
+Gambia,Гамбия
+"Gambia, The","Гамбия, The"
+Georgia,Грузия
+Germany,Германия
+Ghana,Гана
+Gilbratar,Гилбратар
+Greece,Греция
+Greenland,Гренландия
+Grenada,Гренада
+Guam,Гуам
+Guatemala,Гватемала
+Guinea,Гвинея
+Guinea-Bissau,Гвинея-Бисау
+Guyana,Гайана
+Haiti,Гаити
+Honduras,Гондурас
+Hungary,Венгрия
+Iceland,Исландия
+India,Индия
+Indonesia,Индонезия
+"Iran, Islamic Rep.","Иран, исламский представитель."
+Iraq,Ирак
+Ireland,Ирландия
+Israel,Израиль
+Italy,Италия
+Jamaica,Ямайка
+Japan,Япония
+Jordan,Иордания
+Kazakhstan,Казахстан
+Kenya,Кения
+Kiribati,Кирибати
+"Korea, Dem. Rep.","Корея, демократ. Конгрессмен."
+"Korea, Rep.","Корея, представитель."
+Kosovo,Косово
+Kuwait,Кувейт
+Kyrgyz Republic,Кыргызская Республика
+Kyrgyzstan,Киргизия
+Lao Democratic Republic,Лаосская Демократическая Республика
+Laos,Лаос
+Latvia,Латвия
+Lebanon,Ливан
+Lesotho,Лесото
+Liberia,Либерия
+Libya,Ливия
+Lithuania,Литва
+Luxembourg,Люксембург
+Madagascar,Мадагаскар
+Malawi,Малави
+Malaysia,Малайзия
+Maldives,Мальдивы
+Mali,Мали
+Malta,Мальта
+Mariana Islands (CNMI),Марианские острова (CNMI)
+Marshall Islands,Маршалловы острова
+Mauritania,Мавритания
+Mauritius,Маврикий
+Mexico,Мексика
+"Micronesia, Fed. Sts.","Микронезия, Федеральная Федерация Санкт-Петербурга."
+Moldova,Молдова
+Mongolia,Монголия
+Montenegro,Черногория
+Montserrat,Монсеррат
+Morocco,Марокко
+Mozambique,Мозамбик
+Myanmar,Мьянма
+N. Cyprus,Северный Кипр
+Namibia,Намибия
+Nauru,Науру
+Nepal,Непал
+Netherlands,Нидерланды
+New Caledonia,Новая Каледония
+New Zealand,Новая Зеландия
+Nicaragua,Никарагуа
+Niger,Нигер
+Nigeria,Нигерия
+Niue,Ниуэ
+North Korea,Северная Корея
+North Macedonia,Северная Македония
+Northern Ireland,Северная Ирландия
+Norway,Норвегия
+Oman,Оман
+Pakistan,Пакистан
+Palau,Палау
+Palestine,Палестина
+Panama,Панама
+Papua New Guinea,Папуа — Новая Гвинея
+Paraguay,Парагвай
+Peru,Перу
+Philippines,Филиппины
+Poland,Польша
+Portugal,Португалия
+Puerto Rico,Пуэрто-Рико
+Qatar,Катар
+Republic of Kosovo,Республика Косово
+Romania,Румыния
+Russia,Россия
+Russian Federation,Российская Федерация
+Rwanda,Руанда
+S. Sudan,Южный Судан
+Saint Lucia,Сент-Люсия
+Samoa,Самоа
+São Tomé and Principe,Сан-Томе и Принсипи
+Saudi Arabia,Саудовская Аравия
+Senegal,Сенегал
+Serbia,Сербия
+Seychelles,Сейшельские острова
+Sierra Leone,Сьерра-Леоне
+Singapore,Сингапур
+Slovak Rep.,Словацкий представитель.
+Slovakia,Словакия
+Slovenia,Словения
+Solomon Is.,Соломон — это так.
+Solomon Islands,Соломоновы острова
+Somalia,Сомали
+Somaliland,Сомалиленд
+South Africa,Южная Африка
+South Korea,Южная Корея
+South Sudan,Южный Судан
+Spain,Испания
+Sri Lanka,Шри-Ланка
+St. Kitts and Nevis,Сент-Китс и Невис
+St. Lucia,Сент-Люсия
+St. Vincent,Сент-Винсент
+Sudan,Судан
+Suriname,Суринам
+Sweden,Швеция
+Switzerland,Швейцария
+Syrian Arab Rep.,Сирийский арабский представитель.
+Taiwan,Тайвань
+Tajikistan,Таджикистан
+Tanzania,Танзания
+Thailand,Таиланд
+The Netherlands,Нидерланды
+Timor-Leste,Тимор-Лешти
+Togo,Того
+Tokelau,Токелау
+Tonga,Тонга
+Trinidad and Tobago,Тринидад и Тобаго
+Tunisia,Тунис
+Turkey,Турция
+Turkmenistan,Туркменистан
+Turks and Caicos Islands,Острова Теркс и Кайкос
+Tuvalu,Тувалу
+Uganda,Уганда
+Ukraine,Украина
+United Arab Emirates,Объединённые Арабские Эмираты
+United Kingdom,Великобритания
+United States,США
+United States of America,Соединённые Штаты Америки
+Uruguay,Уругвай
+Uzbekistan,Узбекистан
+Vanuatu,Вануату
+"Venezuela, RB","Венесуэла, RB"
+Vietnam,Вьетнам
+W. Sahara,Западная Сахара
+Wallis and Futuna,Уоллис и Футуна
+"Yemen, Rep.","Йемен, представитель."
+Zambia,Замбия
+Zimbabwe,Зимбабве
+World,Мир
+South Asia,Южная Азия
+East Asia & Pacific,Восточная Азия и Тихоокеанский регион
+Middle East & North Africa,Ближний Восток и Северная Африка
+Sub-Saharan Africa,Африка к югу от Сахары
+Latin America & Caribbean,Латинская Америка и Карибский бассейн
+North America,Северная Америка
+Europe & Central Asia,Европа и Центральная Азия
+countries,Страны
+Data source(s): See table for source list,Источник(и) данных: Список источников см. в таблице
+Data source:,Источник данных
+Overview of Results,Обзор результатов
+Detailed results,Подробные результаты
+Map of Disability Questions by Country,Карта вопросов по инвалидности по странам
+Table of Disability Questions by Country,Таблица вопросов по инвалидности по странам
+Region,Регион
+Do the datasets reviewed in each country include functional difficulty questions?,Включают ли в анализируемых в каждой стране наборы данных вопросы по функциональной сложности?
+Washington Group Short Set,Короткий набор группы Вашингтона
+Not assessed,Не оценивается
+Other functional difficulty questions,Другие вопросы по функциональной сложности
+No functional difficulty questions,Без вопросов по функциональной сложности
+Europe & Central Asia countries,Страны Европы и Центральной Азии
+Multiple countries,Несколько стран
+Cross Regions,Кросс-регионы
+Yes,Да
+No,Нет
+Round 1,Раунд 1
+Round 2,Раунд 2
+Round 3,Раунд 3
+Round 4,Раунд 4
+Round 5,Раунд 5
+Round 6,Раунд 6
+Round 7,Раунд 7
+Round 8,Раунд 8
+Round 9,Раунд 9
+Round 10,Раунд 10
+January,Январь
+February,Февраль
+March,Март
+April,Апрель
+May,Май
+June,Июнь
+July,Июль
+August,Август
+September,Сентябрь
+October,Октябрь
+November,Ноябрь
+December,Декабрь
+Version 3 and 2 respectively,Версия 3 и 2 соответственно
+Quarter 1,Четверть 1
+Quarter 2,Четверть 2
+Quarter 3,Четверть 3
+Quarter 4,Четверть 4
+Endline 1,Конец 1
+Endline 2,Конец 2
+Endline 3,Эндлайнер 3
+Endline 4,Финальная линия 4
+Endline 5,Финальная линия 5
+Rural Household Survey,Опрос сельских домохозяйств
+Self Targeting,Самонаведение
+Notes: WG-SS stands for the Washington Group Short,Примечания: WG-SS расшифровывается как Washington Group Short
+(1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain,"(1) - Ответ Да/Нет; (2) - Шкала ответов отличается от той, что в WG-SS; (3) - Формулировка вопросов отличается от WG-SS; (4) - Не имеет сферы самозаботы; (5) - Не имеет домена связи"

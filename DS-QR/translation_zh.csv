@@ -1,0 +1,477 @@
+﻿en,zh
+Disability Statistics Database (DS-QR),残疾统计数据库（DS-E)
+Language,语言
+Change language,更换语言
+English,英语
+French,法语
+Spanish,西班牙语
+Russian,俄语
+Chinese,中文
+Arabic,阿拉伯语
+Home,家
+Countries (select multiple),国家（多项选择）
+Select all countries,选择所有国家
+Reset countries,重置国家
+Country (select single),国家（单项选择）
+The Methods tab above has definitions and details about breakdowns,上面的“方法”栏中包含有关细分项的定义和详细信息。
+Select the subnational level,选择地方层级
+Indicators,指标
+Population Groups,种群
+Disability breakdown,残疾分类
+Disability group,残障人士组
+Other disability group,其他残疾组别
+Indicator scale,指示器刻度
+Pick a colour theme,选择一个颜色对应的主题
+Cross-country estimates,跨国估算
+Graph,图表
+Table,表格
+Estimates within countries,国内估算
+Map,地图
+Methods,方法
+Accessibility,可及性
+Citation,引文
+"By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to https://ds-e.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in part on the Data, will cite the source as follows:",在使用该数据时，您同意对残疾数据倡议（DDI）进行署名标注。电子出版物应包含指向https://ds-e.disabilitydatainstitute.org/的超链接。所有全部或部分基于该数据的出版物（包括印刷版、电子版或广播形式）均须按以下格式标注来源：
+"DDI. Disability Statistics – Estimates Database (DS-E Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.",残疾统计 - 估计数据库（DS-E 数据库）。Disability Data Initiative 集体。福特汉姆大学：美国纽约。2024.
+"For the full terms and conditions, click the link below:",有关完整的条款和条件，请单击下面的链接：
+Terms and conditions,条款和条件
+Graph showing,图表显示
+Table showing,表格显示
+for,为
+by,由
+Map showing,地图显示
+at,在
+Key message:,关键信息：
+Indicator definition:,指标定义：
+Insufficient Sample Size,样本量不足
+A blank cell indicates that the estimate is not available.,空白单元格表示该估计值不可用。
+Data source(s):,数据来源：
+Proportion with disabilities (Prevalence),残疾者所占比例（患病率）
+Education,教育
+Health,健康
+Personal activities,个人活动
+Standard of living,生活水平
+Insecurity,不安全
+Adults with disabilities,有残疾的成年人
+Households with disabilities,有残疾者的家庭
+Ever attended school,曾经上过学
+Primary school or higher,小学或小学以上教育水平
+Secondary school or higher,中学或中学以上教育水平
+Literacy,识字
+Water,水
+Sanitation,水净化和污水处理设施
+Family planning,家庭生育计划
+Violence,暴力
+Computer,计算机
+Internet,互联网
+Own mobile,自有移动电话
+Employment,就业
+Youth idle,青年闲置人员
+Manufacturing work,制造业生产作业
+Managerial work,管理性工作
+Informal work,非正式工作
+Electricity,电
+Clean cooking fuel,清洁烹饪燃料
+Adequate housing,适足住房
+Assets owned,自有资产
+Household mobile,家庭移动电话
+Health insurance,医疗保险
+Social protection,社会保障
+Food insecure,粮食不安全
+Experienced shock,遭受冲击
+Health expenditures,医疗支出
+Multidimensional poverty,多维贫困
+"The proportion of adults with disabilities varies across countries, with the lowest at 5%, the highest at 33%, and the median at 14.2%. ",各国残疾成年人的比例存在差异，最低为 5%，最高为 33%，中位数为 14.2%。
+"The proportion of households who have at least one adult with disabilities varies across countries with the lowest at 10.4%, the highest at 61.7%, and the median at 28.5%.",各国至少有一名残疾成年人的家庭比例存在差异，最低为 10.4%，最高为 61.7%，中位数为 28.5%。
+"The proportion of adults who have ever been to school is lower among adults with disabilities, than among adults without disabilities.",残疾人群体中曾接受过学校教育的成年人比例，低于非残疾人群体。
+"The proportion of adults who at least completed primary school is lower among adults with disabilities, than among adults without disabilities.",残疾人群体中至少完成小学教育的成年人比例，低于非残疾人群体。
+"The proportion of adults who at least completed upper secondary school is lower among adults with disabilities, than among adults without disabilities.",残疾人群体中至少完成高中教育的成年人比例，低于非残疾人群体。
+"The proportion of adults who can read and write in any language is lower among adults with disabilities, than among adults without disabilities.",残疾人群体中能够用任何语言读写的成年人比例低于非残疾人群体。
+"Across countries, the proportion of adults who live in households who have safely managed drinking water is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.",跨国比较中，生活在拥有安全饮用水的家庭户中的残疾成年人与非残疾成年人相比，其比例可能相当、更低或更高。所研究国家中未呈现一致规律。
+"Across countries, the proportion of adults who live in households who have safely managed sanitation services is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.",跨国比较中，生活在享有安全卫生设施的家庭户中的残疾成年人与非残疾成年人相比，其比例可能相当、更低或更高。所研究国家中未呈现一致规律。
+"Across countries, the proportion of women who report that they have their family planning needs met. In other words, women who want and have access to modern contraceptive methods, is similar, lower or higher for women with disabilities, compared to women without disabilities. There is no consistent pattern in the countries under study.",跨国比较中，残疾女性与非残疾女性相比，其家庭生育计划需求得到满足（即有意愿且能获取现代避孕方法）的比例可能相当、更低或更高。所研究国家中未呈现一致规律。
+"In most of the countries under study, the proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months is higher among women with disabilities, than among women without disabilities.",在大多数所研究的国家中，残疾女性报告在过去12个月内遭受亲密伴侣家庭暴力的比例高于非残疾女性。
+"The proportion of adults who have or use a computer is lower among adults with disabilities, than among adults without disabilities.",残疾人群体中拥有或使用电脑的成年人比例低于非残疾人群体。
+"In most countries, the proportion of adults who have or use the internet is lower among adults with disabilities, than among adults without disabilities.  ",在大多数国家中，残疾成年人拥有或使用互联网的比例低于非残疾成年人。
+"In most countries, the proportion of adults who have their own mobile phone is lower among adults with disabilities, than among adults without disabilities.",在大多数国家中，残疾成年人拥有或使用移动电话的比例低于非残疾成年人。
+"In most countries, the proportion of the adult population who work for pay, profit (self-employed) or for a family business/farm (whether paid or unpaid) is lower among persons with disabilities, than among persons without disabilities.",在大多数国家中，残疾成年人从事有偿工作、自营职业（如个体经营）或为家庭企业/农场工作（无论有无报酬）的比例低于非残疾成年人。
+"In most countries, the proportion of youth who are not enrolled in school and not employed is higher among youths with disabilities, than among youths without disabilities.",在大多数国家中，未就学且未就业的残疾青年的比例高于非残疾青年。
+"Across countries, the proportion of workers who work in the manufacturing sector is similar. Lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.",跨国比较中，在制造业从业的残疾成年人与非残疾成年人相比，其比例可能相当、更低或更高。所研究国家中未呈现一致规律。
+"In most countries, the proportion of women workers who have managerial positions is lower among women with disabilities, compared to women without disabilities.",在大多数国家中，残疾女性担任管理职位的比例低于非残疾女性。
+"Workers who do informal work, are ones who are self-employed, work for small firm or a firm that is unregistered, or have no written contract with their employers or work without pay. In most countries, the proportion of these workers is higher among workers with disabilities, than among workers without disabilities.",非正规工作者包括自营职业者、在小型或未注册企业工作的人员，以及与雇主无书面合同或无报酬的劳动者。在大多数国家中，残疾劳动者从事此类非正规工作的比例高于非残疾劳动者。
+"In most countries, the proportion of adults who live in households with access to electricity is lower among persons with disabilities compared to persons without disabilities.",在大多数国家中，残疾人群体所在家庭拥有电力供应的比例低于非残疾成年人群体。
+"In most countries, the proportion of adults who live in households who use clean cooking fuel is lower among persons with disabilities compared to persons without disabilities.",在大多数国家中，残疾人群体所在家庭使用清洁烹饪燃料的比例低于非残疾人群体。
+"In most countries, the proportion of adults who live in households with quality floor, roof and wall materials is lower among persons with disabilities compared to persons without disabilities.",在大多数国家中，残疾人群体所在家庭拥有优质地板、屋顶及墙体材料的比例低于非残疾人群体。
+"In most countries, the proportion of assets owned by an adult's household is lower among persons with disabilities compared to persons without disabilities.",在大多数国家中，残疾人群体所在家庭拥有的资产比例低于非残疾人群体。
+"In most countries, the proportion of adults who live in households with a mobile phone is lower among persons with disabilities compared to persons without disabilities.",在大多数国家中，残疾人群体所在家庭拥有移动电话的成年人比例低于非残疾人群体。
+"In most countries, the proportion of adults who live in households with health insurance is higher among persons with disabilities compared to persons without disabilities.",在大多数国家中，残疾人群体所在家庭拥有医疗保险的成年人比例高于非残疾人群体。
+"In most countries, the proportion of adults who live in households who receive social protection benefits is higher among persons with disabilities compared to persons without disabilities.",在大多数国家中，残疾人群体所在家庭接受社会保障福利的比例高于非残疾人群体。
+The proportion of adults who live in food insecure households is higher among persons with disabilities than among persons without disabilities.,残疾人群体中生活在粮食不安全家庭的成年人比例高于非残疾人群体。
+The proportion of adults who live in households that were recently exposed to at least one negative shock such as a flood or the loss of a job is higher among persons with disabilities than among persons without disabilities.,残疾人群体中，所在家庭近期经历至少一次负面冲击（如洪水或失业）的成年人比例高于非残疾人群体。
+"In most countries, the proportion of a household’s total consumption expenditures that are dedicated to health is higher among persons with disabilities than among persons without disabilities.",在大多数国家中，残疾人家庭的医疗支出占家庭总消费支出的比例高于非残疾人家庭。
+The proportion of adults who experience multidimensional poverty is higher among persons with disabilities than among persons without disabilities.,经历多维贫困的成年人比例在残疾人中高于非残疾人。
+"Proportion of adults ages 15 and older with disabilities. The proportion is available for adults with any disability (adults with disability), by disability type, and by degree (moderate and severe disability). ",15岁及以上残疾成年人的比例。该比例可按是否有任何类型的残疾（残疾成年人）、残疾类型以及残疾程度（中度和重度）分类提供。
+"Proportion of households who have at least one adult aged 15 and older with disabilities. The proportion is available for households with adults with any disability (adults with disability), and by degree (moderate and severe disability). ",至少有一名 15 岁及以上的残疾成年人的家庭比例。该比例适用于有任何残疾的成年人（成年残疾）的家庭，以及按程度（中度和重度残疾）的家庭。
+Proportion of adults ages 15 and older who have ever been to school.,15岁及以上成年人中曾接受过学校教育的比例。
+Proportion of adults ages 25 and older who at least completed primary school. ,25岁及以上成年人中至少完成小学教育的比例。
+"Proportion of adults ages 25 and older who completed upper secondary school, whether or not they also attended tertiary school",25岁及以上成年人中完成高中教育（无论是否继续接受过高等教育）的比例。
+Proportion of adults 15 and older who can read and write in at least one language.,15岁及以上成年人口中具备至少一种语言读写能力的比例。
+Proportion of adults ages 15 and older who live in households that have safely managed drinking water.,"15岁及以上成年人中，所在家庭拥有安全饮用水的比例。
+"
+Proportion of adults ages 15 and older who live in households that have safely managed sanitation services.,"15岁及以上成年人中，所在家庭拥有安全卫生设施的比例。
+"
+Proportion of women who report that they have their family planning needs met; they want and have access to modern contraceptive methods.,自述家庭生育计划需求得到满足（即有意愿且能获取现代避孕方法）的女性比例。
+"Proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months. Domestic violence may be physical, psychological or sexual.",自述在过去12个月内曾遭受亲密伴侣家庭暴力的女性比例（家庭暴力包括身体暴力、心理暴力或性暴力）。
+Proportion of adults ages 15 and older who have or use a computer.  ,15岁及以上成年人中拥有或使用电脑的比例。
+Proportion of adults ages 15 and older who have or use the internet.  ,15岁及以上成年人中拥有或使用互联网的比例。
+Proportion of adults ages 15 and older who have their own mobile phone.,15岁及以上成年人中拥有个人移动电话的比例。
+"Proportion of the adult population ages 15 and older who work for pay, profit (self-employed) or for a family business or  farm (whether paid or unpaid). ",15岁及以上成年人中，从事有偿工作、自营职业（如个体经营）或为家庭企业/农场工作（无论有无报酬）的比例。
+Proportion of youth ages 15 to 24 who are not enrolled in school and not employed.,15至24岁青年中未在学未就业的比例。
+Proportion of workers ages 15 and older who work in the manufacturing sector.,15岁及以上劳动者中在制造业从业的比例。
+Proportion of women workers who have managerial positions.,女性劳动者中担任管理职位的比例。
+"Proportion of workers ages 15 and older who do informal work. They could be self-employed, work for a microenterprise of five or fewer employees or in a firm that is unregistered, or have no written contract with their employers. Family workers without pay are included as informal workers.",15岁及以上劳动者中从事非正规工作的比例。非正规工作者包括：自营职业者、在员工不超过五人的微型企业或未注册企业工作的人员、与雇主无书面合同的劳动者，以及无报酬的家庭劳动者。
+Proportion of adults ages 15 and older who live in households with access to electricity.,15岁及以上成年人中，所在家庭拥有电力供应的比例。
+Proportion of adults ages 15 and older who live in households who use clean cooking fuel.,15岁及以上成年人中，所在家庭使用清洁烹饪燃料的比例。
+"Proportion of adults ages 15 and older who live in households with quality floor, roof and wall materials.","15岁及以上成年人中，所在家庭拥有达标的地板、屋顶及墙体材料的比例。
+"
+"Proportion of assets owned by an adult's household among the following assets:  a radio, TV, telephone, mobile phone, bike, motorbike, refrigerator, car (or truck) and computer.",成年家庭户拥有以下财产的比例：收音机、电视、固定电话、移动电话、自行车、摩托车、冰箱、汽车（或卡车）及电脑。
+Proportion of adults ages 15 and older who live in households with a mobile phone.,15岁及以上成年人中，所在家庭拥有移动电话的比例。
+Proportion of adults ages 15 and older who live in households with health insurance.,15岁及以上成年人中，所在家庭拥有医疗保险的比例。
+"Proportion of adults ages 15 and older who live in households who received social protection benefits in the past year or who currently receive them (e.g. cash benefits, in kind transfers). Benefits may be from Government or Non-Government institutions.",15岁及以上成年人中，所在家庭在过去一年内曾获得或目前正在获得社会保障福利（如现金补贴、实物转移支付）的比例。福利可能来自政府或非政府机构。
+"Proportion of adults ages 15 and older who live in households  that recently (in the past week, month or 12 months) did not have access to adequate food. ",15岁及以上成年人中，所在家庭近期（过去一周、一个月或12个月内）无法获得充足食物的比例。
+"Proportion of adults ages 15 and older who live in households that were recently exposed to at least one negative shock. The time frame is usually the past 12 months and shocks include:
+- shocks related to the weather (drought, flood, heavy rains), 
+- negative events affecting household members (death of a household member, illness of a household member),
+- economic hardships (loss of a job, crop damage) and
+- disasters (e.g. fire, landslide)."," 15 岁及以上成年人中，所在家庭在过去12个月内至少遭受过一次负面冲击的比例。负面冲击包括：
+- 与天气相关的冲击（如干旱、洪水、暴雨）；
+- 家庭成员负面事件（如家庭成员死亡、家庭成员罹患重病）；
+- 经济困境（如失业、农作物损失）；
+- 灾害事件（如火灾、山体滑坡）。"
+"Proportion of a household’s total consumption expenditures that are dedicated to health (inpatient care and outpatient care out of pocket expenditures, medicines).",医疗支出占比（即家庭总消费支出中用于医疗的比例，包括住院护理、门诊自费支出及药品费用）
+Proportion of adults ages 15 and older who experience more than one deprivation such as not working.,15岁及以上成年人中，经历多重剥夺（例如不工作）的比例
+All adults (ages 15 and older),所有成人（15 岁及以上）
+Women,女人
+Men,男人
+Rural residents,农村居民
+Urban residents,城市居民
+Adults ages 15 to 29,15 至 29 岁的成年人
+Adults ages 30 to 44,30 至 44 岁的成年人
+Adults ages 45 to 64,45 至 64 岁的成年人
+Adults ages 65 and older,65 岁及以上的成年人
+Adults ages 25 to 29,25 至 29 岁的成年人
+No disability,无残疾
+Moderate disability,中度残疾
+No and moderate disability,中度残疾和无残疾
+Severe disability,严重残疾
+Disability,残疾
+Seeing disability,视力残疾
+Hearing disability,听力残疾
+Mobility disability,行动障碍
+Self-care disability,个人护理障碍
+Cognition disability,认知障碍
+Communication disability,沟通障碍
+National,全国性
+Subnational division 1,地方区划 1
+Subnational division 2,地方区划 2
+Alternative subnational division,替代性地方区划
+Disability versus no disability,残疾与无残疾
+Severe versus moderate versus no disability,重度残疾与中度残疾与无残疾
+Severe versus moderate or no disability,重度残疾与中度残疾或无残疾
+Disability by type,按类型划分的残疾
+Level,水平
+ISO Code,ISO 代码
+Afghanistan,阿富汗
+Albania,阿尔巴尼亚
+Algeria,阿尔及利亚
+American Samoa,美属萨摩亚
+Angola,安哥拉
+Antigua and Barbuda,安提瓜和巴布达
+Argentina,阿根廷
+Armenia,亚美尼亚
+Australia,澳大利亚
+Austria,奥地利
+Azerbaijan,阿塞拜疆
+Bahamas,巴哈马
+Bahrain,巴林
+Bangladesh,孟加拉国
+Barbados,巴巴多斯
+Belarus,白俄罗斯
+Belgium,比利时
+Belize,伯利兹
+Benin,贝宁
+Bhutan,不丹
+Bolivia,玻利维亚
+Bosnia and Herz.,波斯尼亚和赫兹。
+Bosnia and Herzegovina,波斯尼亚和黑塞哥维那
+Botswana,博茨瓦纳
+Brazil,巴西
+Brunei Darussalam,文莱达鲁萨兰国
+Bulgaria,保加利亚
+Burkina Faso,布基纳法索
+Burundi,布隆迪
+Cabo Verde,佛得角
+Cambodia,柬埔寨
+Cameroon,喀麦隆
+Canada,加拿大
+Cayman Islands,开曼群岛
+Central African Rep.,中非共和国
+Chad,乍得
+Chile,智利
+China,中国
+Colombia,哥伦比亚
+Comoros,科摩罗
+Congo,刚果
+"Congo, Dem. Rep.",刚果，民主党众议院
+"Congo, Rep.",刚果，众议院
+Cook Islands,库克群岛
+Costa Rica,哥斯达黎加
+Côte d'Ivoire,科特迪瓦
+Croatia,克罗地亚
+Cuba,古巴
+Cyprus,塞浦路斯
+Czech Republic,捷克共和国
+Czechia,捷克
+Dem. Rep. Congo,刚果民主共和国
+Denmark,丹麦
+Djibouti,吉布提
+Dominica,多米尼加
+Dominican Rep.,多米尼加共和国
+Dominican Republic,多米尼加共和国
+Ecuador,厄瓜多尔
+"Egypt, Arab Rep.",埃及，阿拉伯共和国
+El Salvador,萨尔瓦多
+Eq. Guinea,几内亚方程
+Equatorial Guinea,赤道几内亚
+Eritrea,厄立特里亚
+Estonia,爱沙尼亚
+Eswatini,斯威士兰
+eSwatini,斯威士兰语
+Ethiopia,埃塞俄比亚
+Falkland Is.,福克兰群岛是。
+Faroe Islands,法罗群岛
+Fiji,斐济
+Finland,芬兰
+Fr. S. Antarctic Lands,S. 南极地神父
+France,法国
+Gabon,加蓬
+Gambia,冈比亚
+"Gambia, The",冈比亚，
+Georgia,格鲁吉亚
+Germany,德国
+Ghana,加纳
+Gilbratar,吉尔布拉塔
+Greece,希腊
+Greenland,格陵兰
+Grenada,格林纳达
+Guam,关岛
+Guatemala,危地马拉
+Guinea,几内亚
+Guinea-Bissau,几内亚比绍
+Guyana,圭亚那
+Haiti,海地
+Honduras,洪都拉斯
+Hungary,匈牙利
+Iceland,冰岛
+India,印度
+Indonesia,印度尼西亚
+"Iran, Islamic Rep.",伊朗，伊斯兰共和国。
+Iraq,伊拉克
+Ireland,爱尔兰
+Israel,以色列
+Italy,意大利
+Jamaica,牙买加
+Japan,日本
+Jordan,约旦
+Kazakhstan,哈萨克斯坦
+Kenya,肯尼亚
+Kiribati,基里巴斯
+"Korea, Dem. Rep.",韩国，民主党众议员
+"Korea, Rep.",韩国，众议员
+Kosovo,科索沃
+Kuwait,科威特
+Kyrgyz Republic,吉尔吉斯共和国
+Kyrgyzstan,吉尔吉斯斯坦
+Lao Democratic Republic,老挝民主共和国
+Laos,老挝
+Latvia,拉托维亚
+Lebanon,黎巴嫩
+Lesotho,莱索托
+Liberia,利比里亚
+Libya,利比亚
+Lithuania,立陶宛
+Luxembourg,卢森堡
+Madagascar,马达加斯加
+Malawi,马拉维
+Malaysia,马来西亚
+Maldives,马尔代夫
+Mali,马里
+Malta,马耳他
+Mariana Islands (CNMI),马里亚纳群岛（CNMI）
+Marshall Islands,马绍尔群岛
+Mauritania,毛里塔尼亚
+Mauritius,毛里求斯
+Mexico,墨西哥
+"Micronesia, Fed. Sts.",密克罗尼西亚联邦
+Moldova,摩尔多瓦
+Mongolia,蒙古
+Montenegro,黑山
+Montserrat,蒙特塞拉特
+Morocco,摩洛哥
+Mozambique,莫桑比克
+Myanmar,缅甸
+N. Cyprus,塞浦路斯北部
+Namibia,纳米比亚
+Nauru,瑙鲁
+Nepal,尼泊尔
+Netherlands,荷兰
+New Caledonia,新喀里多尼亚
+New Zealand,新西兰
+Nicaragua,尼加拉瓜
+Niger,尼日尔
+Nigeria,尼日利亚
+Niue,纽埃
+North Korea,朝鲜
+North Macedonia,北马其顿
+Northern Ireland,北爱尔兰
+Norway,挪威
+Oman,阿曼
+Pakistan,巴基斯坦
+Palau,帕劳
+Palestine,巴勒斯坦
+Panama,巴拿马
+Papua New Guinea,巴布亚新几内亚
+Paraguay,巴拉圭
+Peru,秘鲁
+Philippines,菲律宾
+Poland,波兰
+Portugal,葡萄牙
+Puerto Rico,波多黎各
+Qatar,卡塔尔
+Republic of Kosovo,科索沃共和国
+Romania,罗马尼亚
+Russia,俄罗斯
+Russian Federation,俄罗斯联邦
+Rwanda,卢旺达
+S. Sudan,南苏丹
+Saint Lucia,圣卢西亚
+Samoa,萨摩亚
+São Tomé and Principe,圣多美和普林西比
+Saudi Arabia,沙特阿拉伯
+Senegal,塞内加尔
+Serbia,塞尔维亚
+Seychelles,塞舌尔
+Sierra Leone,塞拉利昂
+Singapore,新加坡
+Slovak Rep.,斯洛伐克共和国
+Slovakia,斯洛伐克
+Slovenia,斯洛文尼亚
+Solomon Is.,所罗门是。
+Solomon Islands,所罗门群岛
+Somalia,索马里
+Somaliland,索马里兰
+South Africa,南非
+South Korea,韩国
+South Sudan,南苏丹
+Spain,西班牙
+Sri Lanka,斯里兰卡
+St. Kitts and Nevis,圣基茨和尼维斯
+St. Lucia,圣卢西亚
+St. Vincent,圣文森特
+Sudan,苏丹
+Suriname,苏里南
+Sweden,瑞典
+Switzerland,瑞士
+Syrian Arab Rep.,叙利亚阿拉伯代表
+Taiwan,台湾
+Tajikistan,塔吉克斯坦
+Tanzania,坦桑尼亚
+Thailand,泰国
+The Netherlands,荷兰
+Timor-Leste,东帝汶
+Togo,多哥
+Tokelau,托克劳
+Tonga,汤加
+Trinidad and Tobago,特立尼达和多巴哥
+Tunisia,突尼斯
+Turkey,土耳其
+Turkmenistan,土库曼斯坦
+Turks and Caicos Islands,特克斯和凯科斯群岛
+Tuvalu,图瓦卢
+Uganda,乌干达
+Ukraine,乌克兰
+United Arab Emirates,阿拉伯联合酋长国
+United Kingdom,英国
+United States,美国
+United States of America,美利坚合众国
+Uruguay,乌拉圭
+Uzbekistan,乌兹别克斯坦
+Vanuatu,瓦努阿图
+"Venezuela, RB",委内瑞拉，跑卫
+Vietnam,越南
+W. Sahara,西撒哈拉
+Wallis and Futuna,瓦利斯和富图纳
+"Yemen, Rep.",也门，众议员。
+Zambia,赞比亚
+Zimbabwe,津巴布韦
+World,世界
+South Asia,南亚
+East Asia & Pacific,东亚和太平洋地区
+Middle East & North Africa,中东和北非
+Sub-Saharan Africa,撒哈拉以南非洲
+Latin America & Caribbean,拉丁美洲和加勒比地区
+North America,北美洲
+Europe & Central Asia,欧洲和中亚
+countries,国家
+Data source(s): See table for source list,数据源：参见表格以获取源列表
+Data source:,数据来源：
+Overview of Results,选举结果概览
+Detailed results,详细结果
+Map of Disability Questions by Country,各国残疾问题地图
+Table of Disability Questions by Country,各国残疾问题表
+Region,地区
+Do the datasets reviewed in each country include functional difficulty questions?,各国所评测的数据集是否包含功能性难度问题？
+Washington Group Short Set,华盛顿群短集
+Not assessed,未评估
+Other functional difficulty questions,其他功能性难度问题
+No functional difficulty questions,没有功能性难度问题
+Europe & Central Asia countries,欧洲和中亚国家
+Multiple countries,多个国家
+Cross Regions,跨地区
+Yes,是的
+No,不
+Round 1,第一轮
+Round 2,第二轮
+Round 3,第三轮
+Round 4,第四轮
+Round 5,第五轮
+Round 6,第六轮
+Round 7,第七轮
+Round 8,第八轮
+Round 9,第九轮
+Round 10,第十轮
+January,一月
+February,二月
+March,三月
+April,四月
+May,五月
+June,六月
+July,七月
+August,八月
+September,九月
+October,十月
+November,十一月
+December,十二月
+Version 3 and 2 respectively,分别是版本3和版本2
+Quarter 1,第一季度
+Quarter 2,第二季度
+Quarter 3,第三季度
+Quarter 4,第四节
+Endline 1,结局第一条
+Endline 2,结局2
+Endline 3,结局三
+Endline 4,结局4
+Endline 5,结尾五
+Rural Household Survey,农村家庭调查
+Self Targeting,自我定向
+Notes: WG-SS stands for the Washington Group Short,注释：WG-SS代表华盛顿群短线
+(1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain,（1） - 是/否回答;（2） - 答案量表与WG-SS不同;（3）- 问题措辞与世界党卫队不同;（4） - 没有自我关怀领域;（5） - 没有通信域

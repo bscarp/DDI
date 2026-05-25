@@ -1,0 +1,478 @@
+﻿en,ar
+Disability Statistics Database (DS-E),قاعدة بيانات إحصاءات الإعاقة (DS-E)
+Language,اللغة
+Change language,تغيير اللغة
+English,الإنكليزية
+French,الفرنسية
+Spanish,الإسبانية
+Russian,الروسية
+Chinese,الصينية
+Arabic,العربية
+Home,الرئيسية
+Countries (select multiple),البلدان (حدد عدة بلدان)
+Select all countries,حدد جميع البلدان
+Reset countries,إعادة تعيين البلدان
+Country (select single),البلد (اختر فرديا)
+The Methods tab above has definitions and details about breakdowns,"تحتوي علامة التبويب ""الأساليب"" أعلاه على تعريفات وتفاصيل حول التقسيمات"
+Select the subnational level,حدد المستوى دون الوطني
+Indicators,المؤشرات
+Population Groups,المجموعات السكانية
+Disability breakdown,تفكيك البيانات حسب الإعاقة
+Disability group,فئة الإعاقة
+Other disability group,مجموعة الإعاقة الأخرى
+Indicator scale,مقياس المؤشر
+Pick a colour theme,اختيار سمة اللون
+Cross-country estimates,التقديرات عبر البلدان
+Graph,الرسم البياني
+Table,جدول
+Estimates within countries,التقديرات داخل البلدان
+Map,خريطة
+Methods,أساليب
+Accessibility,الإتاحة 
+Citation,استشهاد
+"By using the Data, you agree to provide attribution to the DDI. Electronic publications will include a hyperlink to https://ds-e.disabilitydatainitiative.org/. Publications, whether printed, electronic or broadcast, based wholly or in part on the Data, will cite the source as follows:","باستخدام البيانات، فإنك توافق على تقديم الإسناد إلى مبادرة بيانات الإعاقة. ستتضمن المنشورات الإلكترونية رابطًا تشعبيًا إلى https://ds-e.disabilitydatainitiative.org/. وستقوم المنشورات، سواء كانت مطبوعة أو إلكترونية أو إذاعية، والتي تستند كليًا أو جزئيًا إلى هذه البيانات، بذكر المصدر على النحو التالي:"
+"DDI. Disability Statistics – Estimates Database (DS-E Database). Disability Data Initiative collective. Fordham University: New York, USA. 2024.","DDI. إحصاءات الإعاقة - قاعدة بيانات التقديرات (قاعدة بيانات DS-E). مبادرة بيانات الإعاقة الجماعية. جامعة فوردهام: نيويورك ، الولايات المتحدة الأمريكية. 2024."
+"For the full terms and conditions, click the link below:","للاطلاع على الشروط والأحكام الكاملة، انقر فوق الرابط أدناه:"
+Terms and conditions,الشروط والأحكام
+Graph showing,الرسم البياني يعرض
+Table showing, الجدول يعرض
+for,من أجل
+by,ب
+Map showing, الخريطة تعرض
+at,في
+Key message:,الرسالة الرئيسية:
+Indicator definition:,تعريف المؤشر:
+Insufficient Sample Size,حجم عينة غير كاف
+A blank cell indicates that the estimate is not available.,تشير الخلية الفارغة إلى أن التقدير غير متوفر.
+Data source(s):,مصدر (مصادر) البيانات:
+Proportion with disabilities (Prevalence),نسبة الإعاقة (الانتشار)
+Education,التعليم
+Health,الصحة
+Personal activities,الأنشطة الشخصية
+Standard of living,مستوى المعيشة
+Insecurity,انعدام الامن
+Adults with disabilities,البالغون ذوو الإعاقة
+Households with disabilities,الأسر التي تضم أفرادًا من ذوي الإعاقة
+Ever attended school,"	سبق أن التحق بالمدرسة"
+Primary school or higher,التعليم الابتدائي أو ما فوق
+Secondary school or higher,التعليم الثانوي أو أعلى
+Literacy,محو الأمية
+Water,الماء
+Sanitation,المرافق الصحية
+Family planning,تنظيم الأسرة
+Violence,عنف
+Computer,حاسوب
+Internet,إنترنت
+Own mobile,الهاتف المحمول الخاص
+Employment,توظيف
+Youth idle,الشباب غير الملتحقين بالتعليم أو العمل
+Manufacturing work,"العمل في قطاع التصنيع
+"
+Managerial work,العمل الإداري
+Informal work,العمل غير الرسمي
+Electricity,كهرباء
+Clean cooking fuel,وقود الطهي النظيف
+Adequate housing,السكن اللائق
+Assets owned,الأصول المملوكة
+Household mobile,"توفر الهاتف المحمول في الأسرة
+"
+Health insurance,التأمين الصحي
+Social protection,الحماية الاجتماعية
+Food insecure,انعدام الأمن الغذائي
+Experienced shock,"التعرض لصدمة
+"
+Health expenditures,النفقات الصحية
+Multidimensional poverty,الفقر متعدد الأبعاد
+"The proportion of adults with disabilities varies across countries, with the lowest at 5%, the highest at 33%, and the median at 14.2%. ","تختلف نسبة البالغين ذوي الإعاقة من بلد إلى آخر، حيث تبلغ أدنى نسبة 5٪، وأعلى نسبة 33٪، ومتوسطها 14.2٪."
+"The proportion of households who have at least one adult with disabilities varies across countries with the lowest at 10.4%, the highest at 61.7%, and the median at 28.5%.","تختلف نسبة الأسر التي لديها شخص بالغ واحد على الأقل من ذوي الإعاقة باختلاف البلدان حيث يبلغ أدنى معدل 10.4٪ ، وأعلى نسبة 61.7٪ ، والمتوسط 28.5٪."
+"The proportion of adults who have ever been to school is lower among adults with disabilities, than among adults without disabilities.",نسبة البالغين الذين سبق لهم الالتحاق بالمدرسة أقل بين البالغين ذوي الإعاقة مقارنةً بالبالغين غير ذوي الإعاقة.
+"The proportion of adults who at least completed primary school is lower among adults with disabilities, than among adults without disabilities.",نسبة البالغين الذين أتموا على الأقل التعليم الابتدائي أقل بين البالغين ذوي الإعاقة مقارنةً بالبالغين غير ذوي الإعاقة.
+"The proportion of adults who at least completed upper secondary school is lower among adults with disabilities, than among adults without disabilities.",نسبة البالغين الذين أكملوا على الأقل التعليم الثانوي العالي أقل بين البالغين ذوي الإعاقة مقارنةً بالبالغين غير ذوي الإعاقة.
+"The proportion of adults who can read and write in any language is lower among adults with disabilities, than among adults without disabilities.","نسبة البالغين الذين يستطيعون القراءة والكتابة بأي لغة أقل بين البالغين ذوي الإعاقة ، مقارنة بين البالغين غير ذوي الإعاقة."
+"Across countries, the proportion of adults who live in households who have safely managed drinking water is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","عبر البلدان، تكون نسبة البالغين الذين يعيشون في أسر منازل تمكنت من إدارة مياه الشرب بأمان متشابهة، أو أقل أو أعلى بالنسبة للبالغين ذوي الإعاقة، مقارنة بالبالغين غير المعوقين. ولا يوجد نمط ثابت في البلدان قيد الدراسة."
+"Across countries, the proportion of adults who live in households who have safely managed sanitation services is similar, lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","عبر البلدان، تكون نسبة البالغين الذين يعيشون في أسر تتمتع بخدمات صرف صحي مُدارة بأمان مشابهة أو أقل أو أعلى لدى البالغين ذوي الإعاقة مقارنةً بالبالغين بدون إعاقة. لا يوجد نمط ثابت في البلدان الخاضعة للدراسة."
+"Across countries, the proportion of women who report that they have their family planning needs met. In other words, women who want and have access to modern contraceptive methods, is similar, lower or higher for women with disabilities, compared to women without disabilities. There is no consistent pattern in the countries under study.","في جميع البلدان، تم تلبية احتياجات تنظيم الأسرة لدى نسبة من النساء اللواتي أبلغن بذلك. وبعبارة أخرى، فإن النساء اللواتي يرغبن في الحصول على وسائل منع الحمل الحديثة ويتمتعن بإمكانية الوصول إليها، تكون النسبة لديهن مشابهة أو أقل أو أعلى لدى النساء ذوات الإعاقة مقارنةً بالنساء غير ذوات الإعاقة. ولا يوجد نمط ثابت في البلدان الخاضعة للدراسة."
+"In most of the countries under study, the proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months is higher among women with disabilities, than among women without disabilities.","في معظم البلدان الخاضعة للدراسة، تكون نسبة النساء اللاتي أفدن بتعرضهن للعنف الأسري من قبل الشريك الحميم خلال الاثني عشر شهراً الماضية أعلى بين النساء ذوات الإعاقة مقارنةً بالنساء بدون إعاقة."
+"The proportion of adults who have or use a computer is lower among adults with disabilities, than among adults without disabilities.",نسبة البالغين الذين يمتلكون أو يستخدمون جهاز كمبيوتر أقل بين البالغين ذوي الإعاقة مقارنةً بالبالغين بدون إعاقة.
+"In most countries, the proportion of adults who have or use the internet is lower among adults with disabilities, than among adults without disabilities.  ","في معظم البلدان، تكون نسبة البالغين الذين يمتلكون أو يستخدمون الإنترنت أقل بين البالغين ذوي الإعاقة مقارنةً بالبالغين بدون إعاقة."
+"In most countries, the proportion of adults who have their own mobile phone is lower among adults with disabilities, than among adults without disabilities.","في معظم البلدان، تكون نسبة البالغين الذين لديهم هواتفهم المحمولة أقل بين البالغين ذوي الإعاقة، مقارنةً بالبالغين بدون إعاقة."
+"In most countries, the proportion of the adult population who work for pay, profit (self-employed) or for a family business/farm (whether paid or unpaid) is lower among persons with disabilities, than among persons without disabilities.","في معظم البلدان، تكون نسبة السكان البالغين الذين يعملون مقابل أجر أو ربح (كمستقلين) أو في مشروع/مزرعة عائلية (سواء بأجر أو بدون أجر) أقل بين الأشخاص ذوي الإعاقة مقارنةً بالأشخاص بدون إعاقة."
+"In most countries, the proportion of youth who are not enrolled in school and not employed is higher among youths with disabilities, than among youths without disabilities.","في معظم البلدان، تكون نسبة الشباب الذين لا يلتحقون بالمدرسة ولا يعملون أعلى بين الشباب ذوي الإعاقة مقارنةً بالشباب بدون إعاقة."
+"Across countries, the proportion of workers who work in the manufacturing sector is similar. Lower or higher for adults with disabilities, compared to adults without disabilities. There is no consistent pattern in the countries under study.","وبين البلدان، تتشابه نسبة العمال الذين يعملون في قطاع التصنيع. أقل أو أعلى للبالغين ذوي الإعاقة ، مقارنة بالبالغين غير ذوي الإعاقة. ولا يوجد نمط ثابت في البلدان قيد الدراسة."
+"In most countries, the proportion of women workers who have managerial positions is lower among women with disabilities, compared to women without disabilities.","في معظم البلدان، تكون نسبة النساء العاملات اللاتي يشغلن مناصب إدارية أقل بين النساء ذوات الإعاقة مقارنةً بالنساء بدون إعاقة."
+"Workers who do informal work, are ones who are self-employed, work for small firm or a firm that is unregistered, or have no written contract with their employers or work without pay. In most countries, the proportion of these workers is higher among workers with disabilities, than among workers without disabilities.","العمال الذين يؤدون عملاً غير رسمي هم الأشخاص الذين يعملون لحسابهم الخاص، أو يعملون لدى مؤسسة صغيرة أو مؤسسة غير مسجلة، أو لا يملكون عقداً مكتوباً مع أصحاب عملهم، أو يعملون بدون أجر. في معظم البلدان، تكون نسبة هؤلاء العمال أعلى بين العمال ذوي الإعاقة مقارنةً بالعمال بدون إعاقة."
+"In most countries, the proportion of adults who live in households with access to electricity is lower among persons with disabilities compared to persons without disabilities.","في معظم البلدان، تكون نسبة البالغين الذين يعيشون في أسر معيشية مزودة بالكهرباء أقل بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير المعوقين."
+"In most countries, the proportion of adults who live in households who use clean cooking fuel is lower among persons with disabilities compared to persons without disabilities.","في معظم البلدان، تكون نسبة البالغين الذين يعيشون في أسر تستخدم وقود الطهي النظيف أقل بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير ذوي الإعاقة."
+"In most countries, the proportion of adults who live in households with quality floor, roof and wall materials is lower among persons with disabilities compared to persons without disabilities.","في معظم البلدان، تكون نسبة البالغين الذين يعيشون في أسر تحتوي على مواد عالية الجودة للأرضيات والأسطح والجدران أقل بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير ذوي الإعاقة."
+"In most countries, the proportion of assets owned by an adult's household is lower among persons with disabilities compared to persons without disabilities.","في معظم البلدان، تكون نسبة الأصول المملوكة من قبل أسرة البالغين أقل بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير ذوي الإعاقة."
+"In most countries, the proportion of adults who live in households with a mobile phone is lower among persons with disabilities compared to persons without disabilities.","في معظم البلدان، تكون نسبة البالغين الذين يعيشون في أسر بها هاتف محمول أقل بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير المعوقين."
+"In most countries, the proportion of adults who live in households with health insurance is higher among persons with disabilities compared to persons without disabilities.","في معظم البلدان، تكون نسبة البالغين الذين يعيشون في أسر لديهم تأمين صحي أعلى بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير ذوي الإعاقة."
+"In most countries, the proportion of adults who live in households who receive social protection benefits is higher among persons with disabilities compared to persons without disabilities.","في معظم البلدان، تكون نسبة البالغين الذين يعيشون في أسر تتلقى فوائد الحماية الاجتماعية أعلى بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير ذوي الإعاقة."
+The proportion of adults who live in food insecure households is higher among persons with disabilities than among persons without disabilities.,ونسبة البالغين الذين يعيشون في أسر معيشية تعاني من انعدام الأمن الغذائي أعلى بين الأشخاص ذوي الإعاقة منها بين الأشخاص غير المعوقين.
+The proportion of adults who live in households that were recently exposed to at least one negative shock such as a flood or the loss of a job is higher among persons with disabilities than among persons without disabilities.,نسبة البالغين الذين يعيشون في أسر تعرضت مؤخرًا لصدمة سلبية واحدة على الأقل مثل الفيضانات أو فقدان الوظيفة أعلى بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير ذوي الإعاقة.
+"In most countries, the proportion of a household’s total consumption expenditures that are dedicated to health is higher among persons with disabilities than among persons without disabilities.","وفي معظم البلدان، تكون نسبة مجموع الإنفاق الاستهلاكي للأسر المعيشية المخصصة للصحة أعلى بين الأشخاص ذوي الإعاقة منها بين الأشخاص غير المعوقين."
+The proportion of adults who experience multidimensional poverty is higher among persons with disabilities than among persons without disabilities.,نسبة البالغين الذين يعانون من الفقر متعدد الأبعاد أعلى بين الأشخاص ذوي الإعاقة مقارنة بالأشخاص غير ذوي الإعاقة.
+"Proportion of adults ages 15 and older with disabilities. The proportion is available for adults with any disability (adults with disability), by disability type, and by degree (moderate and severe disability). ","نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق من ذوي الإعاقة. هذه النسبة متاحة للبالغين الذين يعانون من أي إعاقة (البالغون ذوو الإعاقة) ، حسب نوع الإعاقة ، وحسب الدرجة (الإعاقة المتوسطة والشديدة)."
+"Proportion of households who have at least one adult aged 15 and older with disabilities. The proportion is available for households with adults with any disability (adults with disability), and by degree (moderate and severe disability). ","نسبة الأسر التي تضم على الأقل بالغًا واحدًا من سن 15 عامًا وما فوق يعاني من إعاقة. تتوفر النسبة للأسر التي تضم بالغين يعانون من أي إعاقة (البالغين ذوي الإعاقة)، وكذلك حسب الدرجة (إعاقة متوسطة وشديدة)."
+Proportion of adults ages 15 and older who have ever been to school.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين ذهبوا إلى المدرسة.
+Proportion of adults ages 25 and older who at least completed primary school. ,نسبة البالغين الذين تتراوح أعمارهم بين 25 عامًا وما فوق والذين أكملوا على الأقل التعليم الابتدائي.
+"Proportion of adults ages 25 and older who completed upper secondary school, whether or not they also attended tertiary school","نسبة البالغين الذين تبلغ أعمارهم 25 عاما فما فوق والذين أكملوا المدرسة الثانوية، سواء التحقوا أيضا بالتعليم العالي أم لا"
+Proportion of adults 15 and older who can read and write in at least one language.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يستطيعون القراءة والكتابة بلغة واحدة على الأقل.
+Proportion of adults ages 15 and older who live in households that have safely managed drinking water.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في أسر تدير مياه الشرب بأمان.
+Proportion of adults ages 15 and older who live in households that have safely managed sanitation services.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في أسر تدير خدمات الصرف الصحي بأمان.
+Proportion of women who report that they have their family planning needs met; they want and have access to modern contraceptive methods.,نسبة النساء اللواتي أبلغن عن تلبية احتياجاتهن لتنظيم الأسرة؛ إنهم يريدون ولديهم إمكانية الوصول إلى وسائل منع الحمل الحديثة.
+"Proportion of women who report being subject to domestic violence by their intimate partner in the past 12 months. Domestic violence may be physical, psychological or sexual.",نسبة النساء اللواتي أبلغن عن تعرضهن للعنف المنزلي من قبل شريكهن الحميم في الأشهر ال 12 الماضية. قد يكون العنف المنزلي جسديا أو نفسيا أو جنسيا.
+Proportion of adults ages 15 and older who have or use a computer.  ,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين لديهم جهاز كمبيوتر أو يستخدمونه.
+Proportion of adults ages 15 and older who have or use the internet.  ,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين لديهم الإنترنت أو يستخدمونه.
+Proportion of adults ages 15 and older who have their own mobile phone.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين لديهم هواتفهم المحمولة.
+"Proportion of the adult population ages 15 and older who work for pay, profit (self-employed) or for a family business or  farm (whether paid or unpaid). ",نسبة السكان البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعملون بأجر أو ربح (يعملون لحسابهم الخاص) أو لصالح شركة عائلية أو مزرعة (سواء كانت مدفوعة الأجر أو غير مدفوعة الأجر).
+Proportion of youth ages 15 to 24 who are not enrolled in school and not employed.,نسبة الشباب الذين تتراوح أعمارهم بين 15 و 24 عاما غير المسجلين في المدرسة وغير العاملين.
+Proportion of workers ages 15 and older who work in the manufacturing sector.,نسبة العمال الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعملون في قطاع التصنيع.
+Proportion of women workers who have managerial positions.,نسبة العاملات اللاتي يشغلن مناصب إدارية.
+"Proportion of workers ages 15 and older who do informal work. They could be self-employed, work for a microenterprise of five or fewer employees or in a firm that is unregistered, or have no written contract with their employers. Family workers without pay are included as informal workers.","نسبة العمال الذين تبلغ أعمارهم 15 عاما فما فوق والذين يقومون بأعمال غير رسمية. يمكن أن يكونوا يعملون لحسابهم الخاص ، أو يعملون في مؤسسة صغيرة تضم خمسة موظفين أو أقل أو في شركة غير مسجلة ، أو ليس لديهم عقد مكتوب مع أصحاب العمل. يتم تضمين عاملات الأسر بدون أجر كعمال غير رسميين."
+Proportion of adults ages 15 and older who live in households with access to electricity.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في منازل مزودة بالكهرباء.
+Proportion of adults ages 15 and older who live in households who use clean cooking fuel.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في أسر تستخدم وقود الطهي النظيف.
+"Proportion of adults ages 15 and older who live in households with quality floor, roof and wall materials.",نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في منازل ذات مواد أرضية وسقف وجدران عالية الجودة.
+"Proportion of assets owned by an adult's household among the following assets:  a radio, TV, telephone, mobile phone, bike, motorbike, refrigerator, car (or truck) and computer.",نسبة الأصول المملوكة لأسرة الشخص البالغ من بين الأصول التالية: راديو وتلفزيون وهاتف وهاتف محمول ودراجة ودراجة نارية وثلاجة وسيارة (أو شاحنة) وكمبيوتر.
+Proportion of adults ages 15 and older who live in households with a mobile phone.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في منازل بها هاتف محمول.
+Proportion of adults ages 15 and older who live in households with health insurance.,نسبة البالغين الذين تتراوح أعمارهم بين 15 عامًا وما فوق والذين يعيشون في أسر لديها تأمين صحي.
+"Proportion of adults ages 15 and older who live in households who received social protection benefits in the past year or who currently receive them (e.g. cash benefits, in kind transfers). Benefits may be from Government or Non-Government institutions.","نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في أسر معيشية تلقت مزايا الحماية الاجتماعية في العام الماضي أو الذين يتلقونها حاليا (مثل الإعانات النقدية، التحويلات العينية). قد تكون المزايا من المؤسسات الحكومية أو غير الحكومية."
+"Proportion of adults ages 15 and older who live in households  that recently (in the past week, month or 12 months) did not have access to adequate food. ",نسبة البالغين الذين تبلغ أعمارهم 15 عاما فأكثر والذين يعيشون في أسر لم تتمكن مؤخرا (في الأسبوع أو الشهر أو الأشهر ال 12 الماضية) من الحصول على الغذاء الكافي.
+"Proportion of adults ages 15 and older who live in households that were recently exposed to at least one negative shock. The time frame is usually the past 12 months and shocks include:
+- shocks related to the weather (drought, flood, heavy rains), 
+- negative events affecting household members (death of a household member, illness of a household member),
+- economic hardships (loss of a job, crop damage) and
+- disasters (e.g. fire, landslide).","نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعيشون في أسر تعرضت مؤخرا لصدمة سلبية واحدة على الأقل. عادة ما يكون الإطار الزمني هو الأشهر ال 12 الماضية وتشمل الصدمات:
+- الصدمات المتعلقة بالطقس (الجفاف والفيضانات والأمطار الغزيرة) ، 
+- الأحداث السلبية التي تؤثر على أفراد الأسرة (وفاة أحد أفراد الأسرة ، مرض أحد أفراد الأسرة) ،
+- المصاعب الاقتصادية (فقدان الوظيفة ، تلف المحاصيل) و
+- الكوارث (مثل الحريق والانهيارات الأرضية)."
+"Proportion of a household’s total consumption expenditures that are dedicated to health (inpatient care and outpatient care out of pocket expenditures, medicines).",نسبة إجمالي نفقات استهلاك الأسرة المخصصة للصحة (رعاية المرضى الداخليين ورعاية المرضى الخارجيين من الجيب والأدوية).
+Proportion of adults ages 15 and older who experience more than one deprivation such as not working.,نسبة البالغين الذين تبلغ أعمارهم 15 عاما فما فوق والذين يعانون من أكثر من حرمان واحد مثل عدم العمل.
+All adults (ages 15 and older),جميع البالغين (من سن 15 عاما فما فوق)
+Women,نساء
+Men,رجال
+Rural residents,سكان الريف
+Urban residents,سكان الحضر
+Adults ages 15 to 29,البالغون الذين تتراوح أعمارهم بين 15 و 29 عاما
+Adults ages 30 to 44,البالغون الذين تتراوح أعمارهم بين 30 و 44 عاما
+Adults ages 45 to 64,البالغون الذين تتراوح أعمارهم بين 45 و 64 عاما
+Adults ages 65 and older,البالغون الذين تبلغ أعمارهم 65 عاما فما فوق
+Adults ages 25 to 29,البالغون الذين تتراوح أعمارهم بين 25 و 29 عاما
+No disability,لا إعاقة
+Moderate disability,إعاقة متوسطة
+No and moderate disability,"بدون إعاقة أو إعاقة متوسطة
+"
+Severe disability,إعاقة شديدة
+Disability,إعاقة
+Seeing disability,إعاقة بصرية
+Hearing disability,إعاقة سمعية
+Mobility disability,إعاقة حركية
+Self-care disability,إعاقة في العناية الذاتية
+Cognition disability,إعاقة في الإدراك
+Communication disability,إعاقة في التواصل
+National,وطني
+Subnational division 1,التقسيم الفرعي الوطني 1
+Subnational division 2,التقسيم الفرعي الوطني 2
+Alternative subnational division,التقسيم الفرعي الوطني البديل
+Disability versus no disability,الإعاقة مقابل لا إعاقة
+Severe versus moderate versus no disability,الإعاقة الشديدة مقابل المتوسطة مقابل لا إعاقة
+Severe versus moderate or no disability,الإعاقة الشديدة مقابل الإعاقة المتوسطة أو لا إعاقة
+Disability by type,الإعاقة حسب النوع
+Level,المستوى
+ISO Code,رمز ISO
+Afghanistan,أفغانستان
+Albania,ألبانيا
+Algeria,الجزائر
+American Samoa,ساموا الأمريكية
+Angola,أنغولا
+Antigua and Barbuda,أنتيغوا وبربودا
+Argentina,الأرجنتين
+Armenia,أرمينيا
+Australia,أستراليا
+Austria,النمسا
+Azerbaijan,أذربيجان
+Bahamas,جزر البهاما
+Bahrain,البحرين
+Bangladesh,بنغلاديش
+Barbados,بربادوس
+Belarus,بيلاروسيا
+Belgium,بلجيكا
+Belize,بيلز
+Benin,بنين
+Bhutan,بوتان
+Bolivia,بوليفيا
+Bosnia and Herz.,البوسنة وهيرتس.
+Bosnia and Herzegovina,البوسنة والهرسك
+Botswana,بوتسوانا
+Brazil,البرازيل
+Brunei Darussalam,بروناي دار السلام
+Bulgaria,بلغاريا
+Burkina Faso,بوركينا فاسو
+Burundi,بوروندي
+Cabo Verde,كابو فيردي
+Cambodia,كمبوديا
+Cameroon,الكاميرون
+Canada,كندا
+Cayman Islands,جزر كايمان
+Central African Rep.,جمهورية أفريقيا الوسطى.
+Chad,تشاد
+Chile,شيلي
+China,الصين
+Colombia,كولومبيا
+Comoros,جزر القمر
+Congo,الكونغو
+"Congo, Dem. Rep.","الكونغو، الحزب الديمقراطي."
+"Congo, Rep.","الكونغو، الجمهور."
+Cook Islands,جزر كوك
+Costa Rica,كوستاريكا
+Côte d'Ivoire,ساحل العاج
+Croatia,كرواتيا
+Cuba,كوبا
+Cyprus,قبرص
+Czech Republic,جمهورية التشيك
+Czechia,تشيكيا
+Dem. Rep. Congo,الديمقراطي الكونغو
+Denmark,الدانمارك
+Djibouti,جيبوتي
+Dominica,دومينيكا
+Dominican Rep.,النائب الدومينيكاني.
+Dominican Republic,جمهورية الدومينيكان
+Ecuador,الإكوادور
+"Egypt, Arab Rep.","مصر، الجمهورية العربية"
+El Salvador,السلفادور
+Eq. Guinea,المعادلة غينيا
+Equatorial Guinea,غينيا الاستوائية
+Eritrea,إريتريا
+Estonia,إستونيا
+Eswatini,إسواتيني
+eSwatini,إيسواتيني
+Ethiopia,إثيوبيا
+Falkland Is.,جزر فوكلاند هي كذلك.
+Faroe Islands,جزر الفارو
+Fiji,فيجي
+Finland,فنلندا
+Fr. S. Antarctic Lands,الأب الجنوبي أراضي القطب الجنوبي
+France,فرنسا
+Gabon,الغابون
+Gambia,غامبيا
+"Gambia, The","غامبيا،"
+Georgia,جورجيا
+Germany,ألمانيا
+Ghana,غانا
+Gilbratar,جيلبراتار
+Greece,اليونان
+Greenland,غرينلاند
+Grenada,غرينادا
+Guam,غوام
+Guatemala,جواتيمالا
+Guinea,غينيا
+Guinea-Bissau,غينيا بيساو
+Guyana,غيانا
+Haiti,هايتي
+Honduras,هندوراس
+Hungary,المجر
+Iceland,أيسلندا
+India,الهند
+Indonesia,إندونيسيا
+"Iran, Islamic Rep.","إيران، الجمهورية الإسلامية."
+Iraq,العراق
+Ireland,أيرلندا
+Israel,إسرائيل
+Italy,إيطاليا
+Jamaica,جامايكا
+Japan,اليابان
+Jordan,الأردن
+Kazakhstan,كازاخستان
+Kenya,كينيا
+Kiribati,كيريباتي
+"Korea, Dem. Rep.","كوريا، الحزب الديمقراطي."
+"Korea, Rep.","كوريا، الجمهور."
+Kosovo,كوسوفو
+Kuwait,الكويت
+Kyrgyz Republic,جمهورية قيرغيزستان
+Kyrgyzstan,قيرغيزستان
+Lao Democratic Republic,جمهورية لاو الديمقراطية
+Laos,لاوس
+Latvia,لاتفيا
+Lebanon,لبنان
+Lesotho,ليسوتو
+Liberia,ليبيريا
+Libya,ليبيا
+Lithuania,لتوانيا
+Luxembourg,لوكسمبورج
+Madagascar,مدغشقر
+Malawi,ملاوي
+Malaysia,ماليزيا
+Maldives,المالديف
+Mali,مالي
+Malta,مالطا
+Mariana Islands (CNMI),جزر ماريانا (CNMI)
+Marshall Islands,جزر مارشال
+Mauritania,موريتانيا
+Mauritius,موريشيوس
+Mexico,المكسيك
+"Micronesia, Fed. Sts.","ميكرونيزيا، الشارعات الفيدرالية."
+Moldova,مولدوفا
+Mongolia,منغوليا
+Montenegro,الجبل الأسود
+Montserrat,مونتسيرات
+Morocco,المغرب
+Mozambique,موزمبيق
+Myanmar,ميانمار
+N. Cyprus,شمال قبرص
+Namibia,ناميبيا
+Nauru,ناورو
+Nepal,نيبال
+Netherlands,هولندا
+New Caledonia,كاليدونيا الجديدة
+New Zealand,نيوزيلندا
+Nicaragua,نيكاراجوا
+Niger,النيجر
+Nigeria,نيجيريا
+Niue,نيوي
+North Korea,كوريا الشمالية
+North Macedonia,مقدونيا الشمالية
+Northern Ireland,أيرلندا الشمالية
+Norway,النرويج
+Oman,عُمان
+Pakistan,باكستان
+Palau,بالاو
+Palestine,فلسطين
+Panama,بنما
+Papua New Guinea,بابوا غينيا الجديدة
+Paraguay,باراجواي
+Peru,بيرو
+Philippines,الفلبين
+Poland,بولندا
+Portugal,البرتغال
+Puerto Rico,بويرتوريكو
+Qatar,قطر
+Republic of Kosovo,جمهورية كوسوفو
+Romania,رومانيا
+Russia,روسيا
+Russian Federation,الاتحاد الروسي
+Rwanda,رواندا
+S. Sudan,السودان الجنوبي
+Saint Lucia,سانت لوسيا
+Samoa,ساموا
+São Tomé and Principe,ساو تومي وبرينسيبي
+Saudi Arabia,المملكة العربية السعودية
+Senegal,السنغال
+Serbia,صربيا
+Seychelles,سيشيل
+Sierra Leone,سيراليون
+Singapore,سنغافورة
+Slovak Rep.,النائب السلوفاكي.
+Slovakia,سلوفاكيا
+Slovenia,سلوفينيا
+Solomon Is.,سليمان هو كذلك.
+Solomon Islands,جزر سليمان
+Somalia,الصومال
+Somaliland,أرض الصومال
+South Africa,جنوب أفريقيا
+South Korea,كوريا الجنوبية
+South Sudan,جنوب السودان
+Spain,إسبانيا
+Sri Lanka,سريلانكا
+St. Kitts and Nevis,سانت كيتس ونيفيس
+St. Lucia,سانت لوسيا
+St. Vincent,سانت فنسنت
+Sudan,السودان
+Suriname,سورينام
+Sweden,السويد
+Switzerland,سويسرا
+Syrian Arab Rep.,البرلمان العربي السوري.
+Taiwan,تايوان
+Tajikistan,طاجيكستان
+Tanzania,تنزانيا
+Thailand,تايلاند
+The Netherlands,هولندا
+Timor-Leste,تيمور - ليشتي
+Togo,توغو
+Tokelau,توكيلاو
+Tonga,تونغا
+Trinidad and Tobago,ترنداد وتوباجو
+Tunisia,تونس
+Turkey,تركيا
+Turkmenistan,تركمانستان
+Turks and Caicos Islands,جزر تركس وكايكوس
+Tuvalu,توفالو
+Uganda,أوغندا
+Ukraine,أوكرانيا
+United Arab Emirates,الإمارات العربية المتحدة
+United Kingdom,المملكة المتحدة
+United States,الولايات المتحدة الأمريكية
+United States of America,الولايات المتحدة الأمريكية
+Uruguay,اوروجواي
+Uzbekistan,أوزبكستان
+Vanuatu,فانواتو
+"Venezuela, RB","فنزويلا، RB"
+Vietnam,فيتنام
+W. Sahara,الصحراء الغربية
+Wallis and Futuna,واليس وفوتونا
+"Yemen, Rep.","اليمن، الجمهورية."
+Zambia,زامبيا
+Zimbabwe,زيمبابوي
+World,العالم
+South Asia,جنوب آسيا
+East Asia & Pacific,شرق آسيا والمحيط الهادئ
+Middle East & North Africa,الشرق الأوسط وشمال أفريقيا
+Sub-Saharan Africa,أفريقيا جنوب الصحراء الكبرى
+Latin America & Caribbean,أمريكا اللاتينية ومنطقة البحر الكاريبي
+North America,أمريكا الشمالية
+Europe & Central Asia,أوروبا وآسيا الوسطى
+countries,البلدان
+Data source(s): See table for source list,مصادر البيانات: انظر الجدول لقائمة المصادر
+Data source:,مصدر البيانات:
+Overview of Results,نظرة عامة على النتائج
+Detailed results,النتائج التفصيلية
+Map of Disability Questions by Country,خريطة أسئلة الإعاقة حسب الدولة
+Table of Disability Questions by Country,جدول أسئلة الإعاقة حسب الدولة
+Region,المنطقة
+Do the datasets reviewed in each country include functional difficulty questions?,هل تتضمن مجموعات البيانات التي تتم مراجعتها في كل دولة أسئلة الصعوبة الوظيفية؟
+Washington Group Short Set,مجموعة واشنطن شورت ست
+Not assessed,لم يتم تقييمه
+Other functional difficulty questions,أسئلة أخرى حول صعوبة الوظائف
+No functional difficulty questions,لا توجد أسئلة صعوبة وظيفية
+Europe & Central Asia countries,دول أوروبا وآسيا الوسطى
+Multiple countries,عدة دول
+Cross Regions,المناطق المشتركة
+Yes,نعم
+No,لا
+Round 1,الجولة الأولى
+Round 2,الجولة الثانية
+Round 3,الجولة الثالثة
+Round 4,الجولة الرابعة
+Round 5,الجولة الخامسة
+Round 6,الجولة السادسة
+Round 7,الجولة 7
+Round 8,الجولة 8
+Round 9,الجولة التاسعة
+Round 10,الجولة العاشرة
+January,يناير
+February,فبراير
+March,مارس
+April,أبريل
+May,مايو
+June,يونيو
+July,يوليو
+August,أغسطس
+September,سبتمبر
+October,أكتوبر
+November,نوفمبر
+December,ديسمبر
+Version 3 and 2 respectively,الإصداران 3 و2 على التوالي
+Quarter 1,الربع الأول
+Quarter 2,الربع الثاني
+Quarter 3,الربع الثالث
+Quarter 4,الربع الرابع
+Endline 1,خط النهاية 1
+Endline 2,خط النهاية 2
+Endline 3,خط النهاية 3
+Endline 4,خط النهاية 4
+Endline 5,خط النهاية 5
+Rural Household Survey,مسح الأسر الريفية
+Self Targeting,الاستهداف الذاتي
+Notes: WG-SS stands for the Washington Group Short,ملاحظات: WG-SS تعني مجموعة واشنطن القصيرة
+(1) - Yes/No answer; (2) - Answer scale is different from that in the WG-SS; (3) - Wording of questions is different from the WG-SS; (4) - Does not have the selfcare domain; (5) - Does not have the communication domain,(1) - إجابة نعم/لا؛ (2) - مقياس الإجابة يختلف عن ذلك في مجموعة العمل و-SS؛ (3) - صياغة الأسئلة تختلف عن WG-SS؛ (4) - لا يمتلك مجال العناية الذاتية؛ (5) - لا يمتلك مجال الاتصال
