@@ -236,7 +236,8 @@ dta_list2 = dta_list %>%
   sub("Guatemala.dta", "Guatemala_Census_2018.dta", .) %>%
   sub("Ecuador.dta", "Ecuador_Census_2022.dta", .) %>%
   sub("Colombia.dta", "Colombia_GEIH_2023.dta", .) %>%
-  sub("Bolivia.dta", "Bolivia_EH_2021.dta", .)
+  sub("Bolivia.dta", "Bolivia_EH_2021.dta", .) %>%
+  sub("Mexico.dta", "Mexico_Census_2020.dta", .)
 file.rename(
   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list),
   paste0(cen_dir, "Downloads/Census/Stata Datasets/", dta_list2)

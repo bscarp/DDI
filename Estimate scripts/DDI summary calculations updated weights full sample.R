@@ -1,7 +1,7 @@
 #Full population datasets
 library(future)
 library(doFuture)
-options(future.globals.maxSize = 1e10)
+options(future.globals.maxSize = 1.5e10)
 library(foreach)
 library(tidyverse)
 library(haven)
